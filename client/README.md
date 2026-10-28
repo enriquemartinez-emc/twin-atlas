@@ -1,59 +1,40 @@
-# Client
+# Twin Atlas client
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.2.5.
+Angular 22 (zoneless, standalone, Vitest) with CesiumJS for the 3D scene and Spartan UI with Tailwind for the shell. Conventions live in [AGENTS.md](../AGENTS.md).
 
-## Development server
+## Commands
 
-To start a local development server, run:
+| Command                | What it does                            |
+| ---------------------- | --------------------------------------- |
+| `npm start`            | Dev server on http://localhost:4200     |
+| `npm run build`        | Production build                        |
+| `npm test`             | Unit tests (Vitest), watch mode         |
+| `npx ng lint`          | angular-eslint (no `any`, import rules) |
+| `npm run format:check` | Prettier check (`npm run format` fixes) |
 
-```bash
-ng serve
-```
+## The 3D scene and where its data comes from
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+The viewer lives in `src/app/features/scene`. Cesium is only touched in `src/app/map` and is loaded lazily, so it never weighs on the first page load.
 
-## Code scaffolding
+| Mode                | When                          | Data                                                                  |
+| ------------------- | ----------------------------- | --------------------------------------------------------------------- |
+| Photorealistic      | A Cesium ion token is saved   | Google Photorealistic 3D Tiles, streamed through Cesium ion           |
+| OpenStreetMap globe | No token, or the token failed | OpenStreetMap raster tiles draped on the globe (development fallback) |
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+### Using photorealistic tiles
 
-```bash
-ng generate component component-name
-```
+1. Create a free account at https://ion.cesium.com and copy an access token.
+2. Open the app and paste it in the "Cesium ion token" panel.
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+The token is kept in this browser's `localStorage` only. It is never committed, never sent to the Twin Atlas API, and can be removed with "Forget token". If ion rejects it, the viewer falls back to the OpenStreetMap globe and says so.
 
-```bash
-ng generate --help
-```
+### Terms and attribution
 
-## Building
+- **Google Photorealistic 3D Tiles** are subject to the Google Maps Platform Terms of Service and Cesium ion's terms. Cesium shows the required credits in the bottom bar: do not hide them. Google's terms only allow its own geocoder to be used alongside these tiles, and the viewer has no geocoder. Review the current terms before any public deployment.
+- **OpenStreetMap** data is © OpenStreetMap contributors under the ODbL. The public tile server (`tile.openstreetmap.org`) has a usage policy that does not allow heavy or production traffic, so the OSM fallback is for local development only. Use a hosted tile provider or your own tiles for anything public.
+- **Cesium ion**: the free tier has usage limits. Check your account's terms.
 
-To build the project run:
+## Notes
 
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+- Spartan Helm components are copied into `src/app/shared/ui` (config in `components.json`). They keep upstream conventions, so ESLint relaxes the selector-prefix and non-null rules in that folder only.
+- `src/app/api` will hold the generated SDK (task 008) and is never edited by hand.

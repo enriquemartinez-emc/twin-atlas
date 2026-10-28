@@ -137,7 +137,7 @@ Use aliases for every import that crosses a folder boundary. Defined in `tsconfi
 
 - No `../../..` imports. Relative imports only within the same feature folder, for siblings and direct children.
 - Cross-feature imports go through the other feature's public entry point (`@features/annotation/public-api`), never its internal files.
-- Don't add or rename aliases without approval. When one changes, update `tsconfig.json`, the test config, and lint rules together.
+- Don't add or rename aliases without approval. Exception: the Spartan CLI adds one `@shared/ui/<component>` entry per copied Helm component (config in `client/components.json`); that is expected. When one changes, update `tsconfig.json`, the test config, and lint rules together.
 - Enforce with `no-restricted-imports` (deep relative paths and cross-feature internals) as an error.
 
 ## Spartan UI usage
@@ -157,7 +157,7 @@ E2E tests are part of the project, but **they are never run without my explicit 
 ## Workflow rules (mandatory)
 
 1. **Acceptance criteria first.** Before starting any task, write its acceptance criteria in `specs/NNN-<slug>.md` and get my approval. No code until they are approved.
-2. **One task at a time.** When a task is done, stop and report. Never start the next task without my explicit approval.
+2. **One task at a time.** When a task is done, stop and report. Never start the next task without my explicit approval. Exception: when I explicitly approve a batch of small tasks, run them in order, one branch and spec per task, and report once at the end. Dependency approvals (rule 6) still stop the batch.
 3. **Feature branches only.** Branch from `main` as `feat/<slug>`, `fix/<slug>`, `chore/<slug>`, `docs/<slug>`, `test/<slug>`. **Never commit or push to `main`.** Changes reach `main` via pull request that I approve. The single exception was the one-time bootstrap commit (AGENTS.md and `.gitignore`).
 4. **Conventional Commits, always.** `type(scope): subject` (feat, fix, docs, refactor, test, chore, build, ci, perf). Imperative, lowercase subject, no trailing period. Small, focused commits.
 5. **Format after every task.** When a task is finished, run the formatters (Prettier on `client/`, Spotless on the backend) before the final commit. Don't hand over unformatted code.
