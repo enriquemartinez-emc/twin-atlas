@@ -56,6 +56,16 @@ module.exports = defineConfig([
     },
   },
   {
+    // Helm components are copied in by the Spartan CLI and keep upstream conventions: `hlm`
+    // selector prefix and non-null assertions in its utilities. Everything else still applies.
+    files: ['src/app/shared/ui/**/*.ts'],
+    rules: {
+      '@angular-eslint/directive-selector': 'off',
+      '@angular-eslint/component-selector': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
+    },
+  },
+  {
     files: ['**/*.html'],
     extends: [angular.configs.templateRecommended, angular.configs.templateAccessibility],
     rules: {},
