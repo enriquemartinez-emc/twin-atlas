@@ -1,6 +1,6 @@
 # 002 — Backend housekeeping
 
-**Status:** Proposed | **Branch:** `chore/bootstrap-backend`
+**Status:** In progress | **Branch:** `chore/bootstrap-backend`
 
 ## Description
 
