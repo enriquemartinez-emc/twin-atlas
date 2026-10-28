@@ -1,0 +1,161 @@
+# AGENTS.md — Twin Atlas
+
+Geospatial digital-twin explorer: Spring Boot API + Angular/Cesium client over PostgreSQL/PostGIS.
+
+A digital twin is a photorealistic 3D copy of a real place, such as a building, a street or a whole neighborhood, built from photos and scans. Twin Atlas is a web platform for exploring and managing these digital twins directly in the browser, with nothing to install.
+
+People can:
+
+Explore a real place in 3D on a map, moving around as if they were there.
+Add information to it: place markers, notes and outlines on the scene, for example "this window needs repair" or "inspection area".
+Find things by area: everything near a point, everything inside a zone, or everything visible in the current view.
+Manage the data attached to each place: create, edit, organize and remove it.
+
+Other software can connect to the platform through a documented interface, so outside systems can read and enrich these places with their own information.
+
+The goal is a fast, reliable and easy-to-use platform that brings real-world spaces to life on screen and scales to large amounts of location data.
+
+## Stack
+
+- Java 25, Spring Boot 4 (Spring Framework 7, Hibernate 7), Maven (commit `mvnw`)
+- PostgreSQL + PostGIS, Flyway, Hibernate Spatial + JTS, MapStruct, springdoc-openapi
+- Backend tests: JUnit 5, AssertJ, jqwik, Testcontainers (postgis image), ArchUnit
+- Angular 22.x (latest stable; confirm with `ng version`), strict TypeScript, Spartan UI (`@spartan-ng/brain` + CLI-copied Helm components) with Tailwind CSS, CesiumJS
+- TypeScript SDK generated from the OpenAPI spec
+- Not yet approved (ask first): Prettier, angular-eslint, Spotless, commitlint/husky, or any other tooling.
+- Generate the backend via start.spring.io. Boot 4 starters are modular (e.g. `spring-boot-starter-webmvc`). Jackson 3 is in use: verify GeoJSON/JTS serializer support, write our own if needed.
+
+# Backend
+
+## Architecture: modular monolith, feature slices, FCIS
+
+Single Maven module. Package by feature, never by layer.
+
+```
+com.twinatlas
+├── annotation/   core/ (pure), one Endpoint class per use case, entity, repository, mapper, AnnotationQueries (reads)
+├── scene/        plain CRUD, no core
+├── asset/        plain CRUD, no core
+├── importing/    core/ (pure OSM -> annotation transforms)
+└── platform/     Problems (ProblemDetail mapping), clock/id beans, security
+```
+
+### Functional core (`..core..` packages)
+
+- Pure Java: records, decision functions, total transforms. No Spring, Jakarta, Hibernate, I/O, clock, or random. Time and IDs are passed in as parameters.
+- **One `evaluate(command, context)` per use case with two or more rules.** It returns a `Decision` (`Accepted` | `Rejected(reason)`); `Rejection` is an enum of stable codes, never messages or HTTP statuses.
+- `context` holds derived facts (counts, flags, extents), not large collections. The shell obtains them from SQL.
+- Transforms (`Annotation.create`, `moveTo`, `publish`) are total: they run only after the decision was accepted and cannot fail.
+- Lifecycle states are types (`Draft`, `Published`, `Archived`), so illegal transitions don't compile. No status enums or boolean flags.
+- No generic `Result<T>` wrappers, no monadic chains, no exceptions for domain control flow.
+
+### Imperative shell (endpoints)
+
+One class per use case, annotated with its `@PostMapping` and similar. Fixed flow:
+
+1. Load context facts (repository, PostGIS counts/existence checks)
+2. `evaluate(...)`
+3. `if (decision instanceof Rejected(var reason)) return Problems.from(reason);` (plain `if`, no trailing `switch`)
+4. Apply the total transform
+5. Persist, then respond
+
+`Problems.from(Rejection)` is the single exhaustive mapping to `ProblemDetail`. The `Rejection` code is exposed as the error `code`, so it lands in OpenAPI and the generated SDK.
+
+### Reads
+
+Spatial queries (bbox, nearest-N, intersects, keyset-paginated lists) **bypass the core**: native SQL / `JdbcClient` projections straight to response DTOs. Use `&&` first, then exact predicates (`ST_DWithin`, `ST_Intersects`, `<->` KNN). Never wrap these in domain types.
+
+## Persistence rules
+
+- Flyway owns the schema, including GiST indexes. `spring.jpa.hibernate.ddl-auto=validate`, `spring.jpa.open-in-view=false`.
+- SRID 4326 for storage and API. Document the geometry vs geography choice in an ADR.
+- Entities never leave the shell and are never exposed in controllers or DTOs. Map entity <-> domain record at the shell boundary (MapStruct).
+- Updates: **load the entity and apply changes to it**. Never rebuild a detached entity and `merge` (Hibernate 7 disallows reassociation).
+- `@Version` optimistic locking, exposed via ETag / `If-Match`.
+- Core rules are advisory under concurrency; back important invariants with DB constraints (unique/exclusion) as the final enforcer.
+- Keyset pagination, not offset.
+
+## Cross-cutting
+
+- Errors: RFC 7807 `ProblemDetail` via `@RestControllerAdvice`. Bean Validation (Jakarta) covers request shape only; domain rules live in the core.
+- Security: Spring Security OAuth2 resource server (JWT), kept simple.
+- Observability: Actuator + Micrometer; timers on spatial queries.
+- Dates: `LocalDate` / `Instant` / `Duration`. No millisecond-constant arithmetic.
+- Bulk import is the only place that collects all violations (`List<Rejection>`); elsewhere return the first.
+
+## Backend testing (no E2E)
+
+1. **Core:** plain JUnit, table-driven, no Spring, no containers; jqwik property tests for geometry rules.
+2. **Endpoints:** `@SpringBootTest` + Testcontainers PostGIS; one test per rejection path, plus a concurrency/race test.
+3. **ArchUnit:** `..core..` must not depend on `org.springframework..`, `jakarta..`, `org.hibernate..`; slices must not reach into each other's internals.
+
+# Frontend (`client/`)
+
+## Angular conventions
+
+- Standalone components only, `ChangeDetectionStrategy.OnPush`, `inject()` over constructor injection. Zoneless-ready.
+- State with signals (`signal`, `computed`, `resource`/`httpResource` where suitable); RxJS only where streams are genuinely needed.
+- Feature folders mirror backend slices: `annotation/`, `scene/`, `asset/`. Shared UI in `shared/ui` (Helm components).
+- Smart (route-level) components fetch via the generated SDK (never hand-write API types); presentational components take inputs and emit outputs.
+- Cesium code lives behind a thin service/wrapper so components don't touch the Cesium API directly, and Cesium objects are destroyed on teardown.
+
+## TypeScript rules
+
+- **`any` is forbidden**, including `as any` and implicit any. Use `unknown` with narrowing, generics, or proper types. Enable `strict`, `noImplicitAny`, `noUncheckedIndexedAccess`; once linting is approved, enforce `@typescript-eslint/no-explicit-any` as an error.
+- Prefer `readonly`, discriminated unions, and `type` imports. No non-null assertions (`!`) without a comment explaining why.
+
+## Path aliases (tsconfig `paths`)
+
+Use aliases for every import that crosses a folder boundary. Defined in `tsconfig.json` and nowhere else:
+
+| Alias         | Maps to              | Use                                             |
+| ------------- | -------------------- | ----------------------------------------------- |
+| `@app/*`      | `src/app/*`          | app shell, routing, config                      |
+| `@features/*` | `src/app/features/*` | feature slices (`annotation`, `scene`, `asset`) |
+| `@shared/*`   | `src/app/shared/*`   | shared UI (Helm components), utilities          |
+| `@map/*`      | `src/app/map/*`      | Cesium wrapper services                         |
+| `@api/*`      | `src/app/api/*`      | generated SDK (never edited by hand)            |
+| `@env/*`      | `src/environments/*` | environment config                              |
+
+- No `../../..` imports. Relative imports only within the same feature folder, for siblings and direct children.
+- Cross-feature imports go through the other feature's public entry point (`@features/annotation/public-api`), never its internal files.
+- Don't add or rename aliases without approval. When one changes, update `tsconfig.json`, the test config, and lint rules together.
+- Once linting is approved, enforce with `no-restricted-imports` (deep relative paths and cross-feature internals).
+
+## Spartan UI usage
+
+- Add components with the Spartan CLI (needs approval before first install). Don't hand-roll components Spartan already provides.
+- Use Brain directives (`brn*`) for behavior/accessibility and Helm (`hlm*`) for styling. Edit Helm files in place when customizing.
+- Use design tokens/theme variables; no hardcoded colors.
+
+## Frontend testing (no E2E)
+
+Unit tests for services and pure logic; component tests with the Angular testing utilities. No Playwright/Cypress/Selenium.
+
+## Workflow rules (mandatory)
+
+1. **Acceptance criteria first.** Before starting any task, write its acceptance criteria and get my approval. No code until they are approved.
+2. **One task at a time.** When a task is done, stop and report. Never start the next task without my explicit approval.
+3. **Feature branches only.** Branch from `main` as `feat/<slug>`, `fix/<slug>`, `chore/<slug>`. **Never commit or push to `main`.** Changes reach `main` via pull request that I approve.
+4. **Conventional Commits, always.** `type(scope): subject` (feat, fix, docs, refactor, test, chore, build, ci, perf). Imperative, lowercase subject, no trailing period. Small, focused commits.
+5. **Format after every task.** When a task is finished, run the formatters (Prettier on `client/`, Spotless on the backend) before the final commit. Don't hand over unformatted code.
+6. **No third-party libraries without approval.** Don't add or upgrade any dependency (npm, Maven, Docker image, CLI tool, schematic) without asking first, naming the library, the reason, and alternatives. Pre-approved only: the stack listed below.
+7. **No end-to-end tests.** Don't write or add browser/E2E tooling (Playwright, Cypress, Selenium). Unit tests, core tests, and backend integration tests are fine.
+8. **No `any` in TypeScript.** Use precise types, `unknown` plus narrowing, or generics.
+9. When unsure about scope, an approach, or a dependency, ask instead of guessing.
+
+# Shared
+
+## Don'ts
+
+- Don't apply the core to scene/asset CRUD or to spatial queries.
+- Don't pass entities or large collections into the core.
+- Don't add repository-over-repository layers or single-implementation interfaces.
+
+## Docs to maintain
+
+`ARCHITECTURE.md` and `docs/adr/`: modular monolith with slices; decision functions with explicit context (not Result types or handler-owned rules); reads bypass the core; native SQL vs Hibernate Spatial; entity mapping at the shell boundary; Maven choice; keyset pagination; Spartan UI choice. Include query plans before/after GiST indexing and a benchmark note.
+
+## Done means
+
+Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still runs everything, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.

@@ -1,0 +1,19 @@
+# Build output
+server/target/
+client/dist/
+client/.angular/
+client/out-tsc/
+
+# Dependencies
+client/node_modules/
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# IDE and OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
