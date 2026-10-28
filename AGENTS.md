@@ -33,7 +33,7 @@ The goal is a fast, reliable and easy-to-use platform that brings real-world spa
 - Java 25, Spring Boot 4 (Spring Framework 7, Hibernate 7), Maven (commit `server/mvnw`). Root package and groupId: `com.twinatlas`.
 - PostgreSQL + PostGIS, Flyway, Hibernate Spatial + JTS, MapStruct, springdoc-openapi
 - Backend tests: JUnit 5, AssertJ, jqwik, Testcontainers (postgis image), ArchUnit
-- Angular 22.x (22.0.x requires Node `^22.22.3 | ^24.15.0 | ^26.0.0` and TypeScript `>=6.0.0 <6.1.0`; confirm with `ng version`), strict TypeScript, Vitest, Spartan UI (`@spartan-ng/brain` + CLI-copied Helm components) with Tailwind CSS, CesiumJS
+- Angular 22.x (installed: 22.2.3 with TypeScript 6.0.3; 22.0.x requires Node `^22.22.3 | ^24.15.0 | ^26.0.0` and TypeScript `>=6.0.0 <6.1.0`; confirm with `ng version`), strict TypeScript, Vitest, Spartan UI (`@spartan-ng/brain` + CLI-copied Helm components) with Tailwind CSS, CesiumJS
 - TypeScript SDK generated from the OpenAPI spec with `@hey-api/openapi-ts` (dev dependency, output in `client/src/app/api`)
 - Docker Compose with a pinned `postgis/postgis` image; Testcontainers uses the same image.
 - Formatting and linting: Prettier (`client/`), Spotless with google-java-format (`server/`), angular-eslint.
@@ -108,7 +108,8 @@ Spatial queries (bbox, nearest-N, intersects, keyset-paginated lists) **bypass t
 
 ## Angular conventions
 
-- Standalone components only, `ChangeDetectionStrategy.OnPush` (explicit, even if it is the default), `inject()` over constructor injection. Zoneless: no zone.js.
+- Standalone components only, `inject()` over constructor injection. Zoneless: no zone.js.
+- Change detection is OnPush. In Angular 22 that is the default, so do not set `ChangeDetectionStrategy.OnPush` explicitly. Never opt into `ChangeDetectionStrategy.Eager` without a comment explaining why.
 - State with signals (`signal`, `computed`, `resource`/`httpResource` where suitable); RxJS only where streams are genuinely needed.
 - Angular 22: forms use Signal Forms. Services use `@Service` (never constructor injection). Heavy services (the Cesium wrapper) are lazy-loaded with `injectAsync`. Experimental APIs (`debounced`, WebMCP) stay out of core paths.
 - Accessibility primitives come from Spartan Brain. `@angular/aria` is not added unless Spartan lacks a needed primitive.
