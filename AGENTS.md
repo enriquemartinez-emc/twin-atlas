@@ -98,7 +98,7 @@ Spatial queries (bbox, nearest-N, intersects, keyset-paginated lists) **bypass t
 - Dates: `LocalDate` / `Instant` / `Duration`. No millisecond-constant arithmetic.
 - Bulk import is the only place that collects all violations (`List<Rejection>`); elsewhere return the first.
 
-## Backend testing (no E2E)
+## Backend testing
 
 1. **Core:** plain JUnit, table-driven, no Spring, no containers; jqwik property tests for geometry rules.
 2. **Endpoints:** `@SpringBootTest` + Testcontainers PostGIS; one test per rejection path, plus a concurrency/race test.
@@ -145,19 +145,23 @@ Use aliases for every import that crosses a folder boundary. Defined in `tsconfi
 - Use Brain directives (`brn*`) for behavior/accessibility and Helm (`hlm*`) for styling. Edit Helm files in place when customizing.
 - Use design tokens/theme variables; no hardcoded colors.
 
-## Frontend testing (no E2E)
+## Frontend testing
 
-Vitest (the Angular default). Unit tests for services and pure logic; component tests with Angular `TestBed`. Zoneless: no `fakeAsync`/`waitForAsync`, use Vitest fake timers. No Playwright/Cypress/Selenium.
+Vitest (the Angular default). Unit tests for services and pure logic; component tests with Angular `TestBed`. Zoneless: no `fakeAsync`/`waitForAsync`, use Vitest fake timers.
+
+## End-to-end tests
+
+E2E tests are part of the project, but **they are never run without my explicit approval**. Not locally, not in CI, not as part of `verify`, `ng test` or "Done means". Write them, keep them out of the default test commands (own folder, own script, own Maven/npm profile), and ask before executing them. The E2E tool is not chosen yet: propose it (rule 6) when the E2E task starts.
 
 ## Workflow rules (mandatory)
 
 1. **Acceptance criteria first.** Before starting any task, write its acceptance criteria in `specs/NNN-<slug>.md` and get my approval. No code until they are approved.
 2. **One task at a time.** When a task is done, stop and report. Never start the next task without my explicit approval.
-3. **Feature branches only.** Branch from `main` as `feat/<slug>`, `fix/<slug>`, `chore/<slug>`, `docs/<slug>`. **Never commit or push to `main`.** Changes reach `main` via pull request that I approve. The single exception was the one-time bootstrap commit (AGENTS.md and `.gitignore`).
+3. **Feature branches only.** Branch from `main` as `feat/<slug>`, `fix/<slug>`, `chore/<slug>`, `docs/<slug>`, `test/<slug>`. **Never commit or push to `main`.** Changes reach `main` via pull request that I approve. The single exception was the one-time bootstrap commit (AGENTS.md and `.gitignore`).
 4. **Conventional Commits, always.** `type(scope): subject` (feat, fix, docs, refactor, test, chore, build, ci, perf). Imperative, lowercase subject, no trailing period. Small, focused commits.
 5. **Format after every task.** When a task is finished, run the formatters (Prettier on `client/`, Spotless on the backend) before the final commit. Don't hand over unformatted code.
 6. **No third-party libraries without approval.** Don't add or upgrade any dependency (npm, Maven, Docker image, CLI tool, schematic) without asking first, naming the library, the reason, and alternatives. Pre-approved only: the stack listed above.
-7. **No end-to-end tests.** Don't write or add browser/E2E tooling (Playwright, Cypress, Selenium). Unit tests, core tests, and backend integration tests are fine.
+7. **E2E tests only on my approval.** E2E tests may be written, but never run until I approve the run. Adding E2E tooling (Playwright, Cypress, Selenium, ...) needs approval like any dependency. Unit tests, core tests, and backend integration tests run normally.
 8. **No `any` in TypeScript.** Use precise types, `unknown` plus narrowing, or generics.
 9. When unsure about scope, an approach, or a dependency, ask instead of guessing.
 10. **Specs track every task.** `specs/README.md` indexes them. Each `specs/NNN-<slug>.md` has a short description, acceptance criteria and a status (`Proposed` → `Approved` → `In progress` → `Done`). Update the status in the same branch as the work. Mark `Done` only after I confirm.
@@ -177,6 +181,6 @@ Vitest (the Angular default). Unit tests for services and pure logic; component 
 
 ## Done means
 
-Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still runs everything (once `docker-compose.yml` exists), spec status updated, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.
+Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit; E2E excluded unless I approved a run), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still runs everything (once `docker-compose.yml` exists), spec status updated, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.
 
 Criteria that don't apply to a task yet (no backend, no client, no compose file) are marked "n/a" in its spec, not silently skipped.

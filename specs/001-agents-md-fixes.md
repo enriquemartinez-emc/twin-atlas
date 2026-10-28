@@ -13,6 +13,7 @@ Put the repo under git and remove the contradictions in AGENTS.md (unapproved to
 - [ ] Layout is documented: `server/`, `client/`, `specs/`, root docs. Package and groupId are `com.twinatlas`.
 - [ ] Angular 22 constraints (Node, TypeScript, Vitest, zoneless, Signal Forms, `@Service`, `injectAsync`, experimental APIs out of core paths) are written down.
 - [ ] Scale target is tiered and measurable (1M local, 1k–10k Testcontainers, 500k fallback, hardware recorded).
+- [ ] E2E policy is explicit: tests may be written, tooling needs approval, and they are never run without my explicit approval (not in `verify`, `ng test`, CI or "Done means").
 - [ ] Rule 10 and the "Done means" section reference specs and the "n/a" convention. The "stack listed below" typo is fixed.
 - [ ] `specs/README.md` plus `specs/001`–`012` exist, each with description, acceptance criteria and status.
 - [ ] No existing file other than AGENTS.md is changed. `twinatlas/` is untouched (task 002).

@@ -18,6 +18,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 010 | [OSM import](010-osm-import.md)                            | `feat/osm-import`                | Proposed    |
 | 011 | [Security and integrations](011-security-and-integrations.md) | `feat/security-and-integrations` | Proposed    |
 | 012 | [Portfolio polish](012-portfolio-polish.md)                | `docs/portfolio-polish`          | Proposed    |
+| 013 | [E2E tests (run only on approval)](013-e2e-tests.md)       | `test/e2e`                       | Proposed    |
 
 ## File template
 

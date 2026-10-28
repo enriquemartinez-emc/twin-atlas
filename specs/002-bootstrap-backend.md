@@ -8,10 +8,10 @@ Make the Initializr skeleton match AGENTS.md: move it to `server/`, fix the pack
 
 ## Acceptance criteria
 
-- [ ] The module lives in `server/` (moved with `git mv`, history kept). `server/mvnw` is committed.
+- [ ] The module lives in `server/` (the old `twinatlas/` folder no longer exists). `server/mvnw` is committed.
 - [ ] groupId and root package are `com.twinatlas`. The main class is `TwinAtlasApplication`, the test class matches, and the artifactId is `twin-atlas-server`.
 - [ ] Lombok (dependency and annotation processor path) and spring-boot-devtools are removed from `server/pom.xml`.
-- [ ] JDK 25 is installed (approved method: SDKMAN or Temurin) and `java -version` reports 25.
+- [ ] The already-installed OpenJDK 25 is used (no new install). `./mvnw` runs with it.
 - [ ] `./mvnw verify` in `server/` passes (context-load test green).
 - [ ] No backend dependencies beyond the current set are added (they belong to task 004).
 - [ ] `.gitignore` ignores `server/target/`. The working tree is clean after the build.
