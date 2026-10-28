@@ -6,8 +6,8 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 
 | #   | Spec                                                       | Branch                           | Status      |
 | --- | ---------------------------------------------------------- | -------------------------------- | ----------- |
-| 001 | [AGENTS.md fixes and repo bootstrap](001-agents-md-fixes.md) | `chore/agents-md-fixes`          | In progress |
-| 002 | [Backend housekeeping](002-bootstrap-backend.md)           | `chore/bootstrap-backend`        | In progress |
+| 001 | [AGENTS.md fixes and repo bootstrap](001-agents-md-fixes.md) | `chore/agents-md-fixes`          | Done        |
+| 002 | [Backend housekeeping](002-bootstrap-backend.md)           | `chore/bootstrap-backend`        | Done        |
 | 003 | [Angular 22 client init](003-init-client.md)               | `chore/init-client`              | Proposed    |
 | 004 | [Backend foundation](004-backend-foundation.md)            | `chore/backend-foundation`       | Proposed    |
 | 005 | [Annotation create (FCIS slice)](005-annotation-create.md) | `feat/annotation-create`         | Proposed    |

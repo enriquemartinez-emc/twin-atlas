@@ -1,6 +1,6 @@
 # 001 — AGENTS.md fixes and repo bootstrap
 
-**Status:** In progress | **Branch:** `chore/agents-md-fixes`
+**Status:** Done | **Branch:** `chore/agents-md-fixes`
 
 ## Description
 
