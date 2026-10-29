@@ -1,6 +1,7 @@
 package com.twinatlas.scene;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.twinatlas.platform.core.Wgs84;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;
@@ -20,12 +21,6 @@ public record CreateSceneRequest(
     if (extent == null) {
       return true; // reported by @NotNull
     }
-    var box = extent.getEnvelopeInternal();
-    return !extent.isEmpty()
-        && extent.isValid()
-        && box.getMinX() >= -180
-        && box.getMaxX() <= 180
-        && box.getMinY() >= -90
-        && box.getMaxY() <= 90;
+    return Wgs84.isValid(extent);
   }
 }

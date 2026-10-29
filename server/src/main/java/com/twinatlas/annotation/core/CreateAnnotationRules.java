@@ -9,7 +9,7 @@ import static com.twinatlas.platform.core.Rejection.TITLE_ALREADY_USED;
 
 import com.twinatlas.annotation.core.SceneFacts.SceneFound;
 import com.twinatlas.platform.core.Decision;
-import org.locationtech.jts.geom.Envelope;
+import com.twinatlas.platform.core.Wgs84;
 import org.locationtech.jts.geom.Geometry;
 
 /** The rules for creating an annotation. The first rule that fails decides the rejection. */
@@ -22,7 +22,7 @@ public final class CreateAnnotationRules {
       return rejected(SCENE_NOT_FOUND);
     }
     Geometry geometry = command.shape().geometry();
-    if (!isValidWgs84(geometry)) {
+    if (!Wgs84.isValid(geometry)) {
       return rejected(INVALID_GEOMETRY);
     }
     if (!extent.covers(geometry)) {
@@ -32,17 +32,5 @@ public final class CreateAnnotationRules {
       return rejected(TITLE_ALREADY_USED);
     }
     return accepted();
-  }
-
-  /** Non-empty, topologically valid (no self-intersections) and inside the WGS 84 world. */
-  static boolean isValidWgs84(Geometry geometry) {
-    if (geometry.isEmpty() || !geometry.isValid()) {
-      return false;
-    }
-    Envelope box = geometry.getEnvelopeInternal();
-    return box.getMinX() >= -180
-        && box.getMaxX() <= 180
-        && box.getMinY() >= -90
-        && box.getMaxY() <= 90;
   }
 }
