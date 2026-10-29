@@ -142,24 +142,26 @@ trap cleanup EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
+# Sets STARTED_PID. It must not run in a command substitution: the process would then belong to a
+# subshell, not to this script.
 start_service() {
   local name="$1" dir="$2"
   shift 2
   ( cd "$dir" && exec setsid "$@" >"$RUN_DIR/$name.log" 2>&1 ) &
-  echo $!
+  STARTED_PID=$!
 }
 
 wait_until_ready() {
-  local name="$1" url="$2" pid="$3" waited=0
+  local name="$1" url="$2" pid="$3" log="$4" waited=0
   until curl -fsS -o /dev/null "$url" 2>/dev/null; do
     if ! kill -0 "$pid" 2>/dev/null; then
-      echo "  ✗ The $name stopped while starting. Last lines of .run/$name.log:" >&2
-      tail -n 25 "$RUN_DIR/$name.log" >&2 || true
+      echo "  ✗ The $name stopped while starting. Last lines of .run/$log.log:" >&2
+      tail -n 25 "$RUN_DIR/$log.log" >&2 || true
       exit 1
     fi
     if [ "$waited" -ge "$READY_TIMEOUT" ]; then
-      echo "  ✗ The $name did not answer at $url within ${READY_TIMEOUT}s. Last lines of .run/$name.log:" >&2
-      tail -n 25 "$RUN_DIR/$name.log" >&2 || true
+      echo "  ✗ The $name did not answer at $url within ${READY_TIMEOUT}s. Last lines of .run/$log.log:" >&2
+      tail -n 25 "$RUN_DIR/$log.log" >&2 || true
       exit 1
     fi
     sleep 2
@@ -180,11 +182,13 @@ if [ ! -d "$ROOT/client/node_modules" ]; then
 fi
 
 echo "Starting the API and the client (logs in .run/)"
-SERVER_PID="$(start_service server "$ROOT/server" ./mvnw -B spring-boot:run -Dspring-boot.run.jvmArguments=-Xmx512m)"
-CLIENT_PID="$(start_service client "$ROOT/client" npm start)"
+start_service server "$ROOT/server" ./mvnw -B spring-boot:run -Dspring-boot.run.jvmArguments=-Xmx512m
+SERVER_PID="$STARTED_PID"
+start_service client "$ROOT/client" npm start
+CLIENT_PID="$STARTED_PID"
 
-wait_until_ready "API" "$API_URL/api/scenes" "$SERVER_PID"
-wait_until_ready "client" "$APP_URL" "$CLIENT_PID"
+wait_until_ready "API" "$API_URL/api/scenes" "$SERVER_PID" server
+wait_until_ready "client" "$APP_URL" "$CLIENT_PID" client
 
 cat <<MSG
 
@@ -196,7 +200,14 @@ cat <<MSG
   Press Ctrl+C to stop everything.
 MSG
 
-wait -n "$SERVER_PID" "$CLIENT_PID" || true
+# Stay here until Ctrl+C, or until one of the two stops (kill -0 works on every bash, unlike wait -n).
+while kill -0 "$SERVER_PID" 2>/dev/null && kill -0 "$CLIENT_PID" 2>/dev/null; do
+  sleep 1
+done
 echo
-echo "A service stopped on its own. See .run/server.log and .run/client.log."
+if kill -0 "$SERVER_PID" 2>/dev/null; then
+  echo "The client stopped on its own. See .run/client.log."
+else
+  echo "The API stopped on its own. See .run/server.log."
+fi
 exit 1
