@@ -7,6 +7,7 @@ import static org.mockito.Mockito.doAnswer;
 import com.twinatlas.TestScenes;
 import com.twinatlas.TestcontainersConfiguration;
 import com.twinatlas.annotation.core.CreateContext;
+import com.twinatlas.annotation.persistence.AnnotationFacts;
 import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

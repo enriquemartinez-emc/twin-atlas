@@ -1,5 +1,7 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
+import com.twinatlas.annotation.AnnotationKind;
+import com.twinatlas.annotation.AnnotationResponse;
 import com.twinatlas.annotation.core.Annotation;
 import com.twinatlas.annotation.core.Annotation.Archived;
 import com.twinatlas.annotation.core.Annotation.Draft;
@@ -16,7 +18,7 @@ import org.mapstruct.MappingTarget;
 
 /** Entity ↔ domain mapping at the shell boundary. The core never sees an entity. */
 @Mapper(componentModel = "spring", imports = AnnotationKind.class)
-interface AnnotationMapper {
+public interface AnnotationMapper {
 
   @Mapping(target = "kind", expression = "java(AnnotationKind.of(draft.shape()))")
   @Mapping(target = "body", expression = "java(AnnotationKind.bodyOf(draft.shape()))")

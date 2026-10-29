@@ -1,5 +1,9 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.web;
 
+import com.twinatlas.annotation.AnnotationResponse;
+import com.twinatlas.annotation.persistence.AnnotationMapper;
+import com.twinatlas.annotation.persistence.AnnotationQueries;
+import com.twinatlas.annotation.persistence.AnnotationRepository;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
 import com.twinatlas.platform.kernel.Rejection;

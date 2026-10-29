@@ -1,4 +1,4 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
 import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.ApiException;
@@ -14,16 +14,16 @@ import java.util.UUID;
  * Keyset position: the last row of the previous page. Opaque to clients. Microseconds are the
  * precision of PostgreSQL's timestamptz, so the position round-trips exactly.
  */
-record Cursor(Instant createdAt, UUID id) {
+public record Cursor(Instant createdAt, UUID id) {
 
-  String encode() {
+  public String encode() {
     long micros = ChronoUnit.MICROS.between(Instant.EPOCH, createdAt);
     return Base64.getUrlEncoder()
         .withoutPadding()
         .encodeToString((micros + ":" + id).getBytes(StandardCharsets.UTF_8));
   }
 
-  static Cursor decode(String text) {
+  public static Cursor decode(String text) {
     try {
       String[] parts =
           new String(Base64.getUrlDecoder().decode(text), StandardCharsets.UTF_8).split(":", 2);
@@ -34,7 +34,7 @@ record Cursor(Instant createdAt, UUID id) {
     }
   }
 
-  OffsetDateTime createdAtUtc() {
+  public OffsetDateTime createdAtUtc() {
     return OffsetDateTime.ofInstant(createdAt, ZoneOffset.UTC);
   }
 }

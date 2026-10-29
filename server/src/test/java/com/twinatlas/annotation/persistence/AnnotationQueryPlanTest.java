@@ -1,10 +1,10 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.twinatlas.TestScenes;
 import com.twinatlas.TestcontainersConfiguration;
-import com.twinatlas.annotation.AnnotationQueries.Filter;
+import com.twinatlas.annotation.persistence.AnnotationQueries.Filter;
 import java.util.UUID;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;

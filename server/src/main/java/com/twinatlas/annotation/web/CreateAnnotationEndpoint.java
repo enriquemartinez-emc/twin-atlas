@@ -1,10 +1,16 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.web;
 
+import com.twinatlas.annotation.AnnotationResponse;
 import com.twinatlas.annotation.core.Annotation;
 import com.twinatlas.annotation.core.Annotation.Draft;
 import com.twinatlas.annotation.core.CreateAnnotation;
 import com.twinatlas.annotation.core.CreateAnnotationRules;
 import com.twinatlas.annotation.core.CreateContext;
+import com.twinatlas.annotation.persistence.AnnotationEntity;
+import com.twinatlas.annotation.persistence.AnnotationFacts;
+import com.twinatlas.annotation.persistence.AnnotationMapper;
+import com.twinatlas.annotation.persistence.AnnotationRepository;
+import com.twinatlas.annotation.persistence.PersistenceConflicts;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
 import com.twinatlas.platform.kernel.Decision;

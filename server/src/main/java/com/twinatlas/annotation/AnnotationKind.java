@@ -13,7 +13,7 @@ public enum AnnotationKind {
   NOTE,
   OUTLINE;
 
-  static AnnotationKind of(Shape shape) {
+  public static AnnotationKind of(Shape shape) {
     return switch (shape) {
       case Marker _ -> MARKER;
       case Note _ -> NOTE;
@@ -22,7 +22,7 @@ public enum AnnotationKind {
   }
 
   /** Only notes carry text. */
-  static String bodyOf(Shape shape) {
+  public static String bodyOf(Shape shape) {
     return shape instanceof Note note ? note.text() : null;
   }
 }

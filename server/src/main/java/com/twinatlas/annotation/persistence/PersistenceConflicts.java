@@ -1,4 +1,4 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
 import com.twinatlas.platform.kernel.Rejection;
 import java.util.Optional;
@@ -12,13 +12,13 @@ import org.springframework.dao.DataIntegrityViolationException;
  * The database is the final enforcer of the rules that can race. When a constraint fires after the
  * core accepted the command, translate it into the same rejection the core would have produced.
  */
-final class PersistenceConflicts {
+public final class PersistenceConflicts {
 
   private static final Pattern CONSTRAINT = Pattern.compile("constraint \"([^\"]+)\"");
 
   private PersistenceConflicts() {}
 
-  static Optional<Rejection> rejectionFor(DataIntegrityViolationException exception) {
+  public static Optional<Rejection> rejectionFor(DataIntegrityViolationException exception) {
     return constraintName(exception)
         .flatMap(
             name ->

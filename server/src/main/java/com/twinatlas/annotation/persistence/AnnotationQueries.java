@@ -1,5 +1,10 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
+import com.twinatlas.annotation.AnnotationKind;
+import com.twinatlas.annotation.AnnotationPage;
+import com.twinatlas.annotation.AnnotationStatus;
+import com.twinatlas.annotation.AnnotationSummary;
+import com.twinatlas.annotation.NearestAnnotation;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import java.sql.ResultSet;
@@ -20,14 +25,14 @@ import tools.jackson.databind.json.JsonMapper;
  * the exact predicate. Each query is timed ({@code twinatlas.annotation.query}, tag {@code type}).
  */
 @Component
-class AnnotationQueries {
+public class AnnotationQueries {
 
-  static final int DEFAULT_PAGE_SIZE = 50;
-  static final int MAX_PAGE_SIZE = 200;
-  static final int DEFAULT_NEAREST = 10;
-  static final int MAX_NEAREST = 100;
+  public static final int DEFAULT_PAGE_SIZE = 50;
+  public static final int MAX_PAGE_SIZE = 200;
+  public static final int DEFAULT_NEAREST = 10;
+  public static final int MAX_NEAREST = 100;
 
-  static final String TIMER = "twinatlas.annotation.query";
+  public static final String TIMER = "twinatlas.annotation.query";
 
   /** Lower bound of metres per degree, so the pre-filter box is never smaller than the radius. */
   private static final double METRES_PER_DEGREE = 110_000;
@@ -53,7 +58,7 @@ class AnnotationQueries {
     this.meters = meters;
   }
 
-  boolean sceneExists(UUID sceneId) {
+  public boolean sceneExists(UUID sceneId) {
     return jdbc.sql("SELECT EXISTS (SELECT 1 FROM scene WHERE id = :id)")
         .param("id", sceneId)
         .query(Boolean.class)
@@ -61,7 +66,7 @@ class AnnotationQueries {
   }
 
   /** Keyset-paginated list, optionally limited to what is visible in a map view. */
-  AnnotationPage list(UUID sceneId, ViewBox view, Cursor cursor, int limit) {
+  public AnnotationPage list(UUID sceneId, ViewBox view, Cursor cursor, int limit) {
     Filter filter =
         view == null
             ? Filter.NONE
@@ -84,7 +89,7 @@ class AnnotationQueries {
   }
 
   /** Everything that intersects the zone, keyset-paginated. */
-  AnnotationPage search(UUID sceneId, Polygon zone, Cursor cursor, int limit) {
+  public AnnotationPage search(UUID sceneId, Polygon zone, Cursor cursor, int limit) {
     return timed(
         "intersects",
         () -> {
@@ -98,7 +103,7 @@ class AnnotationQueries {
   }
 
   /** The N closest annotations (KNN on the GiST index), optionally within a radius in metres. */
-  List<NearestAnnotation> nearest(
+  public List<NearestAnnotation> nearest(
       UUID sceneId, double longitude, double latitude, int limit, Double maxDistanceMeters) {
     return timed(
         "nearest",

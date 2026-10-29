@@ -7,6 +7,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import com.jayway.jsonpath.JsonPath;
 import com.twinatlas.TestScenes;
 import com.twinatlas.TestcontainersConfiguration;
+import com.twinatlas.annotation.persistence.AnnotationQueries;
 import io.micrometer.core.instrument.MeterRegistry;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

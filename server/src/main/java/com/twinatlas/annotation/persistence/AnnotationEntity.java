@@ -1,5 +1,7 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
+import com.twinatlas.annotation.AnnotationKind;
+import com.twinatlas.annotation.AnnotationStatus;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -17,7 +19,7 @@ import org.locationtech.jts.geom.Geometry;
  */
 @Entity
 @Table(name = "annotation")
-class AnnotationEntity {
+public class AnnotationEntity {
 
   @Id private UUID id;
 

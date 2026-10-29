@@ -9,6 +9,7 @@ import com.jayway.jsonpath.JsonPath;
 import com.twinatlas.TestScenes;
 import com.twinatlas.TestcontainersConfiguration;
 import com.twinatlas.annotation.core.UpdateContext;
+import com.twinatlas.annotation.persistence.AnnotationFacts;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;

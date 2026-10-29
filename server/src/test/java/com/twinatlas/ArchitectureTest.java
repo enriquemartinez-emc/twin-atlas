@@ -63,6 +63,43 @@ class ArchitectureTest {
         .check(classes);
   }
 
+  /**
+   * Inside a big feature the dependencies run one way: web, then persistence, then the shapes it
+   * returns.
+   */
+  @Test
+  void roleFoldersDependOneWay() {
+    noClasses()
+        .that()
+        .resideInAPackage("..persistence..")
+        .should()
+        .dependOnClassesThat()
+        .resideInAPackage("..web..")
+        .allowEmptyShould(true)
+        .because("the database side must not know about the HTTP side")
+        .check(classes);
+
+    noClasses()
+        .that()
+        .resideInAPackage(ROOT + ".annotation")
+        .should()
+        .dependOnClassesThat()
+        .resideInAnyPackage(ROOT + ".annotation.web..", ROOT + ".annotation.persistence..")
+        .allowEmptyShould(true)
+        .because("the shapes a feature returns are the base of its folders, not built on them")
+        .check(classes);
+
+    noClasses()
+        .that()
+        .resideInAPackage("..core..")
+        .should()
+        .dependOnClassesThat()
+        .resideInAnyPackage("..web..", "..persistence..", ROOT + ".platform.config..")
+        .allowEmptyShould(true)
+        .because("the functional core knows nothing about how it is called or stored")
+        .check(classes);
+  }
+
   /** A slice's core is its public face. Everything else (endpoints, entities...) stays private. */
   @ParameterizedTest
   @ValueSource(strings = {"annotation", "scene", "asset", "importing"})

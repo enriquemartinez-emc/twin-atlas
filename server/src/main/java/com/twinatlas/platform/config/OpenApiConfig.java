@@ -1,5 +1,6 @@
-package com.twinatlas.platform;
+package com.twinatlas.platform.config;
 
+import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.kernel.Rejection;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;

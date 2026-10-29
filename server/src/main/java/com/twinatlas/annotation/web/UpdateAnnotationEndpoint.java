@@ -1,5 +1,6 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.web;
 
+import com.twinatlas.annotation.AnnotationResponse;
 import com.twinatlas.annotation.core.Annotation;
 import com.twinatlas.annotation.core.CurrentAnnotation;
 import com.twinatlas.annotation.core.CurrentAnnotation.Missing;
@@ -7,6 +8,11 @@ import com.twinatlas.annotation.core.CurrentAnnotation.Present;
 import com.twinatlas.annotation.core.UpdateAnnotation;
 import com.twinatlas.annotation.core.UpdateAnnotationRules;
 import com.twinatlas.annotation.core.UpdateContext;
+import com.twinatlas.annotation.persistence.AnnotationEntity;
+import com.twinatlas.annotation.persistence.AnnotationFacts;
+import com.twinatlas.annotation.persistence.AnnotationMapper;
+import com.twinatlas.annotation.persistence.AnnotationRepository;
+import com.twinatlas.annotation.persistence.PersistenceConflicts;
 import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.Etags;
 import com.twinatlas.platform.ProblemResponse;

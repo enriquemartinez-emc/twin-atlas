@@ -1,6 +1,7 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.twinatlas.annotation.AnnotationKind;
 import com.twinatlas.annotation.core.Shape;
 import com.twinatlas.annotation.core.Shape.Marker;
 import com.twinatlas.annotation.core.Shape.Note;

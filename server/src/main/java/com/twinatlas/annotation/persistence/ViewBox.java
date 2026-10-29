@@ -1,4 +1,4 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
 import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.ApiException;
@@ -7,9 +7,9 @@ import com.twinatlas.platform.ApiException;
  * The visible area of a map in degrees. {@code west > east} means the view crosses the
  * antimeridian, so it is queried as two boxes.
  */
-record ViewBox(double west, double south, double east, double north) {
+public record ViewBox(double west, double south, double east, double north) {
 
-  static ViewBox parse(String text) {
+  public static ViewBox parse(String text) {
     String[] parts = text.split(",", -1);
     if (parts.length != 4) {
       throw invalid("bbox must be west,south,east,north");
@@ -32,7 +32,7 @@ record ViewBox(double west, double south, double east, double north) {
     return box;
   }
 
-  boolean crossesAntimeridian() {
+  public boolean crossesAntimeridian() {
     return west > east;
   }
 

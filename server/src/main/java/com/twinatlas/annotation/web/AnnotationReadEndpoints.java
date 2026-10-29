@@ -1,5 +1,10 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.web;
 
+import com.twinatlas.annotation.AnnotationPage;
+import com.twinatlas.annotation.NearestAnnotation;
+import com.twinatlas.annotation.persistence.AnnotationQueries;
+import com.twinatlas.annotation.persistence.Cursor;
+import com.twinatlas.annotation.persistence.ViewBox;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
 import com.twinatlas.platform.kernel.Rejection;

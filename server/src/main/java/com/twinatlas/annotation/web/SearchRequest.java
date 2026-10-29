@@ -1,6 +1,7 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.web;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.twinatlas.annotation.persistence.AnnotationQueries;
 import com.twinatlas.geo.Wgs84;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;

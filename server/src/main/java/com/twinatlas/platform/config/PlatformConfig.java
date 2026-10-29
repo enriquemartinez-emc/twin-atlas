@@ -1,4 +1,4 @@
-package com.twinatlas.platform;
+package com.twinatlas.platform.config;
 
 import com.twinatlas.geo.Wgs84;
 import java.time.Clock;

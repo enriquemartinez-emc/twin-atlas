@@ -1,4 +1,4 @@
-package com.twinatlas.annotation;
+package com.twinatlas.annotation.persistence;
 
 import com.twinatlas.annotation.core.CreateContext;
 import com.twinatlas.annotation.core.CurrentAnnotation;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 /** Step 1 of the shell flow: derive the facts the rules need with small SQL queries. */
 @Component
-class AnnotationFacts {
+public class AnnotationFacts {
 
   private final JdbcClient jdbc;
   private final GeometryFactory geometryFactory;
@@ -26,7 +26,7 @@ class AnnotationFacts {
     this.geometryFactory = geometryFactory;
   }
 
-  CreateContext forCreate(UUID sceneId, String title) {
+  public CreateContext forCreate(UUID sceneId, String title) {
     SceneFacts scene = sceneFacts(sceneId);
     boolean titleInUse = scene instanceof SceneFound && titleInUse(sceneId, title);
     return new CreateContext(scene, titleInUse);
@@ -36,7 +36,7 @@ class AnnotationFacts {
    * Facts for an update. The annotation itself was already loaded by the endpoint, so only the
    * scene and the title check need SQL. A title is only checked when the update replaces it.
    */
-  UpdateContext forUpdate(
+  public UpdateContext forUpdate(
       UUID sceneId, UUID annotationId, CurrentAnnotation current, String replacementTitle) {
     SceneFacts scene = sceneFacts(sceneId);
     boolean usedByAnother =
