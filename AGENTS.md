@@ -149,6 +149,9 @@ Use aliases for every import that crosses a folder boundary. Defined in `tsconfi
 - Add components with the Spartan CLI (needs approval before first install). Don't hand-roll components Spartan already provides.
 - Use Brain directives (`brn*`) for behavior/accessibility and Helm (`hlm*`) for styling. Edit Helm files in place when customizing.
 - Use design tokens/theme variables; no hardcoded colors.
+- **No class bloat.** Templates stay readable: a static `class` attribute holds at most 4 utility classes. Styling lives in Helm components or in the component's own `styles` block (theme variables, semantic class names). `npm run lint:classes` enforces it and runs as part of `npm run lint`.
+- **UI font: Figtree (variable)**, self-hosted in `client/public/fonts` with its licence. No CDN. The docs site keeps Geist Mono.
+- Spartan components that need an extra npm package (for example the native select, which pulls in an icon library) need approval like any dependency.
 
 ## Frontend testing
 

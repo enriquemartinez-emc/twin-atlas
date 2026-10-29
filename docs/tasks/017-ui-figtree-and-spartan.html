@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Figtree font and a Spartan-built UI - Twin Atlas docs</title>
+<meta name="description" content="Figtree font and a Spartan-built UI.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Figtree font and a Spartan-built UI</h1>
+<div class="tags"><span class="tag c-white">Task 017</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/ui-figtree-spartan</code></span></div>
+<p class="lead">The app now uses the Figtree font, and its panel, alerts, tool buttons, list rows and form fields come from Spartan components instead of long strings of style classes.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>I have not run the app for this task, and I will not without your approval. When you want to look, the three commands are the same as before: <code>docker compose up -d</code>, then <code>./mvnw spring-boot:run</code> in <code>server/</code>, then <code>npm start</code> in <code>client/</code>. You can check the class rule without running anything: <code>npm run lint:classes</code> in <code>client/</code>.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>The Figtree font.</strong> It is a <a href="../glossary.html#variable-font">variable font</a>: two small files (30 KB together) cover every weight. They are stored in the project with their licence, declared once, and used by the whole UI. Nothing is fetched from the internet and no package was added. This documentation keeps its own font, Geist Mono.</li>
+<li><strong>Eight more Spartan components</strong>, added with Spartan's own tool and no new package: card, alert, badge, separator, toggle group, item, field and typography.</li>
+<li><strong>The panel is a card</strong>, errors and warnings are alerts, the tool choice is a toggle group, each annotation is an item with a badge for its kind, and every label, input and message sits in a field.</li>
+<li><strong>One small alert component</strong> for messages the user must see, so the markup is written once instead of ten times.</li>
+<li><strong>A rule that holds.</strong> A short script fails the lint step when an element has more than four <a href="../glossary.html#utility-class">utility classes</a>. It is recorded in AGENTS.md next to the font choice.</li>
+</ul>
+<h2>Measured</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Measured in the feature templates</th><th class="num">Before</th><th class="num">After</th></tr></thead><tbody><tr><td class=""><code>class</code> attributes</td><td class="num">47</td><td class="num">6</td></tr><tr><td class="">Longest <code>class</code> attribute</td><td class="num">249 characters</td><td class="num">18 characters</td></tr><tr><td class="">Spartan components in use</td><td class="num">4 (button, input, label, textarea)</td><td class="num">12: those four, plus card, alert, badge, separator, toggle group, item, field and typography</td></tr><tr><td class="">Client tests</td><td class="num">179</td><td class="num">182</td></tr></tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 300" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">How the UI is put together</title><desc id="d">A template with a few semantic classes uses Spartan components, which carry the styling and read the theme variables. Separately, the Figtree files are declared once and reach every element through one font variable.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="10" y="30" width="220" height="80" rx="10"/><text class="t-title" x="24" y="52">Template</text><text class="t-small" x="24" y="71">semantic markup</text><text class="t-small" x="24" y="88">at most 4 classes</text><rect class="c-slate" x="290" y="30" width="290" height="80" rx="10"/><text class="t-title" x="304" y="52">Spartan components</text><text class="t-small" x="304" y="71">card, alert, field, item,</text><text class="t-small" x="304" y="88">toggle group, badge, button...</text><rect class="c-slate" x="640" y="30" width="250" height="80" rx="10"/><text class="t-title" x="654" y="52">Theme variables</text><text class="t-small" x="654" y="71">colours and radius</text><text class="t-small" x="654" y="88">set once in styles.css</text><path class="arrow" d="M230,70 L290,70" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="260" y="62">uses</text><path class="arrow" d="M580,70 L640,70" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="610" y="62">reads</text><rect class="c-slate" x="10" y="180" width="220" height="80" rx="10"/><text class="t-title" x="24" y="202">Figtree files</text><text class="t-small" x="24" y="221">client/public/fonts</text><rect class="c-sky" x="290" y="180" width="290" height="80" rx="10"/><text class="t-title" x="304" y="202">@font-face</text><text class="t-small" x="304" y="221">declared once in styles.css</text><rect class="c-sky" x="640" y="180" width="250" height="80" rx="10"/><text class="t-title" x="654" y="202">Every element</text><text class="t-small" x="654" y="221">through --font-sans</text><path class="arrow" d="M230,220 L290,220" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="260" y="212">loads</text><path class="arrow" d="M580,220 L640,220" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="610" y="212">feeds</text></svg></div><figcaption>Styling lives in the Spartan components and the theme, not in the templates. The font reaches every element through one variable.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Found on the way</h2>
+<ul>
+<li><strong>My first test proved nothing.</strong> I checked the pressed state of the tool buttons, then broke the code on purpose by freezing the group's value, and every test still passed. The group tracks clicks by itself. A second test, for the case where the app changes the tool (Cancel returns to Select), does fail on that break.</li>
+<li><strong>The new check found two more offenders</strong> in the app shell, which I had not touched. Fixed.</li>
+<li><strong>A stale test.</strong> One setup test asserted that a Tailwind class existed on the shell. It now asserts that Spartan's typography delivers its classes.</li>
+<li><strong>Nine style errors in the generated files</strong> (imports used only as types). The linter fixed them in place, as the rules allow.</li>
+</ul>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Tests</td><td class="">182 client tests pass. Existing ones changed only where the markup changed (the list now shows the kind as a badge, so title, badge and text are checked separately).</td></tr><tr><td class="">Accessibility</td><td class="">The tool buttons keep their pressed state, the alerts keep their alert role, the list keeps its current-item mark. Tests assert each.</td></tr><tr><td class="">Rules can fail</td><td class="">A bloated class made the new check fail. Freezing the toggle group made the new test fail.</td></tr><tr><td class="">Build</td><td class="">Lint, formatting and the production build are clean with no warnings. The build output contains both font files and both font declarations.</td></tr><tr><td class="">The font files</td><td class="">Both contain the variable-font tables. The weight range of 300 to 900 is what the designers publish, I did not read it from the files.</td></tr></tbody></table></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>I have not seen any of it in a browser: the spacing, the look of the panel and how the font renders are unchecked. A look needs your approval to run the app.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>Spartan's field error shows itself from the state of its own form helpers, which do not know about Signal Forms. It is used here as a styled message inside our own checks.</li>
+<li>The scene chooser is a plain <code>select</code>. Spartan's version needs an icon library, which is a new package and needs your approval.</li>
+<li>The Spartan components themselves carry long class strings. That is by design: it is where those classes belong.</li>
+<li>The map controls and dark mode were not redesigned.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="016-shared-kernel-and-cleanup.html">Previous: Shared kernel and server cleanup</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>
