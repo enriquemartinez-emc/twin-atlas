@@ -152,37 +152,39 @@ const FOCUS_HEIGHT = 250;
         }
 
         <div hlmSeparator></div>
-        <details open class="stack">
+        <details open>
           <summary>Map</summary>
-          @if (map(); as map) {
-            <dl>
-              <dt>Source</dt>
-              <dd>
-                {{
-                  map.mode() === 'photorealistic'
-                    ? 'Google Photorealistic 3D Tiles'
-                    : 'OpenStreetMap'
-                }}
-              </dd>
-              @if (map.cameraPosition(); as position) {
-                <dt>Camera</dt>
+          <div class="stack">
+            @if (map(); as map) {
+              <dl>
+                <dt>Source</dt>
                 <dd>
-                  {{ position.latitude | number: '1.4-4' }},
-                  {{ position.longitude | number: '1.4-4' }} ·
-                  {{ position.height | number: '1.0-0' }} m
+                  {{
+                    map.mode() === 'photorealistic'
+                      ? 'Google Photorealistic 3D Tiles'
+                      : 'OpenStreetMap'
+                  }}
                 </dd>
-              }
-            </dl>
-            <button hlmBtn variant="outline" size="sm" type="button" (click)="resetView()">
-              Reset view
-            </button>
-          }
-          <app-ion-token-panel
-            [mode]="map()?.mode() ?? null"
-            [tilesError]="map()?.tilesError() ?? null"
-            (saved)="saveToken($event)"
-            (forgotten)="forgetToken()"
-          />
+                @if (map.cameraPosition(); as position) {
+                  <dt>Camera</dt>
+                  <dd>
+                    {{ position.latitude | number: '1.4-4' }},
+                    {{ position.longitude | number: '1.4-4' }} ·
+                    {{ position.height | number: '1.0-0' }} m
+                  </dd>
+                }
+              </dl>
+              <button hlmBtn variant="outline" size="sm" type="button" (click)="resetView()">
+                Reset view
+              </button>
+            }
+            <app-ion-token-panel
+              [mode]="map()?.mode() ?? null"
+              [tilesError]="map()?.tilesError() ?? null"
+              (saved)="saveToken($event)"
+              (forgotten)="forgetToken()"
+            />
+          </div>
         </details>
       </div>
     </aside>
@@ -215,6 +217,11 @@ const FOCUS_HEIGHT = 250;
     summary {
       cursor: pointer;
       font-weight: 500;
+    }
+
+    /* Chromium does not apply a flex gap to the children of an open <details>, so they sit in a div. */
+    details > .stack {
+      margin-top: 0.5rem;
     }
 
     dl {
