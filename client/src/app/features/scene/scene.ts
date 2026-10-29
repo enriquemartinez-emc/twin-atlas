@@ -8,19 +8,22 @@ import {
   type ElementRef,
   inject,
   injectAsync,
+  input,
+  linkedSignal,
   signal,
   untracked,
   viewChild,
 } from '@angular/core';
+import { Router } from '@angular/router';
 import type { AnnotationSummary } from '@api/index';
 import { environment } from '@env/environment';
 import {
-  AnnotationData,
   AnnotationEditor,
   AnnotationForm,
   AnnotationList,
   type AnnotationFormValue,
   type AnnotationKind,
+  annotationData,
   buildCreateRequest,
   buildUpdateRequest,
   focusPoint,
@@ -79,15 +82,15 @@ const FOCUS_HEIGHT = 250;
 
         <app-scene-picker
           [scenes]="scenes.scenes()"
-          [selectedId]="scenes.selectedId()"
+          [selectedId]="selectedSceneId()"
           [canCreate]="canCreateScene()"
           [busy]="creatingScene()"
           [problem]="sceneProblem()"
-          (choose)="scenes.select($event)"
+          (choose)="chooseScene($event)"
           (create)="createScene($event)"
         />
 
-        @if (scenes.selectedId()) {
+        @if (selectedSceneId()) {
           <div hlmSeparator></div>
           <section class="stack" aria-label="Annotations">
             <div
@@ -239,27 +242,67 @@ export class Scene {
   private readonly loadMap = injectAsync(() =>
     import('@map/map.service').then((m) => m.MapService),
   );
+  /** From the URL: `/scenes/:sceneId`. Without it the scene used last is shown. */
+  readonly sceneId = input<string>();
+  /** From the URL: `?annotation=<id>`. */
+  readonly annotation = input<string>();
+
+  private readonly router = inject(Router);
   private readonly ionTokenStore = inject(IonTokenStore);
   private readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
   private destroyed = false;
 
   protected readonly scenes = inject(SceneData);
-  protected readonly data = inject(AnnotationData);
   protected readonly tools = TOOLS;
 
   protected readonly map = signal<MapService | null>(null);
   protected readonly loadError = signal<string | null>(null);
 
+  protected readonly selectedSceneId = computed(() => this.sceneId() ?? this.scenes.defaultId());
+  /** Follows the URL, and takes the user's choice at once while the URL catches up. */
+  protected readonly selectedAnnotationId = linkedSignal<string | null>(
+    () => this.annotation() ?? null,
+  );
+  private readonly view = computed(() => this.map()?.visibleBbox() ?? null);
+  protected readonly data = annotationData(
+    this.selectedSceneId,
+    this.view,
+    this.selectedAnnotationId,
+  );
+
   protected readonly tool = signal<Tool>('select');
-  protected readonly draft = signal<readonly LonLat[]>([]);
-  protected readonly selectedAnnotationId = signal<string | null>(null);
+  /** Cleared when the tool changes, and when another annotation is chosen in select mode. */
+  protected readonly draft = linkedSignal<
+    { readonly tool: Tool; readonly id: string | null },
+    readonly LonLat[]
+  >({
+    source: () => ({ tool: this.tool(), id: this.selectedAnnotationId() }),
+    computation: (source, previous) =>
+      source.tool === 'select' || previous?.source.tool !== source.tool
+        ? []
+        : (previous?.value ?? []),
+  });
   protected readonly saving = signal(false);
   protected readonly formProblem = signal<string | null>(null);
-  protected readonly moving = signal(false);
-  protected readonly movedTo = signal<LonLat | null>(null);
   protected readonly updating = signal(false);
-  protected readonly editProblem = signal<string | null>(null);
-  protected readonly editStale = signal(false);
+
+  // Half-finished edits belong to one annotation: choosing another one starts them afresh.
+  protected readonly moving = linkedSignal(() => {
+    this.selectedAnnotationId();
+    return false;
+  });
+  protected readonly movedTo = linkedSignal<LonLat | null>(() => {
+    this.selectedAnnotationId();
+    return null;
+  });
+  protected readonly editProblem = linkedSignal<string | null>(() => {
+    this.selectedAnnotationId();
+    return null;
+  });
+  protected readonly editStale = linkedSignal(() => {
+    this.selectedAnnotationId();
+    return false;
+  });
   protected readonly creatingScene = signal(false);
   protected readonly sceneProblem = signal<string | null>(null);
 
@@ -290,17 +333,8 @@ export class Scene {
       this.map()?.destroy();
     });
 
-    // What the page knows feeds the data service...
-    effect(() => this.data.sceneId.set(this.scenes.selectedId()));
-    effect(() => this.data.view.set(this.map()?.visibleBbox() ?? null));
-    effect(() => this.data.selectedId.set(this.selectedAnnotationId()));
-    // Choosing another annotation drops half-finished edits of the previous one.
-    effect(() => {
-      this.selectedAnnotationId();
-      untracked(() => this.resetEdit());
-    });
-
-    // ...and what is known is drawn on the map. `epoch` re-runs these after the map is rebuilt.
+    // The Cesium map is an imperative API, so what is known is pushed to it by effects.
+    // `epoch` re-runs them after the map is rebuilt.
     effect(() => {
       const map = this.map();
       if (!map) return;
@@ -314,6 +348,7 @@ export class Scene {
       map.setDraft(this.draft(), this.tool() === 'OUTLINE');
     });
 
+    // Map clicks arrive as a signal from the Cesium wrapper and are turned into actions here.
     effect(() => {
       const click = this.map()?.lastClick();
       if (click) untracked(() => this.onMapClick(click));
@@ -333,13 +368,13 @@ export class Scene {
   }
 
   protected focus(annotation: AnnotationSummary): void {
-    this.selectedAnnotationId.set(annotation.id);
+    this.selectAnnotation(annotation.id);
     const point = focusPoint(annotation.geometry);
     if (point) this.map()?.flyTo({ ...point, height: FOCUS_HEIGHT });
   }
 
   protected async save(value: AnnotationFormValue): Promise<void> {
-    const sceneId = this.scenes.selectedId();
+    const sceneId = this.selectedSceneId();
     const kind = this.formKind();
     if (!sceneId || !kind || !this.draftReady()) return;
 
@@ -350,7 +385,7 @@ export class Scene {
 
     if (outcome.ok) {
       this.data.reload();
-      this.selectedAnnotationId.set(outcome.value.id);
+      this.selectAnnotation(outcome.value.id);
       this.selectTool('select');
     } else {
       this.formProblem.set(problemMessage(outcome.problem));
@@ -370,7 +405,7 @@ export class Scene {
   }
 
   protected closeEditor(): void {
-    this.selectedAnnotationId.set(null);
+    this.selectAnnotation(null);
   }
 
   /** After a conflict: drop the edits and read the annotation again, with its new version. */
@@ -414,7 +449,13 @@ export class Scene {
     this.sceneProblem.set(null);
     const outcome = await this.scenes.create(name, bboxPolygon(box));
     this.creatingScene.set(false);
-    if (!outcome.ok) this.sceneProblem.set(problemMessage(outcome.problem));
+    if (outcome.ok) void this.router.navigate(['/scenes', outcome.value.id]);
+    else this.sceneProblem.set(problemMessage(outcome.problem));
+  }
+
+  protected chooseScene(id: string): void {
+    this.scenes.remember(id);
+    void this.router.navigate(['/scenes', id]);
   }
 
   protected resetView(): void {
@@ -429,6 +470,16 @@ export class Scene {
   protected forgetToken(): void {
     this.ionTokenStore.clear();
     void this.start();
+  }
+
+  /** The user's choice shows at once, and goes into the URL so the link can be shared. */
+  private selectAnnotation(id: string | null): void {
+    this.selectedAnnotationId.set(id);
+    void this.router.navigate([], {
+      queryParams: { annotation: id },
+      queryParamsHandling: 'merge',
+      replaceUrl: true,
+    });
   }
 
   private resetEdit(): void {
@@ -450,7 +501,7 @@ export class Scene {
         this.moving.set(false);
         return;
       }
-      this.selectedAnnotationId.set(click.featureId);
+      this.selectAnnotation(click.featureId);
       return;
     }
     if (click.longitude === null || click.latitude === null) return;

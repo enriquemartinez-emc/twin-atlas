@@ -58,16 +58,16 @@ describe('SceneData', () => {
     await flushList([scene('new', 'Newest'), scene('old', 'Oldest')]);
 
     expect(service.scenes().map((s) => s.id)).toEqual(['new', 'old']);
-    expect(service.selectedId()).toBe('new');
+    expect(service.defaultId()).toBe('new');
   });
 
   it('remembers the chosen scene in this browser', async () => {
     const service = create();
     await flushList([scene('new', 'Newest'), scene('old', 'Oldest')]);
 
-    service.select('old');
+    service.remember('old');
 
-    expect(service.selectedId()).toBe('old');
+    expect(service.defaultId()).toBe('old');
     expect(localStorage.getItem('twinatlas.sceneId')).toBe('old');
   });
 
@@ -76,16 +76,16 @@ describe('SceneData', () => {
 
     await flushList([scene('new', 'Newest'), scene('old', 'Oldest')]);
 
-    expect(service.selectedId()).toBe('old');
+    expect(service.defaultId()).toBe('old');
   });
 
   it('falls back to the newest scene when the remembered one is gone', async () => {
     const service = create();
-    service.select('deleted');
+    service.remember('deleted');
 
     await flushList([scene('new', 'Newest')]);
 
-    expect(service.selectedId()).toBe('new');
+    expect(service.defaultId()).toBe('new');
   });
 
   it('has no selection when there are no scenes', async () => {
@@ -93,7 +93,7 @@ describe('SceneData', () => {
 
     await flushList([]);
 
-    expect(service.selectedId()).toBeNull();
+    expect(service.defaultId()).toBeNull();
   });
 
   it('creates a scene, selects it at once and refreshes the list', async () => {
@@ -106,7 +106,7 @@ describe('SceneData', () => {
     post.flush(scene('made', 'Plaza'));
 
     expect(await outcome).toMatchObject({ ok: true, value: { id: 'made' } });
-    expect(service.selectedId()).toBe('made');
+    expect(service.defaultId()).toBe('made');
     expect(service.scenes().map((s) => s.id)).toEqual(['made', 'old']);
     await settle();
     http
@@ -131,7 +131,7 @@ describe('SceneData', () => {
       ok: false,
       problem: expect.objectContaining({ code: 'VALIDATION_FAILED' }),
     });
-    expect(service.selectedId()).toBeNull();
+    expect(service.defaultId()).toBeNull();
   });
 
   it('keeps working when storage is unavailable', async () => {
@@ -144,8 +144,8 @@ describe('SceneData', () => {
     const service = create();
     await flushList([scene('new', 'Newest')]);
 
-    expect(() => service.select('new')).not.toThrow();
-    expect(service.selectedId()).toBe('new');
+    expect(() => service.remember('new')).not.toThrow();
+    expect(service.defaultId()).toBe('new');
     vi.restoreAllMocks();
   });
 });

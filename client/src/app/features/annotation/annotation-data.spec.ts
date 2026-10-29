@@ -1,9 +1,11 @@
 import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { client } from '@api/client.gen';
+import type { Bbox } from '@map/public-api';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AnnotationData } from './annotation-data';
+import { type AnnotationData, annotationData } from './annotation-data';
 
 const summary = (id: string, title: string) => ({
   id,
@@ -25,7 +27,10 @@ const settle = async (): Promise<void> => {
   TestBed.tick();
 };
 
-describe('AnnotationData', () => {
+describe('annotationData', () => {
+  let sceneId: WritableSignal<string | null>;
+  let visible: WritableSignal<Bbox | null>;
+  let selectedId: WritableSignal<string | null>;
   let data: AnnotationData;
   let http: HttpTestingController;
 
@@ -36,7 +41,10 @@ describe('AnnotationData', () => {
       providers: [provideHttpClient(), provideHttpClientTesting()],
     });
     client.setConfig({ httpClient: TestBed.inject(HttpClient), baseUrl: '' });
-    data = TestBed.inject(AnnotationData);
+    sceneId = signal<string | null>(null);
+    visible = signal<Bbox | null>(null);
+    selectedId = signal<string | null>(null);
+    data = TestBed.runInInjectionContext(() => annotationData(sceneId, visible, selectedId));
     http = TestBed.inject(HttpTestingController);
   });
 
@@ -45,18 +53,18 @@ describe('AnnotationData', () => {
       await settle();
       expect(listRequests()).toHaveLength(0);
 
-      data.sceneId.set('scene-1');
+      sceneId.set('scene-1');
       await settle();
       expect(listRequests()).toHaveLength(0);
 
-      data.view.set(view);
+      visible.set(view);
       await settle();
       expect(listRequests()).toHaveLength(1);
     });
 
     it('asks for the scene, the visible bbox and one page', async () => {
-      data.sceneId.set('scene-1');
-      data.view.set(view);
+      sceneId.set('scene-1');
+      visible.set(view);
       await settle();
 
       const request = http.expectOne((r) => r.url.includes('/api/scenes/scene-1/annotations'));
@@ -69,8 +77,8 @@ describe('AnnotationData', () => {
     });
 
     it('exposes the items and whether the page was cut off', async () => {
-      data.sceneId.set('scene-1');
-      data.view.set(view);
+      sceneId.set('scene-1');
+      visible.set(view);
       await settle();
       http
         .expectOne((r) => r.url.includes('/annotations'))
@@ -82,8 +90,8 @@ describe('AnnotationData', () => {
     });
 
     it('keeps the previous items on screen while a new view loads', async () => {
-      data.sceneId.set('scene-1');
-      data.view.set(view);
+      sceneId.set('scene-1');
+      visible.set(view);
       await settle();
       http
         .expectOne((r) => r.url.includes('/annotations'))
@@ -91,7 +99,7 @@ describe('AnnotationData', () => {
       await settle();
       expect(data.items().map((i) => i.title)).toEqual(['One']); // the page reads it, so it is live
 
-      data.view.set({ ...view, west: 2.171 });
+      visible.set({ ...view, west: 2.171 });
       await settle();
 
       expect(data.loading()).toBe(true);
@@ -102,8 +110,8 @@ describe('AnnotationData', () => {
     });
 
     it('reload asks again for the same view', async () => {
-      data.sceneId.set('scene-1');
-      data.view.set(view);
+      sceneId.set('scene-1');
+      visible.set(view);
       await settle();
       http.expectOne((r) => r.url.includes('/annotations')).flush({ items: [], nextCursor: null });
       await settle();
@@ -115,8 +123,8 @@ describe('AnnotationData', () => {
     });
 
     it('reports a failed load', async () => {
-      data.sceneId.set('scene-1');
-      data.view.set(view);
+      sceneId.set('scene-1');
+      visible.set(view);
       await settle();
       http
         .expectOne((r) => r.url.includes('/annotations'))
@@ -187,7 +195,7 @@ describe('AnnotationData', () => {
       http.match((r) => r.method === 'GET' && /\/annotations\/[^/?]+$/.test(r.url));
 
     it('loads nothing until an annotation is selected', async () => {
-      data.sceneId.set('scene-1');
+      sceneId.set('scene-1');
       await settle();
 
       expect(detailRequests()).toHaveLength(0);
@@ -195,8 +203,8 @@ describe('AnnotationData', () => {
     });
 
     it('loads the selected annotation and keeps its ETag', async () => {
-      data.sceneId.set('scene-1');
-      data.selectedId.set('a1');
+      sceneId.set('scene-1');
+      selectedId.set('a1');
       await settle();
 
       const [request] = detailRequests();
@@ -209,14 +217,14 @@ describe('AnnotationData', () => {
     });
 
     it('drops the old annotation and its ETag when another is selected', async () => {
-      data.sceneId.set('scene-1');
-      data.selectedId.set('a1');
+      sceneId.set('scene-1');
+      selectedId.set('a1');
       await settle();
       detailRequests()[0]?.flush(detail('a1').body, { headers: detail('a1').headers });
       await settle();
       expect(data.current()?.id).toBe('a1');
 
-      data.selectedId.set('a2');
+      selectedId.set('a2');
       await settle();
 
       expect(data.current()).toBeNull(); // never show a1 while a2 loads
@@ -226,8 +234,8 @@ describe('AnnotationData', () => {
     });
 
     it('reloadDetail reads the annotation again', async () => {
-      data.sceneId.set('scene-1');
-      data.selectedId.set('a1');
+      sceneId.set('scene-1');
+      selectedId.set('a1');
       await settle();
       detailRequests()[0]?.flush(detail('a1').body, { headers: detail('a1').headers });
       await settle();
@@ -239,8 +247,8 @@ describe('AnnotationData', () => {
     });
 
     it('reports a detail that cannot be loaded', async () => {
-      data.sceneId.set('scene-1');
-      data.selectedId.set('gone');
+      sceneId.set('scene-1');
+      selectedId.set('gone');
       await settle();
 
       detailRequests()[0]?.flush(
@@ -254,8 +262,8 @@ describe('AnnotationData', () => {
 
     describe('update', () => {
       const select = async () => {
-        data.sceneId.set('scene-1');
-        data.selectedId.set('a1');
+        sceneId.set('scene-1');
+        selectedId.set('a1');
         await settle();
         detailRequests()[0]?.flush(detail('a1').body, { headers: detail('a1').headers });
         await settle();
@@ -301,8 +309,8 @@ describe('AnnotationData', () => {
       });
 
       it('does not call the server without a version, and says a version is required', async () => {
-        data.sceneId.set('scene-1');
-        data.selectedId.set('a1'); // the annotation has not loaded, so there is no ETag
+        sceneId.set('scene-1');
+        selectedId.set('a1'); // the annotation has not loaded, so there is no ETag
         await settle();
 
         const outcome = await data.update({ title: 'Loose tile' });

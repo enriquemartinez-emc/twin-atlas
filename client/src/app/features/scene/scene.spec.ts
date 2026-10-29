@@ -2,6 +2,9 @@ import { HttpClient, provideHttpClient } from '@angular/common/http';
 import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
 import { signal } from '@angular/core';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { Router, provideRouter, withComponentInputBinding } from '@angular/router';
+import { RouterTestingHarness } from '@angular/router/testing';
+import { routes } from '@app/app.routes';
 import { client } from '@api/client.gen';
 import { MapService } from '@map/map.service';
 import type { Bbox, MapClick, MapMode } from '@map/public-api';
@@ -47,7 +50,7 @@ const annotation = (id: string, title: string) => ({
 });
 
 describe('Scene', () => {
-  let fixture: ComponentFixture<Scene>;
+  let fixture: ComponentFixture<unknown>;
   let http: HttpTestingController;
   let map: FakeMap;
   let clickSequence = 0;
@@ -101,6 +104,7 @@ describe('Scene', () => {
     map = new FakeMap();
     TestBed.configureTestingModule({
       providers: [
+        provideRouter(routes, withComponentInputBinding()),
         provideHttpClient(),
         provideHttpClientTesting(),
         { provide: MapService, useValue: map },
@@ -384,6 +388,123 @@ describe('Scene', () => {
     expect(map.destroy).toHaveBeenCalledOnce();
   });
 
+  describe('routing', () => {
+    const annotationRequest = (id: string) => (r: { method: string; url: string }) =>
+      r.method === 'GET' && r.url.endsWith(`/api/scenes/s1/annotations/${id}`);
+    const other = { ...scene, id: 's2', name: 'Other' };
+    const select = () => el().querySelector<HTMLSelectElement>('#scene-select');
+
+    /** Opens the page the way the router does: from an address, with route values as inputs. */
+    const openAt = async (url: string, scenes = [scene]) => {
+      const harness = await RouterTestingHarness.create();
+      const page = await harness.navigateByUrl(url, Scene);
+      fixture = harness.fixture;
+      await settle();
+      scenesRequest().flush(scenes);
+      await settle();
+      return { harness, page };
+    };
+
+    it('opens the scene and the annotation named in the address', async () => {
+      await openAt('/scenes/s1?annotation=a1');
+      listRequest().flush({ items: [annotation('a1', 'Cracked window')], nextCursor: null });
+      await settle();
+      http
+        .expectOne(annotationRequest('a1'))
+        .flush(annotation('a1', 'Cracked window'), { headers: { ETag: '"2"' } });
+      await settle();
+
+      expect(select()?.value).toBe('s1');
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Cracked window');
+    });
+
+    it('prefers the scene in the address over the one used last', async () => {
+      localStorage.setItem('twinatlas.sceneId', 's2');
+
+      await openAt('/scenes/s1', [scene, other]);
+
+      expect(select()?.value).toBe('s1');
+      listRequest().flush({ items: [], nextCursor: null });
+    });
+
+    it('shows the scene used last at /scenes', async () => {
+      localStorage.setItem('twinatlas.sceneId', 's2');
+
+      await openAt('/scenes', [scene, other]);
+
+      expect(select()?.value).toBe('s2');
+    });
+
+    it('puts the chosen annotation into the address', async () => {
+      await openAt('/scenes/s1');
+      listRequest().flush({ items: [annotation('a1', 'Cracked window')], nextCursor: null });
+      await settle();
+
+      el().querySelector<HTMLButtonElement>('app-annotation-list li button')?.click();
+      await settle();
+
+      expect(TestBed.inject(Router).url).toBe('/scenes/s1?annotation=a1');
+    });
+
+    it('clears the annotation from the address when the editor is closed', async () => {
+      await openAt('/scenes/s1?annotation=a1');
+      listRequest().flush({ items: [annotation('a1', 'Cracked window')], nextCursor: null });
+      await settle();
+      http
+        .expectOne(annotationRequest('a1'))
+        .flush(annotation('a1', 'Cracked window'), { headers: { ETag: '"2"' } });
+      await settle();
+
+      button('Close').click();
+      await settle();
+
+      expect(TestBed.inject(Router).url).toBe('/scenes/s1');
+    });
+
+    it('moves to the address of the scene that is chosen', async () => {
+      await openAt('/scenes/s1', [scene, other]);
+      listRequest().flush({ items: [], nextCursor: null });
+      await settle();
+
+      const chooser = select();
+      if (!chooser) throw new Error('no scene chooser');
+      chooser.value = 's2';
+      chooser.dispatchEvent(new Event('change'));
+      await settle();
+
+      expect(TestBed.inject(Router).url).toBe('/scenes/s2');
+      expect(select()?.value).toBe('s2');
+    });
+
+    it('keeps the page and its map when the scene changes', async () => {
+      const { harness, page } = await openAt('/scenes', [scene, other]);
+
+      const again = await harness.navigateByUrl('/scenes/s2', Scene);
+
+      expect(again).toBe(page);
+      expect(map.init).toHaveBeenCalledOnce();
+    });
+
+    it('follows the address when it changes to another annotation', async () => {
+      const { harness } = await openAt('/scenes/s1?annotation=a1');
+      listRequest().flush({ items: [], nextCursor: null });
+      await settle();
+      http
+        .expectOne(annotationRequest('a1'))
+        .flush(annotation('a1', 'Cracked window'), { headers: { ETag: '"2"' } });
+      await settle();
+
+      await harness.navigateByUrl('/scenes/s1?annotation=a2', Scene);
+      await settle();
+      http
+        .expectOne(annotationRequest('a2'))
+        .flush(annotation('a2', 'Leak'), { headers: { ETag: '"1"' } });
+      await settle();
+
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Leak');
+    });
+  });
+
   describe('editing an annotation', () => {
     const detailUrl = (r: { method: string; url: string }) =>
       r.method === 'GET' && r.url.endsWith('/api/scenes/s1/annotations/a1');
@@ -547,6 +668,30 @@ describe('Scene', () => {
       expect(el().textContent).toContain('already has that title');
       expect(() => button('Load latest version')).toThrow();
       expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Taken title');
+    });
+
+    it('starts half-finished edits afresh when another annotation is chosen', async () => {
+      await open([annotation('a1', 'Cracked window'), annotation('a2', 'Leak')]);
+      const rows = () => [
+        ...el().querySelectorAll<HTMLButtonElement>('app-annotation-list li button'),
+      ];
+      rows()[0]?.click();
+      await settle();
+      http.expectOne(detailUrl).flush(responseBody('Cracked window'), { headers: { ETag: '"2"' } });
+      await settle();
+      button('Move on map').click();
+      await settle();
+      expect(el().textContent).toContain('Click the map to choose the new position.');
+
+      rows()[1]?.click();
+      await settle();
+      http
+        .expectOne((r) => r.method === 'GET' && r.url.endsWith('/api/scenes/s1/annotations/a2'))
+        .flush({ ...annotation('a2', 'Leak'), body: null }, { headers: { ETag: '"1"' } });
+      await settle();
+
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Leak');
+      expect(el().textContent).not.toContain('Click the map to choose the new position.');
     });
 
     it('closing the editor clears the selection', async () => {

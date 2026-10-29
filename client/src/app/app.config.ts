@@ -1,7 +1,7 @@
 import { provideHttpClient, withFetch } from '@angular/common/http';
 import type { ApplicationConfig } from '@angular/core';
 import { provideBrowserGlobalErrorListeners } from '@angular/core';
-import { provideRouter } from '@angular/router';
+import { provideRouter, withComponentInputBinding } from '@angular/router';
 import { client } from '@api/client.gen';
 import { provideHeyApiClient } from '@api/client/client.gen';
 import { environment } from '@env/environment';
@@ -12,7 +12,7 @@ client.setConfig({ baseUrl: environment.apiBaseUrl });
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-    provideRouter(routes),
+    provideRouter(routes, withComponentInputBinding()),
     provideHttpClient(withFetch()),
     provideHeyApiClient(client),
   ],

@@ -1,5 +1,5 @@
 import { httpResource } from '@angular/common/http';
-import { computed, linkedSignal, Service, signal } from '@angular/core';
+import { computed, linkedSignal, type Signal } from '@angular/core';
 import { getAnnotationRequest, listAnnotationsRequest } from '@api/@angular/common.gen';
 import {
   type AnnotationResponse,
@@ -12,25 +12,24 @@ import {
   updateAnnotation,
 } from '@api/index';
 import type { Bbox } from '@map/public-api';
-import { type Outcome, asProblem, failed, succeeded } from '@shared/problems/outcome';
+import { type Outcome, asProblem, failed as failure, succeeded } from '@shared/problems/outcome';
 import { bboxParam } from './annotation-draft';
 
 const PAGE_SIZE = 200;
 
 /**
  * The annotations of one scene inside the visible map area, loaded through the generated SDK.
- * Nothing loads until a scene is chosen and the map has reported its view.
+ * Nothing loads until a scene is chosen and the map has reported its view. The caller passes the
+ * signals it already has, so there is nothing to keep in sync: call it in an injection context.
  */
-@Service()
-export class AnnotationData {
-  readonly sceneId = signal<string | null>(null);
-  readonly view = signal<Bbox | null>(null);
-  /** The annotation being looked at or edited. Its detail (and ETag) load when it is set. */
-  readonly selectedId = signal<string | null>(null);
-
-  private readonly page = httpResource<ListAnnotationsResponse>(() => {
-    const sceneId = this.sceneId();
-    const view = this.view();
+export function annotationData(
+  activeSceneId: Signal<string | null>,
+  visibleView: Signal<Bbox | null>,
+  selectedAnnotationId: Signal<string | null>,
+) {
+  const page = httpResource<ListAnnotationsResponse>(() => {
+    const sceneId = activeSceneId();
+    const view = visibleView();
     if (!sceneId || !view) return undefined;
     return listAnnotationsRequest({
       path: { sceneId },
@@ -39,45 +38,45 @@ export class AnnotationData {
   });
 
   /** Keeps showing the previous result while a new view loads, so the map does not flicker. */
-  readonly items = linkedSignal<AnnotationSummary[] | undefined, AnnotationSummary[]>({
-    source: () => (this.page.hasValue() ? this.page.value().items : undefined),
+  const items = linkedSignal<AnnotationSummary[] | undefined, AnnotationSummary[]>({
+    source: () => (page.hasValue() ? page.value().items : undefined),
     computation: (next, previous) => next ?? previous?.value ?? [],
   });
 
   /** True when the view holds more annotations than one page: zoom in to see them all. */
-  readonly truncated = computed(() => this.page.hasValue() && !!this.page.value().nextCursor);
-  readonly loading = computed(() => this.page.isLoading());
-  readonly failed = computed(() => this.page.error() !== undefined);
+  const truncated = computed(() => page.hasValue() && !!page.value().nextCursor);
+  const loading = computed(() => page.isLoading());
+  const failed = computed(() => page.error() !== undefined);
 
-  private readonly detail = httpResource<GetAnnotationResponse>(() => {
-    const sceneId = this.sceneId();
-    const id = this.selectedId();
+  const detail = httpResource<GetAnnotationResponse>(() => {
+    const sceneId = activeSceneId();
+    const id = selectedAnnotationId();
     if (!sceneId || !id) return undefined;
     return getAnnotationRequest({ path: { sceneId, id } });
   });
 
   /** The selected annotation as the server has it right now, or null while it loads. */
-  readonly current = computed(() => (this.detail.hasValue() ? this.detail.value() : null));
+  const current = computed(() => (detail.hasValue() ? detail.value() : null));
   /** Its version. An update sends it back as If-Match, so it can never overwrite a newer one. */
-  readonly etag = computed(() => this.detail.headers()?.get('ETag') ?? null);
-  readonly detailLoading = computed(() => this.detail.isLoading());
-  readonly detailFailed = computed(() => this.detail.error() !== undefined);
+  const etag = computed(() => detail.headers()?.get('ETag') ?? null);
+  const detailLoading = computed(() => detail.isLoading());
+  const detailFailed = computed(() => detail.error() !== undefined);
 
-  reload(): void {
-    this.page.reload();
+  function reload(): void {
+    page.reload();
   }
 
-  reloadDetail(): void {
-    this.detail.reload();
+  function reloadDetail(): void {
+    detail.reload();
   }
 
   /** Saves changes to the selected annotation against the version that was read. */
-  async update(request: UpdateAnnotationRequest): Promise<Outcome<AnnotationResponse>> {
-    const sceneId = this.sceneId();
-    const id = this.selectedId();
-    const etag = this.etag();
-    if (!sceneId || !id || !etag) {
-      return failed({
+  async function update(request: UpdateAnnotationRequest): Promise<Outcome<AnnotationResponse>> {
+    const sceneId = activeSceneId();
+    const id = selectedAnnotationId();
+    const version = etag();
+    if (!sceneId || !id || !version) {
+      return failure({
         code: 'PRECONDITION_REQUIRED',
         title: 'A version is required',
         detail: 'The annotation has not finished loading.',
@@ -87,24 +86,41 @@ export class AnnotationData {
     try {
       const result = await updateAnnotation({
         path: { sceneId, id },
-        headers: { 'If-Match': etag },
+        headers: { 'If-Match': version },
         body: request,
       });
-      return result.data ? succeeded(result.data) : failed(asProblem(result.error));
+      return result.data ? succeeded(result.data) : failure(asProblem(result.error));
     } catch {
-      return failed(undefined);
+      return failure(undefined);
     }
   }
 
-  async create(
-    sceneId: string,
+  async function create(
+    targetSceneId: string,
     request: CreateAnnotationRequest,
   ): Promise<Outcome<AnnotationResponse>> {
     try {
-      const result = await createAnnotation({ path: { sceneId }, body: request });
-      return result.data ? succeeded(result.data) : failed(asProblem(result.error));
+      const result = await createAnnotation({ path: { sceneId: targetSceneId }, body: request });
+      return result.data ? succeeded(result.data) : failure(asProblem(result.error));
     } catch {
-      return failed(undefined);
+      return failure(undefined);
     }
   }
+
+  return {
+    items,
+    truncated,
+    loading,
+    failed,
+    current,
+    etag,
+    detailLoading,
+    detailFailed,
+    reload,
+    reloadDetail,
+    update,
+    create,
+  };
 }
+
+export type AnnotationData = ReturnType<typeof annotationData>;

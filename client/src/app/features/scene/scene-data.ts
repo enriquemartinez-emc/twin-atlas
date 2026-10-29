@@ -12,8 +12,9 @@ import { type Outcome, asProblem, failed, succeeded } from '@shared/problems/out
 const STORAGE_KEY = 'twinatlas.sceneId';
 
 /**
- * The scenes the user can pick from, and the one picked. The choice is remembered in this browser
- * only. Storage can be unavailable (private window), so every access is guarded.
+ * The scenes the user can pick from, and the one used last. The URL says which scene is open
+ * (`/scenes/:sceneId`); this remembers the choice for `/scenes` in this browser only. Storage can
+ * be unavailable (private window), so every access is guarded.
  */
 @Service()
 export class SceneData {
@@ -31,15 +32,15 @@ export class SceneData {
   readonly loading = computed(() => this.loaded.isLoading());
   readonly failed = computed(() => this.loaded.error() !== undefined);
 
-  /** The stored choice if it still exists, otherwise the newest scene. */
-  readonly selectedId = computed(() => {
+  /** The scene used last if it still exists, otherwise the newest one. Shown at `/scenes`. */
+  readonly defaultId = computed(() => {
     const stored = this.stored();
     const scenes = this.scenes();
     if (!this.loaded.hasValue() && scenes.length === 0) return stored; // still loading: trust it
     return scenes.some((scene) => scene.id === stored) ? stored : (scenes[0]?.id ?? null);
   });
 
-  select(id: string | null): void {
+  remember(id: string | null): void {
     this.stored.set(id);
     this.write(id);
   }
@@ -49,7 +50,7 @@ export class SceneData {
       const result = await createScene({ body: { name, extent } });
       if (!result.data) return failed(asProblem(result.error));
       this.created.update((scenes) => [result.data, ...scenes]);
-      this.select(result.data.id);
+      this.remember(result.data.id);
       this.loaded.reload();
       return succeeded(result.data);
     } catch {
