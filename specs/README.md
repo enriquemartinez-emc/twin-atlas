@@ -24,6 +24,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 016 | [Shared kernel and server cleanup](016-shared-kernel-and-cleanup.md) | `chore/shared-kernel` | Done        |
 | 017 | [Figtree font and a Spartan-built UI](017-ui-figtree-and-spartan.md) | `feat/ui-figtree-spartan` | In progress |
 | 018 | [One command to start the app](018-one-command-start.md) | `feat/one-command-start` | In progress |
+| 019 | [Angular structure, routes and state flow](019-angular-structure.md) | `chore/angular-structure` | In progress |
 
 ## File template
 
