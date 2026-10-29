@@ -1,6 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 import { FormField, form, maxLength, required, submit } from '@angular/forms/signals';
 import type { SceneResponse } from '@api/index';
+import { notBlank } from '@shared/forms/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
 import { HlmLabelImports } from '@shared/ui/label';
@@ -67,6 +68,7 @@ export class ScenePicker {
 
   protected readonly sceneForm = form(this.model, (path) => {
     required(path.name, { message: 'Name the scene.' });
+    notBlank(path.name, 'Name the scene.');
     maxLength(path.name, 120, { message: 'Keep the name under 120 characters.' });
   });
 

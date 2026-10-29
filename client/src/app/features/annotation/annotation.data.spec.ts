@@ -177,4 +177,145 @@ describe('AnnotationData', () => {
       expect(await outcome).toEqual({ ok: false, problem: undefined });
     });
   });
+
+  describe('one annotation and its ETag', () => {
+    const detail = (id: string, etag = '"4"') => ({
+      body: { ...summary(id, 'Cracked window'), body: null },
+      headers: { ETag: etag },
+    });
+    const detailRequests = () =>
+      http.match((r) => r.method === 'GET' && /\/annotations\/[^/?]+$/.test(r.url));
+
+    it('loads nothing until an annotation is selected', async () => {
+      data.sceneId.set('scene-1');
+      await settle();
+
+      expect(detailRequests()).toHaveLength(0);
+      expect(data.current()).toBeNull();
+    });
+
+    it('loads the selected annotation and keeps its ETag', async () => {
+      data.sceneId.set('scene-1');
+      data.selectedId.set('a1');
+      await settle();
+
+      const [request] = detailRequests();
+      expect(request?.request.url).toContain('/api/scenes/scene-1/annotations/a1');
+      request?.flush(detail('a1').body, { headers: detail('a1').headers });
+      await settle();
+
+      expect(data.current()).toMatchObject({ id: 'a1', title: 'Cracked window' });
+      expect(data.etag()).toBe('"4"');
+    });
+
+    it('drops the old annotation and its ETag when another is selected', async () => {
+      data.sceneId.set('scene-1');
+      data.selectedId.set('a1');
+      await settle();
+      detailRequests()[0]?.flush(detail('a1').body, { headers: detail('a1').headers });
+      await settle();
+      expect(data.current()?.id).toBe('a1');
+
+      data.selectedId.set('a2');
+      await settle();
+
+      expect(data.current()).toBeNull(); // never show a1 while a2 loads
+      detailRequests().forEach((r) => r.flush(detail('a2').body, { headers: { ETag: '"9"' } }));
+      await settle();
+      expect(data.etag()).toBe('"9"');
+    });
+
+    it('reloadDetail reads the annotation again', async () => {
+      data.sceneId.set('scene-1');
+      data.selectedId.set('a1');
+      await settle();
+      detailRequests()[0]?.flush(detail('a1').body, { headers: detail('a1').headers });
+      await settle();
+
+      data.reloadDetail();
+      await settle();
+
+      expect(detailRequests()).toHaveLength(1);
+    });
+
+    it('reports a detail that cannot be loaded', async () => {
+      data.sceneId.set('scene-1');
+      data.selectedId.set('gone');
+      await settle();
+
+      detailRequests()[0]?.flush(
+        { code: 'ANNOTATION_NOT_FOUND' },
+        { status: 404, statusText: 'Not Found' },
+      );
+      await settle();
+
+      expect(data.detailFailed()).toBe(true);
+    });
+
+    describe('update', () => {
+      const select = async () => {
+        data.sceneId.set('scene-1');
+        data.selectedId.set('a1');
+        await settle();
+        detailRequests()[0]?.flush(detail('a1').body, { headers: detail('a1').headers });
+        await settle();
+      };
+
+      it('sends the changes with the ETag it read as If-Match', async () => {
+        await select();
+
+        const outcome = data.update({ title: 'Loose tile' });
+        const patch = await vi.waitFor(() => http.expectOne((r) => r.method === 'PATCH'));
+        expect(patch.request.url).toContain('/api/scenes/scene-1/annotations/a1');
+        expect(patch.request.headers.get('If-Match')).toBe('"4"');
+        expect(patch.request.body).toEqual({ title: 'Loose tile' });
+        patch.flush({ ...summary('a1', 'Loose tile'), body: null }, { headers: { ETag: '"5"' } });
+
+        expect(await outcome).toMatchObject({ ok: true, value: { title: 'Loose tile' } });
+      });
+
+      it('returns the problem when the version is stale', async () => {
+        await select();
+
+        const outcome = data.update({ title: 'Loose tile' });
+        const patch = await vi.waitFor(() => http.expectOne((r) => r.method === 'PATCH'));
+        patch.flush(
+          { code: 'STALE_VERSION', title: 't', detail: 'd', status: 412 },
+          { status: 412, statusText: 'Precondition Failed' },
+        );
+
+        expect(await outcome).toEqual({
+          ok: false,
+          problem: expect.objectContaining({ code: 'STALE_VERSION' }),
+        });
+      });
+
+      it('returns no problem when the network fails', async () => {
+        await select();
+
+        const outcome = data.update({ title: 'Loose tile' });
+        const patch = await vi.waitFor(() => http.expectOne((r) => r.method === 'PATCH'));
+        patch.error(new ProgressEvent('error'), { status: 0 });
+
+        expect(await outcome).toEqual({ ok: false, problem: undefined });
+      });
+
+      it('does not call the server without a version, and says a version is required', async () => {
+        data.sceneId.set('scene-1');
+        data.selectedId.set('a1'); // the annotation has not loaded, so there is no ETag
+        await settle();
+
+        const outcome = await data.update({ title: 'Loose tile' });
+
+        expect(outcome).toEqual({
+          ok: false,
+          problem: expect.objectContaining({ code: 'PRECONDITION_REQUIRED' }),
+        });
+        expect(http.match((r) => r.method === 'PATCH')).toHaveLength(0);
+        detailRequests().forEach((r) =>
+          r.flush(detail('a1').body, { headers: detail('a1').headers }),
+        );
+      });
+    });
+  });
 });

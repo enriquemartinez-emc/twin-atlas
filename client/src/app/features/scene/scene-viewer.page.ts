@@ -16,11 +16,13 @@ import type { AnnotationSummary } from '@api/index';
 import { environment } from '@env/environment';
 import {
   AnnotationData,
+  AnnotationEditor,
   AnnotationForm,
   AnnotationList,
   type AnnotationFormValue,
   type AnnotationKind,
   buildCreateRequest,
+  buildUpdateRequest,
   focusPoint,
   isDraftReady,
   toMapFeature,
@@ -54,6 +56,7 @@ const FOCUS_HEIGHT = 250;
     HlmButtonImports,
     ScenePicker,
     AnnotationForm,
+    AnnotationEditor,
     AnnotationList,
     IonTokenPanel,
   ],
@@ -104,6 +107,24 @@ const FOCUS_HEIGHT = 250;
               (submitted)="save($event)"
               (cancelled)="selectTool('select')"
             />
+          }
+
+          @if (editing(); as annotation) {
+            <app-annotation-editor
+              [annotation]="annotation"
+              [moving]="moving()"
+              [moved]="movedTo() !== null"
+              [busy]="updating()"
+              [problem]="editProblem()"
+              [stale]="editStale()"
+              (submitted)="saveEdit($event)"
+              (moveRequested)="startMove()"
+              (moveCancelled)="cancelMove()"
+              (reloadRequested)="loadLatest()"
+              (closed)="closeEditor()"
+            />
+          } @else if (tool() === 'select' && data.detailFailed()) {
+            <p role="alert" class="text-destructive">Could not load this annotation.</p>
           }
 
           <app-annotation-list
@@ -179,6 +200,11 @@ export class SceneViewerPage {
   protected readonly selectedAnnotationId = signal<string | null>(null);
   protected readonly saving = signal(false);
   protected readonly formProblem = signal<string | null>(null);
+  protected readonly moving = signal(false);
+  protected readonly movedTo = signal<LonLat | null>(null);
+  protected readonly updating = signal(false);
+  protected readonly editProblem = signal<string | null>(null);
+  protected readonly editStale = signal(false);
   protected readonly creatingScene = signal(false);
   protected readonly sceneProblem = signal<string | null>(null);
 
@@ -191,6 +217,11 @@ export class SceneViewerPage {
     const kind = this.formKind();
     return kind !== null && isDraftReady(kind, this.draft());
   });
+
+  /** The selected annotation, shown for editing in select mode once the server has returned it. */
+  protected readonly editing = computed(() =>
+    this.tool() === 'select' ? this.data.current() : null,
+  );
 
   /** A scene is built from the visible area, so the map must have reported one. */
   protected readonly canCreateScene = computed(() => !!this.map()?.visibleBbox());
@@ -207,6 +238,12 @@ export class SceneViewerPage {
     // What the page knows feeds the data service...
     effect(() => this.data.sceneId.set(this.scenes.selectedId()));
     effect(() => this.data.view.set(this.map()?.visibleBbox() ?? null));
+    effect(() => this.data.selectedId.set(this.selectedAnnotationId()));
+    // Choosing another annotation drops half-finished edits of the previous one.
+    effect(() => {
+      this.selectedAnnotationId();
+      untracked(() => this.resetEdit());
+    });
 
     // ...and what is known is drawn on the map. `epoch` re-runs these after the map is rebuilt.
     effect(() => {
@@ -259,6 +296,52 @@ export class SceneViewerPage {
     }
   }
 
+  protected startMove(): void {
+    this.moving.set(true);
+    this.movedTo.set(null);
+    this.draft.set([]);
+  }
+
+  protected cancelMove(): void {
+    this.moving.set(false);
+    this.movedTo.set(null);
+    this.draft.set([]);
+  }
+
+  protected closeEditor(): void {
+    this.selectedAnnotationId.set(null);
+  }
+
+  /** After a conflict: drop the edits and read the annotation again, with its new version. */
+  protected loadLatest(): void {
+    this.resetEdit();
+    this.data.reloadDetail();
+    this.data.reload();
+  }
+
+  protected async saveEdit(value: AnnotationFormValue): Promise<void> {
+    const current = this.data.current();
+    if (!current) return;
+    const request = buildUpdateRequest(current, value, this.movedTo());
+    if (!request) return;
+
+    this.updating.set(true);
+    this.editProblem.set(null);
+    this.editStale.set(false);
+    const outcome = await this.data.update(request);
+    this.updating.set(false);
+
+    if (outcome.ok) {
+      this.data.reload();
+      this.data.reloadDetail();
+      this.resetEdit();
+      return;
+    }
+    this.editProblem.set(problemMessage(outcome.problem));
+    const code = outcome.problem?.code;
+    this.editStale.set(code === 'STALE_VERSION' || code === 'CONCURRENT_MODIFICATION');
+  }
+
   protected async createScene(name: string): Promise<void> {
     const box = this.map()?.visibleBbox();
     if (!box) return;
@@ -287,9 +370,25 @@ export class SceneViewerPage {
     void this.start();
   }
 
+  private resetEdit(): void {
+    this.moving.set(false);
+    this.movedTo.set(null);
+    this.editProblem.set(null);
+    this.editStale.set(false);
+    if (this.tool() === 'select') this.draft.set([]);
+  }
+
   private onMapClick(click: MapClick): void {
     const tool = this.tool();
     if (tool === 'select') {
+      if (this.moving()) {
+        if (click.longitude === null || click.latitude === null) return;
+        const point = { longitude: click.longitude, latitude: click.latitude };
+        this.movedTo.set(point);
+        this.draft.set([point]);
+        this.moving.set(false);
+        return;
+      }
       this.selectedAnnotationId.set(click.featureId);
       return;
     }

@@ -90,6 +90,24 @@ describe('ScenePicker', () => {
     expect(el().textContent).toContain('Name the scene.');
   });
 
+  it('treats a name of only spaces as missing', async () => {
+    fixture.componentRef.setInput('canCreate', true);
+    const created: string[] = [];
+    fixture.componentInstance.create.subscribe((name) => created.push(name));
+    await flush();
+    const input = el().querySelector<HTMLInputElement>('#scene-name');
+    if (!input) throw new Error('no name field');
+    input.value = '     ';
+    input.dispatchEvent(new Event('input'));
+    await flush();
+
+    el().querySelector<HTMLButtonElement>('button[type="submit"]')?.click();
+    await flush();
+
+    expect(created).toEqual([]);
+    expect(el().textContent).toContain('Name the scene.');
+  });
+
   it('cannot create until the map has a view, and shows problems', async () => {
     fixture.componentRef.setInput('problem', 'The view crosses the date line.');
     await flush();

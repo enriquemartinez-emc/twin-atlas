@@ -63,6 +63,25 @@ describe('AnnotationForm', () => {
     expect(el().textContent).toContain('Give it a title.');
   });
 
+  it('treats a title of only spaces as missing', async () => {
+    await type(title(), '    ');
+    await submit();
+
+    expect(emitted).toEqual([]);
+    expect(el().textContent).toContain('Give it a title.');
+  });
+
+  it('treats note text of only spaces as missing', async () => {
+    fixture.componentRef.setInput('kind', 'NOTE');
+    await flush();
+    await type(title(), 'Leak');
+    await type(body(), '   ');
+    await submit();
+
+    expect(emitted).toEqual([]);
+    expect(el().textContent).toContain('A note needs some text.');
+  });
+
   it('rejects a title longer than 120 characters', async () => {
     await type(title(), 'x'.repeat(121));
     await submit();

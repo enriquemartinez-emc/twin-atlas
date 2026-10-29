@@ -1,5 +1,6 @@
 import { Component, computed, input, output, signal } from '@angular/core';
-import { FormField, form, maxLength, required, submit } from '@angular/forms/signals';
+import { FormField, form, maxLength, required, submit, validate } from '@angular/forms/signals';
+import { notBlank } from '@shared/forms/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
 import { HlmLabelImports } from '@shared/ui/label';
@@ -82,8 +83,14 @@ export class AnnotationForm {
 
   protected readonly annotationForm = form(this.model, (path) => {
     required(path.title, { message: 'Give it a title.' });
+    notBlank(path.title, 'Give it a title.');
     maxLength(path.title, 120, { message: 'Keep the title under 120 characters.' });
     required(path.body, { message: 'A note needs some text.', when: () => this.kind() === 'NOTE' });
+    validate(path.body, ({ value }) =>
+      this.kind() === 'NOTE' && value().trim() === ''
+        ? { kind: 'blank', message: 'A note needs some text.' }
+        : undefined,
+    );
     maxLength(path.body, 2000, { message: 'Keep the text under 2000 characters.' });
   });
 

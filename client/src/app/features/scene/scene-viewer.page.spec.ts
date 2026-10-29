@@ -64,7 +64,7 @@ describe('SceneViewerPage', () => {
   };
 
   const listRequest = () =>
-    http.expectOne((r) => r.method === 'GET' && r.url.includes('/api/scenes/s1/annotations'));
+    http.expectOne((r) => r.method === 'GET' && r.url.includes('/api/scenes/s1/annotations?'));
   const scenesRequest = () =>
     http.expectOne((r) => r.method === 'GET' && r.url.endsWith('/api/scenes'));
 
@@ -347,5 +347,194 @@ describe('SceneViewerPage', () => {
     fixture.destroy();
 
     expect(map.destroy).toHaveBeenCalledOnce();
+  });
+
+  describe('editing an annotation', () => {
+    const detailUrl = (r: { method: string; url: string }) =>
+      r.method === 'GET' && r.url.endsWith('/api/scenes/s1/annotations/a1');
+
+    const responseBody = (title: string) => ({ ...annotation('a1', title), body: null });
+
+    /** Picks the annotation from the list and answers the detail request with its ETag. */
+    const openEditor = async (etag = '"2"') => {
+      await open();
+      el().querySelector<HTMLButtonElement>('app-annotation-list li button')?.click();
+      await settle();
+      http.expectOne(detailUrl).flush(responseBody('Cracked window'), { headers: { ETag: etag } });
+      await settle();
+    };
+
+    const saveChanges = async () => {
+      button('Save changes').click();
+      await settle();
+    };
+
+    it('shows the editor with the values the server returned', async () => {
+      await openEditor();
+
+      expect(el().textContent).toContain('Edit marker');
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Cracked window');
+    });
+
+    it('does not show the editor while placing something new', async () => {
+      await openEditor();
+
+      button('Marker').click();
+      await settle();
+
+      expect(el().textContent).not.toContain('Edit marker');
+      expect(el().textContent).toContain('New marker');
+    });
+
+    it('renames with only the title, sends the version it read, then refreshes', async () => {
+      await openEditor('"2"');
+      await type('#edit-title', 'Loose tile');
+
+      await saveChanges();
+
+      const patch = http.expectOne((r) => r.method === 'PATCH');
+      expect(patch.request.url).toContain('/api/scenes/s1/annotations/a1');
+      expect(patch.request.headers.get('If-Match')).toBe('"2"');
+      expect(patch.request.body).toEqual({ title: 'Loose tile' });
+      patch.flush(responseBody('Loose tile'), { headers: { ETag: '"3"' } });
+      await settle();
+
+      expect(http.match((r) => r.method === 'GET' && r.url.includes('/annotations?'))).toHaveLength(
+        1,
+      );
+      const reread = http.expectOne(detailUrl);
+      reread.flush(responseBody('Loose tile'), { headers: { ETag: '"3"' } });
+      await settle();
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Loose tile');
+      expect(el().textContent).not.toContain('Someone changed');
+    });
+
+    it('moves a pin: the next click on the map is the new position', async () => {
+      await openEditor();
+
+      button('Move on map').click();
+      await settle();
+      expect(el().textContent).toContain('Click the map to choose the new position.');
+      click(2.172, 41.402);
+      await settle();
+      expect(lastCall(map.setDraft)[0]).toEqual([{ longitude: 2.172, latitude: 41.402 }]);
+      expect(lastCall(map.setFeatures)[1]).toBe('a1'); // clicking the map did not change the selection
+
+      await saveChanges();
+
+      const patch = http.expectOne((r) => r.method === 'PATCH');
+      expect(patch.request.body).toEqual({
+        geometry: { type: 'Point', coordinates: [2.172, 41.402] },
+      });
+      patch.flush(responseBody('Cracked window'), { headers: { ETag: '"3"' } });
+      await settle();
+      expect(lastCall(map.setDraft)[0]).toEqual([]); // the preview is cleared once saved
+      http.match(() => true).forEach((r) => r.flush([]));
+    });
+
+    it('can give up on a move and keep the position', async () => {
+      await openEditor();
+      button('Move on map').click();
+      await settle();
+      click(2.172, 41.402);
+      await settle();
+
+      button('Keep position').click();
+      await settle();
+
+      expect(lastCall(map.setDraft)[0]).toEqual([]);
+      expect(button('Save changes').disabled).toBe(true);
+    });
+
+    it('offers the latest version when someone else changed it, and loads it', async () => {
+      await openEditor('"2"');
+      await type('#edit-title', 'My edit');
+      await saveChanges();
+      http
+        .expectOne((r) => r.method === 'PATCH')
+        .flush(
+          { code: 'STALE_VERSION', title: 't', detail: 'd', status: 412 },
+          { status: 412, statusText: 'Precondition Failed' },
+        );
+      await settle();
+
+      expect(el().textContent).toContain('Someone changed this annotation');
+      button('Load latest version').click();
+      await settle();
+
+      http
+        .expectOne(detailUrl)
+        .flush(responseBody('Renamed elsewhere'), { headers: { ETag: '"5"' } });
+      http
+        .match((r) => r.method === 'GET' && r.url.includes('/annotations?'))
+        .forEach((r) => r.flush({ items: [], nextCursor: null }));
+      await settle();
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Renamed elsewhere');
+      expect(el().textContent).not.toContain('Someone changed this annotation');
+
+      // the next save uses the new version
+      await type('#edit-title', 'Second try');
+      await saveChanges();
+      expect(http.expectOne((r) => r.method === 'PATCH').request.headers.get('If-Match')).toBe(
+        '"5"',
+      );
+    });
+
+    it('also offers the latest version after a lost race (409 conflict)', async () => {
+      await openEditor();
+      await type('#edit-title', 'My edit');
+      await saveChanges();
+
+      http
+        .expectOne((r) => r.method === 'PATCH')
+        .flush(
+          { code: 'CONCURRENT_MODIFICATION', title: 't', detail: 'd', status: 409 },
+          { status: 409, statusText: 'Conflict' },
+        );
+      await settle();
+
+      expect(button('Load latest version')).toBeDefined();
+    });
+
+    it('explains a rejection that is not a conflict, without offering to reload', async () => {
+      await openEditor();
+      await type('#edit-title', 'Taken title');
+      await saveChanges();
+
+      http
+        .expectOne((r) => r.method === 'PATCH')
+        .flush(
+          { code: 'TITLE_ALREADY_USED', title: 't', detail: 'd', status: 409 },
+          { status: 409, statusText: 'Conflict' },
+        );
+      await settle();
+
+      expect(el().textContent).toContain('already has that title');
+      expect(() => button('Load latest version')).toThrow();
+      expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Taken title');
+    });
+
+    it('closing the editor clears the selection', async () => {
+      await openEditor();
+
+      button('Close').click();
+      await settle();
+
+      expect(el().textContent).not.toContain('Edit marker');
+      expect(lastCall(map.setFeatures)[1]).toBeNull();
+    });
+
+    it('tells the user when the selected annotation cannot be loaded', async () => {
+      await open();
+      el().querySelector<HTMLButtonElement>('app-annotation-list li button')?.click();
+      await settle();
+
+      http
+        .expectOne(detailUrl)
+        .flush({ code: 'ANNOTATION_NOT_FOUND' }, { status: 404, statusText: 'Not Found' });
+      await settle();
+
+      expect(el().textContent).toContain('Could not load this annotation.');
+    });
   });
 });

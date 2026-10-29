@@ -1,6 +1,13 @@
 import type { AnnotationSummary } from '@api/index';
 import { describe, expect, it } from 'vitest';
-import { bboxParam, buildCreateRequest, focusPoint, isDraftReady, toMapFeature } from './draft';
+import {
+  bboxParam,
+  buildCreateRequest,
+  buildUpdateRequest,
+  focusPoint,
+  isDraftReady,
+  toMapFeature,
+} from './draft';
 
 const a = { longitude: 2.17, latitude: 41.4 };
 const b = { longitude: 2.18, latitude: 41.4 };
@@ -117,5 +124,75 @@ describe('toMapFeature and focusPoint', () => {
   it('has no focus for empty geometry', () => {
     expect(focusPoint({ type: 'Point', coordinates: [] })).toBeNull();
     expect(focusPoint({ type: 'Polygon', coordinates: [] })).toBeNull();
+  });
+});
+
+describe('buildUpdateRequest', () => {
+  const marker = {
+    id: 'a',
+    sceneId: 's',
+    kind: 'MARKER' as const,
+    title: 'Cracked window',
+    body: null,
+    status: 'DRAFT',
+    createdAt: '2026-01-01T00:00:00Z',
+    geometry: { type: 'Point' as const, coordinates: [2.175, 41.405] },
+  };
+  const note = { ...marker, kind: 'NOTE' as const, title: 'Leak', body: 'wet' };
+  const outline = {
+    ...marker,
+    kind: 'OUTLINE' as const,
+    title: 'Area',
+    geometry: {
+      type: 'Polygon' as const,
+      coordinates: [
+        [
+          [0, 0],
+          [1, 0],
+          [1, 1],
+          [0, 0],
+        ],
+      ],
+    },
+  };
+  const target = { longitude: 2.172, latitude: 41.402 };
+
+  it('is null when nothing changed, ignoring surrounding spaces', () => {
+    expect(buildUpdateRequest(marker, { title: ' Cracked window ', body: '' }, null)).toBeNull();
+    expect(buildUpdateRequest(note, { title: 'Leak', body: ' wet ' }, null)).toBeNull();
+  });
+
+  it('sends only the title when only the title changed', () => {
+    expect(buildUpdateRequest(marker, { title: ' Loose tile ', body: '' }, null)).toEqual({
+      title: 'Loose tile',
+    });
+  });
+
+  it('treats a change of letter case as a change', () => {
+    expect(buildUpdateRequest(marker, { title: 'cracked window', body: '' }, null)).toEqual({
+      title: 'cracked window',
+    });
+  });
+
+  it('sends the text of a note only when it changed, and never for other kinds', () => {
+    expect(buildUpdateRequest(note, { title: 'Leak', body: 'dry' }, null)).toEqual({ body: 'dry' });
+    expect(
+      buildUpdateRequest(marker, { title: 'Cracked window', body: 'stray text' }, null),
+    ).toBeNull();
+    expect(buildUpdateRequest(outline, { title: 'Area', body: 'stray text' }, null)).toBeNull();
+  });
+
+  it('sends the new position as a point when the pin was moved', () => {
+    expect(buildUpdateRequest(marker, { title: 'Cracked window', body: '' }, target)).toEqual({
+      geometry: { type: 'Point', coordinates: [2.172, 41.402] },
+    });
+  });
+
+  it('combines every change in one request', () => {
+    expect(buildUpdateRequest(note, { title: 'Drip', body: 'dry' }, target)).toEqual({
+      title: 'Drip',
+      body: 'dry',
+      geometry: { type: 'Point', coordinates: [2.172, 41.402] },
+    });
   });
 });

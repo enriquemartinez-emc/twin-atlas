@@ -1,4 +1,9 @@
-import type { AnnotationSummary, CreateAnnotationRequest } from '@api/index';
+import type {
+  AnnotationResponse,
+  AnnotationSummary,
+  CreateAnnotationRequest,
+  UpdateAnnotationRequest,
+} from '@api/index';
 import type { Bbox, LonLat, MapFeature } from '@map/public-api';
 import { ringGeometry } from '@shared/geo/geojson';
 
@@ -30,6 +35,27 @@ export function buildCreateRequest(
   return kind === 'NOTE'
     ? { kind, title, body: value.body.trim(), geometry }
     : { kind, title, geometry };
+}
+
+/**
+ * What to send to update an annotation: only the fields that actually changed, or null when
+ * nothing did. Outlines are renamed, notes can also change text, pins can move.
+ */
+export function buildUpdateRequest(
+  original: AnnotationResponse,
+  value: AnnotationFormValue,
+  movedTo: LonLat | null,
+): UpdateAnnotationRequest | null {
+  const title = value.title.trim();
+  const body = value.body.trim();
+  const request: UpdateAnnotationRequest = {
+    ...(title !== original.title ? { title } : {}),
+    ...(original.kind === 'NOTE' && body !== (original.body ?? '') ? { body } : {}),
+    ...(movedTo
+      ? { geometry: { type: 'Point', coordinates: [movedTo.longitude, movedTo.latitude] } }
+      : {}),
+  };
+  return Object.keys(request).length === 0 ? null : request;
 }
 
 /** `west,south,east,north`, the format the list endpoint takes. */

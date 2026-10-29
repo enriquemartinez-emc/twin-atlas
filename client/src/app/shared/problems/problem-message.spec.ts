@@ -4,14 +4,19 @@ import { failed, succeeded } from './outcome';
 import { type ProblemCode, problemMessage } from './problem-message';
 
 const ALL_CODES: readonly ProblemCode[] = [
+  'ANNOTATION_NOT_FOUND',
   'CONCURRENT_MODIFICATION',
+  'GEOMETRY_KIND_MISMATCH',
   'GEOMETRY_OUTSIDE_SCENE_EXTENT',
   'INTERNAL_ERROR',
   'INVALID_CURSOR',
   'INVALID_GEOMETRY',
   'NOT_FOUND',
+  'PRECONDITION_REQUIRED',
   'REQUEST_INVALID',
   'SCENE_NOT_FOUND',
+  'STALE_VERSION',
+  'TEXT_ONLY_FOR_NOTES',
   'TITLE_ALREADY_USED',
   'VALIDATION_FAILED',
 ];
@@ -40,6 +45,10 @@ describe('problemMessage', () => {
   it('explains the rule the user broke for the domain rejections', () => {
     expect(problemMessage(problem('TITLE_ALREADY_USED'))).toContain('title');
     expect(problemMessage(problem('GEOMETRY_OUTSIDE_SCENE_EXTENT'))).toContain('outside the scene');
+  });
+
+  it('tells the user to load the latest version when someone else changed the annotation', () => {
+    expect(problemMessage(problem('STALE_VERSION'))).toContain('latest version');
   });
 
   it('talks about the connection when there is no problem body', () => {
