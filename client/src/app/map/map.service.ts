@@ -33,7 +33,16 @@ const WIDGETS_OFF: Viewer.ConstructorOptions = {
   fullscreenButton: false,
   infoBox: false,
   selectionIndicator: false,
+  // Cesium renders at CSS pixels by default, which looks soft on any screen scaled above 100%.
+  useBrowserRecommendedResolution: false,
 };
+
+/**
+ * How coarse a 3D tile may look, in screen pixels of error. Cesium's default is 16, which keeps
+ * the photorealistic tiles visibly soft; 8 loads the next level of detail sooner, at the price of
+ * more tile requests.
+ */
+const TILE_SCREEN_SPACE_ERROR = 8;
 
 const BBOX_DEBOUNCE_MS = 250;
 const WIDGETS_CSS_ID = 'cesium-widgets-css';
@@ -93,6 +102,7 @@ export class MapService {
           onlyUsingWithGoogleGeocoder: true,
         });
         if (generation !== this.generation) return;
+        tileset.maximumScreenSpaceError = TILE_SCREEN_SPACE_ERROR;
         viewer.scene.primitives.add(tileset);
         this.modeState.set('photorealistic');
       } catch (error) {

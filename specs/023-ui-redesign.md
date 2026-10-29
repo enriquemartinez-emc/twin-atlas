@@ -74,3 +74,4 @@ Colour stays as it is: neutral chrome, and the three kind colours as the only st
 - The status bar covered the map credits: moved to the top.
 - Label range 1500 m to 300 m after seeing a crowded real import.
 - Not exercised, because they write data: the conflict message and moving a place. README screenshots still show the earlier layout.
+- Soft Google tiles (reported by the owner): render at the real device resolution and lower the tile screen-space error from 16 to 8. Unit-tested as settings; the look needs a real tileset.

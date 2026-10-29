@@ -262,7 +262,20 @@ describe('MapService', () => {
     await service.init(container, { ionToken: 'token', initialView: view });
 
     expect(service.mode()).toBe('photorealistic');
-    expect(viewer().scene.primitives.add).toHaveBeenCalledExactlyOnceWith({ kind: 'tileset' });
+    expect(viewer().scene.primitives.add).toHaveBeenCalledExactlyOnceWith({
+      kind: 'tileset',
+      maximumScreenSpaceError: 8,
+    });
+  });
+
+  it("renders at the screen's real resolution on both kinds of globe", async () => {
+    await service.init(container, { ionToken: 'token', initialView: view });
+    await service.init(container, { ionToken: null, initialView: view });
+
+    expect(cesium.state.viewers.map((v) => v.options['useBrowserRecommendedResolution'])).toEqual([
+      false,
+      false,
+    ]);
   });
 
   it('falls back to OpenStreetMap and destroys the first viewer when the tileset fails', async () => {

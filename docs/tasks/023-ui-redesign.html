@@ -61,6 +61,7 @@
 <li><strong>The phone layout overflowed.</strong> The scene bar pushed its buttons over each other and the status bar covered the tools. "New scene" is now an icon on a phone, the dropdown is narrower, and the status bar sits under the tools.</li>
 <li><strong>The status bar covered Cesium&#39;s credits.</strong> It moved to the top, beside the tools.</li>
 <li><strong>Labels piled up.</strong> At 700 m a real import showed overlapping names. The label range went from 1,500 m to 300 m. It is still a judgement call.</li>
+<li><strong>Soft 3D tiles (found by you).</strong> Cesium rendered at CSS pixels, which looks blurry on a screen scaled above 100%, and loaded Google&#39;s tiles at its default coarseness. It now renders at the screen&#39;s real resolution and asks for finer tiles (error 8 instead of 16), which means more tile requests. Not looked at on a real Google tileset: that needs your token.</li>
 <li><strong>Smaller things.</strong> The scene dropdown wrapped long names, and the hide-panel button took a whole empty row.</li>
 </ul>
 <h2>New packages</h2>
