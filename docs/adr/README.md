@@ -16,3 +16,5 @@ Short records of decisions that are costly to reverse. Format: context, decision
 | 0010 | [The version check is a pure rule](0010-version-check-is-a-rule.md) | Accepted |
 | 0011 | [An import judges each element on its own](0011-import-judges-each-element.md) | Accepted |
 | 0012 | [A shared kernel for what every core shares](0012-shared-kernel.md) | Accepted |
+| 0013 | [A modular monolith, packaged by feature](0013-modular-monolith-with-feature-slices.md) | Accepted |
+| 0014 | [Spartan UI for the client's components](0014-spartan-ui.md) | Accepted |

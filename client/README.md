@@ -4,14 +4,14 @@ Angular 22 (zoneless, standalone, Vitest) with CesiumJS for the 3D scene and Spa
 
 ## Commands
 
-| Command                | What it does                            |
-| ---------------------- | --------------------------------------- |
-| `npm start`            | Dev server on http://localhost:4200     |
-| `npm run build`        | Production build                        |
-| `npm test`             | Unit tests (Vitest), watch mode         |
-| `npx ng lint`          | angular-eslint (no `any`, import rules) |
-| `npm run format:check` | Prettier check (`npm run format` fixes) |
-| `npm run api:generate` | Regenerate the SDK in `src/app/api`     |
+| Command                | What it does                               |
+| ---------------------- | ------------------------------------------ |
+| `npm start`            | Dev server on http://localhost:4200        |
+| `npm run build`        | Production build                           |
+| `npm test`             | Unit tests (Vitest), watch mode            |
+| `npm run lint`         | angular-eslint, plus the class-bloat check |
+| `npm run format:check` | Prettier check (`npm run format` fixes)    |
+| `npm run api:generate` | Regenerate the SDK in `src/app/api`        |
 
 ## Run the whole app
 

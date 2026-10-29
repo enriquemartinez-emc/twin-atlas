@@ -1,6 +1,6 @@
 # Architecture
 
-Twin Atlas is a modular monolith: one Spring Boot module, packaged by feature, with an Angular client. Decisions are recorded in [docs/adr](docs/adr/README.md); conventions are in [AGENTS.md](AGENTS.md).
+Twin Atlas is a modular monolith: one Spring Boot module, packaged by feature, with an Angular client ([ADR 0013](docs/adr/0013-modular-monolith-with-feature-slices.md)). Decisions are recorded in [docs/adr](docs/adr/README.md); conventions are in [AGENTS.md](AGENTS.md).
 
 ## Backend slices
 
@@ -66,6 +66,8 @@ client/src/app
 │   └── annotation/      AnnotationData (httpResource), form (Signal Forms), list, draft logic
 └── shared/              problems (code → message), geo helpers, Spartan UI components
 ```
+
+The UI is built from Spartan components and the Figtree font, and templates keep to a few classes ([ADR 0014](docs/adr/0014-spartan-ui.md)).
 
 - **Contract first.** The server commits `docs/openapi.json`; a test fails when it is stale. The SDK is generated from it, with typed GeoJSON and a typed enum of error codes ([ADR 0008](docs/adr/0008-contract-first-sdk.md)).
 - **Smart and presentational.** `SceneViewerPage` owns the state and talks to the services. The form, list, picker and token panel only take inputs and emit outputs.
