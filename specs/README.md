@@ -28,7 +28,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 020 | [Spring Boot structure: roles inside the big feature](020-spring-structure.md) | `chore/spring-structure` | In progress |
 | 021 | [UI polish: the app's own icon and name, and a guide for new users](021-ui-polish.md) | `feat/ui-polish` | In progress |
 | 022 | [Panel polish: readable map, clearer list, honest loading, tidier forms](022-ui-panel-polish.md) | `feat/ui-panel-polish` | In progress |
-| 023 | [Redesign: a tool rail, a scene bar and a panel that does one thing at a time](023-ui-redesign.md) | `feat/ui-redesign` | Proposed |
+| 023 | [Redesign: a tool rail, a scene bar and a panel that does one thing at a time](023-ui-redesign.md) | `feat/ui-redesign` | In progress |
 
 ## File template
 

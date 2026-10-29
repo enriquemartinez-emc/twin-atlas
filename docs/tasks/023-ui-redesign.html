@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Redesign: tools, scene bar and panel - Twin Atlas docs</title>
+<meta name="description" content="A scene bar, a tool rail, a hint, a status bar and a panel that shows one thing at a time.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../guide.html"><span>Using the app</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="../tasks/022-ui-panel-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li><li><a href="../tasks/023-ui-redesign.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">023</span><span>Redesign: tools and panel</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Redesign: tools, scene bar and panel</h1>
+<div class="tags"><span class="tag c-white">Task 023</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/ui-redesign</code></span></div>
+<p class="lead">The screen was one tall card that held everything. Now the page has a bar for the scene, a column of tools on the map, a status bar, and a panel that shows one thing at a time.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Reload the app. Read <a href="../guide.html">Using the app</a> first: its diagram names every part. I have not looked at any of this in a browser yet.</p></aside>
+<h2>What was wrong</h2>
+<p>Read from the code: copy link, the scene picker, New scene, the tools, the form, the editor, the list, the map details and the token box all lived in one 20 rem card with the same weight. The tools were bare words, "Marker" named the tool, the kind and every row, and developer details (source, camera) were always on screen.</p>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 620 330" width="620" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Before and after</title><desc id="d">Before, one tall card holds everything. After, the page has a bar on top, tools on the left, a status bar at the bottom and a panel on the right.</desc><text class="t-title" x="20" y="24">Before</text><text class="t-title" x="330" y="24">After</text><rect class="frame" x="10" y="34" width="290" height="276" rx="12"/><rect class="c-white" x="20" y="44" width="270" height="256" rx="8"/><text class="t-small" x="88" y="176">the map</text><rect class="c-slate" x="30" y="54" width="168" height="236" rx="8"/><text class="t-small" x="38" y="76">copy link, hide</text><text class="t-small" x="38" y="98">scene picker</text><text class="t-small" x="38" y="120">new scene</text><text class="t-small" x="38" y="142">tool toggles</text><text class="t-small" x="38" y="164">form or editor</text><text class="t-small" x="38" y="186">list + filter</text><text class="t-small" x="38" y="208">map details</text><text class="t-small" x="38" y="230">token box</text><text class="t-small" x="38" y="270">one card, one scroll</text><rect class="frame" x="320" y="34" width="290" height="276" rx="12"/><rect class="c-sky" x="328" y="42" width="274" height="22" rx="6"/><text class="t-small" x="338" y="57">scene bar</text><rect class="c-white" x="328" y="70" width="274" height="232" rx="8"/><text class="t-small" x="418" y="190">the map</text><rect class="c-sky" x="336" y="78" width="42" height="86" rx="6"/><text class="t-small" x="338" y="126">tools</text><rect class="c-sky" x="470" y="78" width="124" height="214" rx="8"/><text class="t-small" x="480" y="98">panel:</text><text class="t-small" x="480" y="116">list, or form,</text><text class="t-small" x="480" y="134">or editor</text><rect class="c-sky" x="372" y="246" width="88" height="20" rx="10"/><text class="t-small" x="380" y="260">hint</text><rect class="c-sky" x="336" y="272" width="124" height="20" rx="6"/><text class="t-small" x="344" y="286">status bar</text></svg></div><figcaption>The same things, given places of their own.</figcaption></figure><div class="col">
+<h2>What was built</h2>
+<ul>
+<li><strong>Scene bar.</strong> The app, the scene chooser (a styled native select, so keyboard and phone behaviour stay), a "New scene" dialog, a link button and a cog for the 3D tiles token.</li>
+<li><strong>Tool rail.</strong> Select, Marker, Note and Outline as icon buttons with tooltips. The active one is drawn in the colour of what it creates.</li>
+<li><strong>Hint.</strong> A pill that says the next step for the tool in hand, from one small tested function. It replaced the text inside the form.</li>
+<li><strong>Status bar.</strong> The map source (with a status dot, the second use of the badge copied from Sim UI), the camera, a button to go back to the starting view, and a spinner while the viewer starts.</li>
+<li><strong>Panel.</strong> It shows the list, or the form, or the editor, never two at once, and it sits on the right and is more see-through. Rows have an icon per kind (a pin, a speech bubble, a hexagon) and imported places carry an "OSM" badge. The filter shows an icon and a count per kind.</li>
+<li><strong>Comments.</strong> Comments that only restated the code were removed from the server and the client, about 420 lines. The ones that explain a decision stayed.</li>
+</ul>
+<h2>New packages</h2>
+<p>You approved the icon packages: <code>@ng-icons/core</code> (MIT) and <code>@ng-icons/lucide</code> (ISC). With them came Spartan&#39;s dialog, tooltip, spinner and native select. The Spartan select and tabs were tried and dropped: the native select keeps the platform behaviour, and nothing needed a second tab once the map details moved to the status bar.</p>
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Client tests</td><td class="">237 pass (216 before). New: the hint rules, the tool rail, the status bar, the scene bar with its dialogs, the new scene form, and the panel swapping between list, form and editor.</td></tr><tr><td class="">Deliberate breaks</td><td class="">Seven, each failed a test: the hint ignoring a move, the rail never showing the active tool, the dialog staying open after a scene is created, the list shown next to the form, the list shown next to the editor, every kind counted as a marker, and the spinner never stopping. One break survived at first because the test only covered drawing, so a test for the editor was added.</td></tr><tr><td class="">Server</td><td class="">193 tests pass after the comment cleanup; formatting is clean.</td></tr><tr><td class="">Build</td><td class="">Lint with the class check, formatting and the production build are clean.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>How it looks and feels in a real browser: the see-through panel over the map, tooltips and dialogs, the phone layout, and the 1,500 m label distance. These need your approval to drive the running app.</p></div>
+<h2>Left for later</h2>
+<ul>
+<li>Map symbols with the same icons as the rail and the list. The map still draws coloured dots, so the list and the map do not fully match yet.</li>
+<li>Moving the corners of an outline, and a delete.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="022-ui-panel-polish.html">Previous: Panel polish and a guide</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

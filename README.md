@@ -40,10 +40,10 @@ cd client && npm run lint && npm test -- --watch=false && npm run build
 
 Five minutes, in the order that makes sense. The [user guide](docs/guide.html) explains every part of the screen, and why the list can be long.
 
-1. **Open the app** at http://localhost:4200. On a fresh database the panel says there are no scenes yet. The map starts at the Sagrada Família in Barcelona.
-2. **Make a scene.** A scene is the area you work in. Pan and zoom to a place you care about, type a name under "New scene covering the current view", and press "Create scene from this view". A green rectangle shows the scene's area. Everything you add must fall inside it, and the app tells you when it does not.
-3. **Add a marker.** Choose Marker, click inside the green area, give it a title such as "Cracked window", and press Save. A note works the same way and also asks for its text. For an outline, click three or more corners.
-4. **Find it again.** The list in the panel shows what is in the current view. Click an item to fly to it, or choose Select and click it on the map.
+1. **Open the app** at http://localhost:4200. On a fresh database the top bar says there are no scenes yet. The map starts at the Sagrada Família in Barcelona.
+2. **Make a scene.** A scene is the area you work in. Pan and zoom to a place you care about, click "New scene" in the top bar, type a name, and press "Create scene from this view". A green rectangle shows the scene's area. Everything you add must fall inside it, and the app tells you when it does not.
+3. **Add a marker.** Choose Marker in the tools on the left of the map, click inside the green area, give it a title such as "Cracked window", and press Save. A note works the same way and also asks for its text. For an outline, click three or more corners.
+4. **Find it again.** The list in the panel on the right shows what is in the current view. Click an item to fly to it, or choose Select and click it on the map.
 5. **Edit it.** With an annotation selected you can rename it, change a note's text, or press "Move on map" and click the new position, then "Save changes".
 6. **Watch a conflict being refused.** Open the same annotation in two browser tabs. Save a change in one, then save a different change in the other. The second save is refused with "Someone changed this annotation since you opened it", and "Load latest version" shows the change that won. Nothing is overwritten.
 7. **Share a place.** The address bar follows your choice (`/scenes/<scene>?annotation=<id>`), so a link opens the same scene and annotation.
@@ -59,7 +59,7 @@ Five minutes, in the order that makes sense. The [user guide](docs/guide.html) e
 
    Reload the page and pick "Eixample" in the scene list: 35 markers and outlines appear. Run the second command again and nothing is added, because the answer reports every element as already imported.
 
-9. **Optional: real 3D buildings.** Create a free token at ion.cesium.com, paste it into the Map section of the panel, and press "Load 3D tiles". It stays in your browser only.
+9. **Optional: real 3D buildings.** Create a free token at ion.cesium.com, open the cog in the top bar (Map settings), paste it, and press "Load 3D tiles". It stays in your browser only.
 
 ## What works today
 
@@ -71,7 +71,7 @@ Five minutes, in the order that makes sense. The [user guide](docs/guide.html) e
 
 ## What it looks like
 
-Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe).
+Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe). They show the screen before the redesign (panel on the left, tools inside it) and will be retaken.
 
 ![An OpenStreetMap extract imported into a scene: markers, a note and outlines on the map, listed in the panel](docs/assets/screenshots/import.png)
 

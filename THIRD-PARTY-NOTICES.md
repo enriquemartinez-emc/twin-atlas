@@ -45,3 +45,7 @@ The font of the documentation site, in `docs/assets/fonts/`. Copyright (c) 2023 
 ## OpenStreetMap data (ODbL)
 
 The test extracts in `server/src/test/resources/osm/` and the map tiles shown by the app contain data © OpenStreetMap contributors, available under the [Open Database License](https://www.openstreetmap.org/copyright).
+
+## ng-icons and Lucide (MIT, ISC)
+
+`@ng-icons/core` (MIT) renders icons in Angular and `@ng-icons/lucide` (ISC) carries the Lucide icon set (<https://github.com/ng-icons/ng-icons>, <https://lucide.dev>). They are npm dependencies, not copied files. The icons in the tool rail, the status bar and the list come from Lucide.
