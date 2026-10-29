@@ -1,0 +1,351 @@
+import { HttpClient, provideHttpClient } from '@angular/common/http';
+import { HttpTestingController, provideHttpClientTesting } from '@angular/common/http/testing';
+import { signal } from '@angular/core';
+import { type ComponentFixture, TestBed } from '@angular/core/testing';
+import { client } from '@api/client.gen';
+import { MapService } from '@map/map.service';
+import type { Bbox, MapClick, MapMode } from '@map/public-api';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { SceneViewerPage } from './scene-viewer.page';
+
+/** Stands in for the Cesium-backed service: same signals and methods, no WebGL. */
+class FakeMap {
+  readonly visibleBbox = signal<Bbox | null>({ west: 2.17, south: 41.4, east: 2.18, north: 41.41 });
+  readonly cameraPosition = signal({ longitude: 2.175, latitude: 41.405, height: 700 });
+  readonly mode = signal<MapMode | null>('osm');
+  readonly tilesError = signal<string | null>(null);
+  readonly lastClick = signal<MapClick | null>(null);
+  readonly epoch = signal(1);
+  readonly init = vi.fn(() => Promise.resolve());
+  readonly setFeatures = vi.fn();
+  readonly setDraft = vi.fn();
+  readonly flyTo = vi.fn();
+  readonly destroy = vi.fn();
+}
+
+const extent = {
+  type: 'Polygon' as const,
+  coordinates: [
+    [
+      [2.17, 41.4],
+      [2.18, 41.4],
+      [2.18, 41.41],
+      [2.17, 41.4],
+    ],
+  ],
+};
+const scene = { id: 's1', name: 'Plaza', extent, createdAt: '2026-01-01T00:00:00Z' };
+const annotation = (id: string, title: string) => ({
+  id,
+  sceneId: 's1',
+  kind: 'MARKER' as const,
+  title,
+  body: null,
+  status: 'DRAFT',
+  createdAt: '2026-01-01T00:00:00Z',
+  geometry: { type: 'Point' as const, coordinates: [2.175, 41.405] },
+});
+
+describe('SceneViewerPage', () => {
+  let fixture: ComponentFixture<SceneViewerPage>;
+  let http: HttpTestingController;
+  let map: FakeMap;
+  let clickSequence = 0;
+
+  const el = (): HTMLElement => fixture.nativeElement;
+
+  const settle = async () => {
+    for (let round = 0; round < 2; round++) {
+      fixture.detectChanges();
+      await new Promise((resolve) => setTimeout(resolve, 0));
+      TestBed.tick();
+    }
+    fixture.detectChanges();
+  };
+
+  const listRequest = () =>
+    http.expectOne((r) => r.method === 'GET' && r.url.includes('/api/scenes/s1/annotations'));
+  const scenesRequest = () =>
+    http.expectOne((r) => r.method === 'GET' && r.url.endsWith('/api/scenes'));
+
+  const open = async (annotations = [annotation('a1', 'Cracked window')]) => {
+    fixture = TestBed.createComponent(SceneViewerPage);
+    await settle();
+    scenesRequest().flush([scene]);
+    await settle();
+    listRequest().flush({ items: annotations, nextCursor: null });
+    await settle();
+  };
+
+  const button = (label: string): HTMLButtonElement => {
+    const found = [...el().querySelectorAll('button')].find((b) => b.textContent?.trim() === label);
+    if (!found) throw new Error(`no "${label}" button`);
+    return found;
+  };
+
+  const click = (longitude: number, latitude: number, featureId: string | null = null) =>
+    map.lastClick.set({ longitude, latitude, featureId, sequence: ++clickSequence });
+
+  const type = async (selector: string, text: string) => {
+    const input = el().querySelector<HTMLInputElement>(selector);
+    if (!input) throw new Error(`no ${selector}`);
+    input.value = text;
+    input.dispatchEvent(new Event('input'));
+    await settle();
+  };
+
+  const lastCall = (fn: ReturnType<typeof vi.fn>) => fn.mock.calls.at(-1) ?? [];
+
+  beforeEach(() => {
+    localStorage.clear();
+    map = new FakeMap();
+    TestBed.configureTestingModule({
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+        { provide: MapService, useValue: map },
+      ],
+    });
+    client.setConfig({ httpClient: TestBed.inject(HttpClient), baseUrl: '' });
+    http = TestBed.inject(HttpTestingController);
+  });
+
+  afterEach(() => vi.restoreAllMocks());
+
+  it('starts the map, picks the newest scene and draws the annotations of the visible area', async () => {
+    await open();
+
+    expect(map.init).toHaveBeenCalledOnce();
+    expect(el().querySelector<HTMLSelectElement>('#scene-select')?.value).toBe('s1');
+    expect(el().textContent).toContain('Cracked window');
+    const [features, selected] = lastCall(map.setFeatures);
+    expect(features).toEqual([expect.objectContaining({ id: 'a1', label: 'Cracked window' })]);
+    expect(selected).toBeNull();
+  });
+
+  it('asks the server only for what is inside the visible area', async () => {
+    fixture = TestBed.createComponent(SceneViewerPage);
+    await settle();
+    scenesRequest().flush([scene]);
+    await settle();
+
+    const request = listRequest();
+
+    const query = new URL(request.request.urlWithParams, 'http://localhost').searchParams;
+    expect(query.get('bbox')).toBe('2.17,41.4,2.18,41.41');
+    request.flush({ items: [], nextCursor: null });
+  });
+
+  it('places a marker with a click, saves it and returns to select mode', async () => {
+    await open();
+
+    button('Marker').click();
+    await settle();
+    expect(el().textContent).toContain('New marker');
+    click(2.176, 41.406);
+    await settle();
+    expect(lastCall(map.setDraft)).toEqual([[{ longitude: 2.176, latitude: 41.406 }], false]);
+
+    await type('#annotation-title', 'Loose tile');
+    button('Save').click();
+    await settle();
+
+    const post = http.expectOne((r) => r.method === 'POST' && r.url.includes('/annotations'));
+    expect(post.request.body).toEqual({
+      kind: 'MARKER',
+      title: 'Loose tile',
+      geometry: { type: 'Point', coordinates: [2.176, 41.406] },
+    });
+    post.flush(annotation('a2', 'Loose tile'));
+    await settle();
+
+    listRequest().flush({
+      items: [annotation('a1', 'Cracked window'), annotation('a2', 'Loose tile')],
+      nextCursor: null,
+    });
+    await settle();
+    expect(el().textContent).not.toContain('New marker');
+    expect(el().textContent).toContain('Loose tile');
+    expect(lastCall(map.setDraft)).toEqual([[], false]);
+    expect(lastCall(map.setFeatures)[1]).toBe('a2'); // the new one is selected
+  });
+
+  it('shows a readable message and keeps the draft when the server rejects the annotation', async () => {
+    await open();
+    button('Marker').click();
+    await settle();
+    click(2.176, 41.406);
+    await type('#annotation-title', 'Cracked window');
+
+    button('Save').click();
+    await settle();
+    http
+      .expectOne((r) => r.method === 'POST')
+      .flush(
+        { code: 'TITLE_ALREADY_USED', title: 't', detail: 'd', status: 409 },
+        { status: 409, statusText: 'Conflict' },
+      );
+    await settle();
+
+    expect(el().textContent).toContain('already has that title');
+    expect(el().textContent).toContain('New marker'); // the form stays open to fix it
+    expect(lastCall(map.setDraft)[0]).toHaveLength(1);
+  });
+
+  it('draws an outline from several clicks and needs three corners before it can be saved', async () => {
+    await open();
+    button('Outline').click();
+    await settle();
+    const save = () => button('Save');
+
+    click(2.171, 41.401);
+    await settle();
+    click(2.179, 41.401);
+    await settle();
+    expect(save().disabled).toBe(true);
+
+    click(2.179, 41.409);
+    await settle();
+    expect(save().disabled).toBe(false);
+    expect(lastCall(map.setDraft)[1]).toBe(true);
+
+    await type('#annotation-title', 'Inspection area');
+    save().click();
+    await settle();
+    const post = http.expectOne((r) => r.method === 'POST');
+    expect(post.request.body).toMatchObject({
+      kind: 'OUTLINE',
+      title: 'Inspection area',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [2.171, 41.401],
+            [2.179, 41.401],
+            [2.179, 41.409],
+            [2.171, 41.401],
+          ],
+        ],
+      },
+    });
+    post.flush({ ...annotation('o1', 'Inspection area'), kind: 'OUTLINE' });
+  });
+
+  it('a note click replaces the previous point instead of adding corners', async () => {
+    await open();
+    button('Note').click();
+    await settle();
+
+    click(2.172, 41.402);
+    await settle();
+    click(2.178, 41.408);
+    await settle();
+
+    expect(lastCall(map.setDraft)[0]).toEqual([{ longitude: 2.178, latitude: 41.408 }]);
+  });
+
+  it('selecting a tool again clears the draft and any earlier error', async () => {
+    await open();
+    button('Marker').click();
+    await settle();
+    click(2.176, 41.406);
+    await settle();
+
+    button('Select').click();
+    await settle();
+
+    expect(lastCall(map.setDraft)[0]).toEqual([]);
+    expect(el().textContent).not.toContain('New marker');
+  });
+
+  it('selects an annotation when it is clicked on the map in select mode', async () => {
+    await open();
+
+    click(2.175, 41.405, 'a1');
+    await settle();
+
+    expect(lastCall(map.setFeatures)[1]).toBe('a1');
+  });
+
+  it('flies to an annotation picked from the list', async () => {
+    await open();
+
+    el().querySelector<HTMLButtonElement>('app-annotation-list li button')?.click();
+    await settle();
+
+    expect(lastCall(map.flyTo)).toEqual([{ longitude: 2.175, latitude: 41.405, height: 250 }]);
+    expect(lastCall(map.setFeatures)[1]).toBe('a1');
+  });
+
+  it('creates a scene covering the visible area and selects it', async () => {
+    await open();
+    await type('#scene-name', 'Old town');
+
+    button('Create scene from this view').click();
+    await settle();
+
+    const post = http.expectOne((r) => r.method === 'POST' && r.url.endsWith('/api/scenes'));
+    expect(post.request.body).toEqual({
+      name: 'Old town',
+      extent: {
+        type: 'Polygon',
+        coordinates: [
+          [
+            [2.17, 41.4],
+            [2.18, 41.4],
+            [2.18, 41.41],
+            [2.17, 41.41],
+            [2.17, 41.4],
+          ],
+        ],
+      },
+    });
+    post.flush({ ...scene, id: 's2', name: 'Old town' });
+    await settle();
+
+    expect(el().querySelector<HTMLSelectElement>('#scene-select')?.value).toBe('s2');
+    http.match(() => true).forEach((r) => r.flush([]));
+  });
+
+  it('will not create a scene from a view that crosses the date line', async () => {
+    await open();
+    map.visibleBbox.set({ west: 179, south: 0, east: -179, north: 1 });
+    await settle();
+    http.match(() => true).forEach((r) => r.flush({ items: [], nextCursor: null }));
+    await type('#scene-name', 'Pacific');
+
+    button('Create scene from this view').click();
+    await settle();
+
+    expect(http.match((r) => r.method === 'POST')).toHaveLength(0);
+    expect(el().textContent).toContain('crosses the date line');
+  });
+
+  it('redraws the annotations when the map is rebuilt', async () => {
+    await open();
+    const calls = map.setFeatures.mock.calls.length;
+
+    map.epoch.set(2);
+    await settle();
+
+    expect(map.setFeatures.mock.calls.length).toBeGreaterThan(calls);
+  });
+
+  it('shows a message when the viewer cannot start', async () => {
+    map.init.mockRejectedValueOnce(new Error('WebGL is not supported'));
+    fixture = TestBed.createComponent(SceneViewerPage);
+
+    await settle();
+
+    expect(el().querySelector('[role="alert"]')?.textContent).toContain('WebGL is not supported');
+    http.match(() => true).forEach((r) => r.flush([]));
+  });
+
+  it('releases the map when the page is destroyed', async () => {
+    await open();
+
+    fixture.destroy();
+
+    expect(map.destroy).toHaveBeenCalledOnce();
+  });
+});
