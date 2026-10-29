@@ -4,27 +4,13 @@ Explore a real place in 3D in the browser, put markers, notes and outlines on it
 
 A digital twin is a photorealistic 3D copy of a real place. Twin Atlas is the platform for exploring and managing the information attached to one, with nothing to install.
 
-## What works today
+## The problem it solves
 
-- **A 3D map.** A globe in the browser, with Google's photorealistic 3D buildings when you paste a free Cesium ion token (otherwise an OpenStreetMap globe). The Cesium code is isolated and loaded on demand.
-- **Scenes and annotations.** Create a scene from the current view, click to place a marker, note or outline, and edit or move it later. A save never silently overwrites a newer change: the server refuses a stale edit and the screen offers the latest version.
-- **Find things by area.** What is in the current view, the nearest N to a point, everything inside a zone. All keyset-paginated.
-- **Bulk import from OpenStreetMap.** `POST /api/scenes/{id}/imports/osm` takes an Overpass answer, imports what is usable and reports every skipped element with a stable code. There is no screen for it yet.
-- **A typed API.** The server commits its OpenAPI contract, a test fails when it is stale, and the client's SDK is generated from it.
+Information about a real place is scattered. A cracked window is a photo on someone's phone, an inspection area is a line in a spreadsheet, and "the corner on the third floor" is a sentence in an email. None of it is tied to the actual spot, so nobody can ask the obvious questions: what has been noted near here, what is inside this zone, what is in the part of the site I am looking at?
 
-## What it looks like
+Twin Atlas pins each piece of information to a real position on a 3D map. A **marker** is a point ("this window needs repair"), a **note** is a point with text, an **outline** is an area ("inspection area"). Everyone sees the same place, and things are found by where they are: what is in the current view, what is nearest to a point, what falls inside a zone. It is built to stay fast with a million of them (measured, see below), and other software can read and add to the same data through a documented API.
 
-Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe).
-
-![An OpenStreetMap extract imported into a scene: markers, a note and outlines on the map, listed in the panel](docs/assets/screenshots/import.png)
-
-Editing an annotation: the map flies to it, and the editor opens in the panel.
-
-![The editor for a marker, with the selected annotation highlighted on the map and in the list](docs/assets/screenshots/edit.png)
-
-When someone else changed the same annotation first, the save is refused and nothing is overwritten.
-
-![A refused save: "Someone changed this annotation since you opened it", with a Load latest version button](docs/assets/screenshots/conflict.png)
+**What it is not, yet.** It does not build 3D models: the buildings come from Google's photorealistic tiles through Cesium, and you need your own free token to see them. There is no login and no teams: whoever opens the app shares one database. It is a portfolio project, built to show how a system like this is engineered, not a product to deploy as it is.
 
 ## Quick start
 
@@ -52,13 +38,64 @@ cd server && ./mvnw verify
 cd client && npm run lint && npm test -- --watch=false && npm run build
 ```
 
-## How it is built
+## A first session
 
-- **Functional core, imperative shell.** Rules with more than one condition are pure functions that return `Accepted` or `Rejected(code)`; the endpoint around them loads facts, calls the rule, and writes. The codes become RFC 7807 problems and appear in the API contract and the SDK ([ADR 0003](docs/adr/0003-fcis-decision-functions.md)).
-- **Reads go straight to SQL.** Spatial queries use the bounding-box operator first and the exact test second, over a GiST index ([ADR 0005](docs/adr/0005-reads-bypass-the-core.md)).
-- **Races are tested, not assumed.** Rules are advisory under concurrency, so the database has the last word: a unique index and a version column. Tests send eight clients at once and expect exactly one winner.
-- **Boundaries are enforced.** A modular monolith packaged by feature, with ArchUnit rules that fail the build ([ADR 0013](docs/adr/0013-modular-monolith-with-feature-slices.md)).
-- **Measured, not claimed.** On 1.2 million annotations on a 4-CPU laptop with 7.8 GiB of memory, a 250 m map view takes 7.5 ms at the median with the spatial index and 254 ms without it, and "10 nearest" takes 5.6 ms against 361 ms. Method, hardware and query plans are in [ADR 0009](docs/adr/0009-benchmark-one-million-rows.md) and [`docs/benchmark/`](docs/benchmark/).
+Five minutes, in the order that makes sense.
+
+1. **Open the app** at http://localhost:4200. On a fresh database the panel says there are no scenes yet. The map starts at the Sagrada Família in Barcelona.
+2. **Make a scene.** A scene is the area you work in. Pan and zoom to a place you care about, type a name under "New scene covering the current view", and press "Create scene from this view". A green rectangle shows the scene's area. Everything you add must fall inside it, and the app tells you when it does not.
+3. **Add a marker.** Choose Marker, click inside the green area, give it a title such as "Cracked window", and press Save. A note works the same way and also asks for its text. For an outline, click three or more corners.
+4. **Find it again.** The list in the panel shows what is in the current view. Click an item to fly to it, or choose Select and click it on the map.
+5. **Edit it.** With an annotation selected you can rename it, change a note's text, or press "Move on map" and click the new position, then "Save changes".
+6. **Watch a conflict being refused.** Open the same annotation in two browser tabs. Save a change in one, then save a different change in the other. The second save is refused with "Someone changed this annotation since you opened it", and "Load latest version" shows the change that won. Nothing is overwritten.
+7. **Share a place.** The address bar follows your choice (`/scenes/<scene>?annotation=<id>`), so a link opens the same scene and annotation.
+8. **Load real data.** There is no import screen yet, but two commands bring in a real OpenStreetMap extract (shops, landmarks, building outlines) through the API:
+
+   ```bash
+   curl -s -X POST localhost:8080/api/scenes -H 'Content-Type: application/json' \
+     -d '{"name":"Eixample","extent":{"type":"Polygon","coordinates":[[[2.17,41.40],[2.18,41.40],[2.18,41.41],[2.17,41.41],[2.17,41.40]]]}}'
+   # copy the "id" from the answer, then:
+   curl -s -X POST localhost:8080/api/scenes/<that id>/imports/osm \
+     -H 'Content-Type: application/json' --data @server/src/test/resources/osm/overpass-real-eixample.json
+   ```
+
+   Reload the page and pick "Eixample" in the scene list: 35 markers and outlines appear. Run the second command again and nothing is added, because the answer reports every element as already imported.
+
+9. **Optional: real 3D buildings.** Create a free token at ion.cesium.com, paste it into the Map section of the panel, and press "Load 3D tiles". It stays in your browser only.
+
+## What works today
+
+- **A 3D map.** A globe in the browser, with Google's photorealistic 3D buildings when you paste a Cesium ion token (otherwise an OpenStreetMap globe). The Cesium code is isolated and loaded on demand.
+- **Scenes and annotations.** Create a scene from the current view, click to place a marker, note or outline, and edit or move it later. A save never silently overwrites a newer change: the server refuses a stale edit and the screen offers the latest version.
+- **Find things by area.** What is in the current view, the nearest N to a point, everything inside a zone. All keyset-paginated.
+- **Bulk import from OpenStreetMap.** `POST /api/scenes/{id}/imports/osm` takes an Overpass answer, imports what is usable and reports every skipped element with a stable code.
+- **A typed API.** The server commits its OpenAPI contract, a test fails when it is stale, and the client's SDK is generated from it.
+
+## What it looks like
+
+Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe).
+
+![An OpenStreetMap extract imported into a scene: markers, a note and outlines on the map, listed in the panel](docs/assets/screenshots/import.png)
+
+Editing an annotation: the map flies to it, and the editor opens in the panel.
+
+![The editor for a marker, with the selected annotation highlighted on the map and in the list](docs/assets/screenshots/edit.png)
+
+When someone else changed the same annotation first, the save is refused and nothing is overwritten.
+
+![A refused save: "Someone changed this annotation since you opened it", with a Load latest version button](docs/assets/screenshots/conflict.png)
+
+## What is worth a look
+
+Each point says where the evidence is.
+
+- **Fast at scale, measured and not claimed.** On 1.2 million annotations on a 4-CPU laptop with 7.8 GiB of memory, a 250 m map view takes 7.5 ms at the median with the spatial index and 254 ms without it, and "10 nearest" takes 5.6 ms against 361 ms. Method, hardware and query plans are in [ADR 0009](docs/adr/0009-benchmark-one-million-rows.md) and [`docs/benchmark/`](docs/benchmark/). The reads are plain SQL, bounding box first and exact test second ([`AnnotationQueries.java`](server/src/main/java/com/twinatlas/annotation/persistence/AnnotationQueries.java), [ADR 0005](docs/adr/0005-reads-bypass-the-core.md)).
+- **Correct under concurrency.** Eight clients create the same title at once and exactly one wins. Two people editing the same annotation: the second save is refused (ETag and `If-Match`, status 412). The business rules are advisory under concurrency, so the database has the last word, with a unique index and a version column. The tests are [`AnnotationRaceTest`](server/src/test/java/com/twinatlas/annotation/AnnotationRaceTest.java) and [`UpdateAnnotationRaceTest`](server/src/test/java/com/twinatlas/annotation/UpdateAnnotationRaceTest.java).
+- **Rules you can read.** The business rules are pure functions that return `Accepted` or `Rejected(code)`, with table-driven and property-based tests. Start with [`CreateAnnotationRules.java`](server/src/main/java/com/twinatlas/annotation/core/CreateAnnotationRules.java) and [ADR 0003](docs/adr/0003-fcis-decision-functions.md). Architecture tests fail the build if the core touches Spring or one feature reaches into another ([ADR 0013](docs/adr/0013-modular-monolith-with-feature-slices.md)).
+- **The API is treated as a product.** The OpenAPI contract is committed and a test fails when it is stale. The client's SDK is generated from it. Every error carries a stable code, visible in the contract and in the client ([ADR 0008](docs/adr/0008-contract-first-sdk.md)).
+- **Real data, reported honestly.** The OpenStreetMap import takes what is usable, reports every skipped element with its reason, is safe to repeat and safe when two imports run at once, and is tested on a real extract ([ADR 0011](docs/adr/0011-import-judges-each-element.md)).
+- **Modern Angular with guard rails.** Angular 22: zoneless, Signal Forms, `httpResource`, state in the address, Spartan UI. Lint rules fail the build on `any`, on bloated templates, and on imports that cross feature boundaries ([ADR 0014](docs/adr/0014-spartan-ui.md)).
+- **A visible process.** Every task has a spec with acceptance criteria and a documentation page that says what was not verified. Tests are checked by breaking the code on purpose, and the mistakes found on the way are written down in the specs. Start at [`docs/index.html`](docs/index.html).
 
 |               |                                                                                                                  |
 | ------------- | ---------------------------------------------------------------------------------------------------------------- |
