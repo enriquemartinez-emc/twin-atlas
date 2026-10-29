@@ -4,11 +4,11 @@
 
 ## Description
 
-Today the app takes three terminals: the database, the server, the client. One script, `scripts/dev.sh`, starts all three, waits until they answer, prints the address, and stops everything when you press Ctrl+C. Plain bash: no new tool, no new Docker image.
+Today the app takes three terminals: the database, the server, the client. One script, `./dev.sh`, starts all three, waits until they answer, prints the address, and stops everything when you press Ctrl+C. Plain bash: no new tool, no new Docker image.
 
 ## Acceptance criteria
 
-- [ ] `scripts/dev.sh` starts the database (Docker Compose, waiting until it is healthy), the server and the client, waits until the server and the client answer, and prints the address to open.
+- [ ] `./dev.sh` starts the database (Docker Compose, waiting until it is healthy), the server and the client, waits until the server and the client answer, and prints the address to open.
 - [ ] Ctrl+C (or either service dying) stops the server and the client, including the processes they started, and then the database. No process is left listening on 8080 or 4200.
 - [ ] `--keep-db` leaves the database running when the script stops.
 - [x] `--check` verifies that the machine can run it (Docker running, JDK 25, a supported Node, free ports, the Maven wrapper) and starts nothing. Every problem is listed in plain words with the fix, not just the first.

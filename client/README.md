@@ -18,7 +18,7 @@ Angular 22 (zoneless, standalone, Vitest) with CesiumJS for the 3D scene and Spa
 From the repository root, one command starts the database, the API and this client, and Ctrl+C stops them all:
 
 ```bash
-scripts/dev.sh
+./dev.sh
 ```
 
 Or by hand:

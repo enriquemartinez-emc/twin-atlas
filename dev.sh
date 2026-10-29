@@ -2,12 +2,15 @@
 # Starts the whole app with one command: the database, the API and the client.
 # Press Ctrl+C to stop everything.
 #
-#   scripts/dev.sh             start everything
-#   scripts/dev.sh --check     only check that this machine can run it, start nothing
-#   scripts/dev.sh --keep-db   leave the database running when you stop
+#   ./dev.sh             start everything
+#   ./dev.sh --check     only check that this machine can run it, start nothing
+#   ./dev.sh --keep-db   leave the database running when you stop
 set -euo pipefail
 
-ROOT="$(cd "${BASH_SOURCE[0]%/*}/.." && pwd)"
+SELF="${BASH_SOURCE[0]}"
+SELF_DIR="${SELF%/*}"
+[ "$SELF_DIR" = "$SELF" ] && SELF_DIR=.
+ROOT="$(cd "$SELF_DIR" && pwd)"
 RUN_DIR="$ROOT/.run"
 API_URL="http://localhost:8080"
 APP_URL="http://localhost:4200"
@@ -95,7 +98,7 @@ if [ "$problems" -gt 0 ]; then
 fi
 if [ "$MODE" = check ]; then
   echo
-  echo "All good. Run scripts/dev.sh to start the app."
+  echo "All good. Run ./dev.sh to start the app."
   exit 0
 fi
 
