@@ -4,3 +4,4 @@
 export type { Bbox, CameraPosition } from './bbox';
 export { MapService } from './map.service';
 export type { MapInitOptions, MapMode } from './map.service';
+export type { LonLat, MapClick, MapFeature, MapFeatureKind, MapGeometry } from './features';

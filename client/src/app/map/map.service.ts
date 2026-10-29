@@ -1,7 +1,9 @@
 import { Service, signal } from '@angular/core';
-import type { Viewer } from 'cesium';
+import type { ScreenSpaceEventHandler, Viewer } from 'cesium';
 import { type Bbox, type CameraPosition, bboxFromRadians, cameraPositionFromRadians } from './bbox';
 import { debounce, type Debounced } from './debounce';
+import { FeatureLayer } from './feature-layer';
+import type { LonLat, MapClick, MapFeature } from './features';
 
 declare global {
   interface Window {
@@ -47,6 +49,8 @@ export class MapService {
   private readonly visibleBboxState = signal<Bbox | null>(null);
   private readonly modeState = signal<MapMode | null>(null);
   private readonly tilesErrorState = signal<string | null>(null);
+  private readonly lastClickState = signal<MapClick | null>(null);
+  private readonly epochState = signal(0);
 
   readonly cameraPosition = this.cameraPositionState.asReadonly();
   /** Debounced: updates {@link BBOX_DEBOUNCE_MS} ms after the camera stops changing. */
@@ -54,11 +58,18 @@ export class MapService {
   readonly mode = this.modeState.asReadonly();
   /** Set when photorealistic tiles failed to load (usually a rejected token) and OSM is shown instead. */
   readonly tilesError = this.tilesErrorState.asReadonly();
+  /** The latest click on the map. Each click is a new object, so effects re-run for every one. */
+  readonly lastClick = this.lastClickState.asReadonly();
+  /** Goes up each time a viewer is built. Read it in an effect to redraw after a rebuild. */
+  readonly epoch = this.epochState.asReadonly();
 
   private cesium: CesiumModule | undefined;
   private viewer: Viewer | undefined;
   private removeCameraListener: (() => void) | undefined;
   private publishBbox: Debounced<[]> | undefined;
+  private layer: FeatureLayer | undefined;
+  private clickHandler: ScreenSpaceEventHandler | undefined;
+  private clickSequence = 0;
   private generation = 0;
 
   async init(container: HTMLElement, options: MapInitOptions): Promise<void> {
@@ -122,6 +133,8 @@ export class MapService {
     };
     this.removeCameraListener = camera.changed.addEventListener(onCameraChanged);
     onCameraChanged();
+    this.attachInteractions(Cesium, viewer);
+    this.epochState.update((epoch) => epoch + 1);
   }
 
   flyTo(view: CameraPosition): void {
@@ -132,9 +145,23 @@ export class MapService {
     });
   }
 
-  /** Releases the viewer, its tileset and listeners. Safe to call at any time, more than once. */
+  /** Replaces the annotations drawn on the map and highlights the selected one. */
+  setFeatures(features: readonly MapFeature[], selectedId: string | null): void {
+    this.layer?.setFeatures(features, selectedId);
+  }
+
+  /** Previews the points being drawn. An empty list clears it. */
+  setDraft(points: readonly LonLat[], asArea: boolean): void {
+    this.layer?.setDraft(points, asArea);
+  }
+
+  /** Releases the viewer, its tileset, layers and listeners. Safe to call at any time, more than once. */
   destroy(): void {
     this.generation++;
+    this.clickHandler?.destroy();
+    this.clickHandler = undefined;
+    this.layer?.destroy();
+    this.layer = undefined;
     this.publishBbox?.cancel();
     this.publishBbox = undefined;
     this.removeCameraListener?.();
@@ -147,6 +174,34 @@ export class MapService {
     this.visibleBboxState.set(null);
     this.modeState.set(null);
     this.tilesErrorState.set(null);
+    this.lastClickState.set(null);
+  }
+
+  private attachInteractions(Cesium: CesiumModule, viewer: Viewer): void {
+    this.layer = new FeatureLayer(
+      Cesium,
+      viewer,
+      this.modeState() === 'photorealistic' ? 'tiles' : 'ground',
+    );
+    const handler = new Cesium.ScreenSpaceEventHandler(viewer.scene.canvas);
+    handler.setInputAction((event: ScreenSpaceEventHandler.PositionedEvent) => {
+      const picked: unknown = viewer.scene.pick(event.position);
+      const entity =
+        typeof picked === 'object' && picked !== null && 'id' in picked ? picked.id : null;
+      const featureId = entity instanceof Cesium.Entity ? String(entity.id) : null;
+      const position =
+        (viewer.scene.pickPositionSupported
+          ? viewer.scene.pickPosition(event.position)
+          : undefined) ?? viewer.camera.pickEllipsoid(event.position, Cesium.Ellipsoid.WGS84);
+      const cartographic = position ? Cesium.Cartographic.fromCartesian(position) : undefined;
+      this.lastClickState.set({
+        longitude: cartographic ? Cesium.Math.toDegrees(cartographic.longitude) : null,
+        latitude: cartographic ? Cesium.Math.toDegrees(cartographic.latitude) : null,
+        featureId,
+        sequence: ++this.clickSequence,
+      });
+    }, Cesium.ScreenSpaceEventType.LEFT_CLICK);
+    this.clickHandler = handler;
   }
 
   private createOsmViewer(Cesium: CesiumModule, container: HTMLElement): Viewer {
