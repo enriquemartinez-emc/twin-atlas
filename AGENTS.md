@@ -31,14 +31,14 @@ The goal is a fast, reliable and easy-to-use platform that brings real-world spa
 ## Stack
 
 - Java 25, Spring Boot 4 (Spring Framework 7, Hibernate 7), Maven (commit `server/mvnw`). Root package and groupId: `com.twinatlas`.
-- PostgreSQL + PostGIS, Flyway, Hibernate Spatial + JTS, MapStruct, springdoc-openapi
+- PostgreSQL + PostGIS, Flyway, Hibernate Spatial + JTS (GeoJSON via `jackson-datatype-jts`), MapStruct, springdoc-openapi
 - Backend tests: JUnit 5, AssertJ, jqwik, Testcontainers (postgis image), ArchUnit
 - Angular 22.x (installed: 22.2.3 with TypeScript 6.0.3; 22.0.x requires Node `^22.22.3 | ^24.15.0 | ^26.0.0` and TypeScript `>=6.0.0 <6.1.0`; confirm with `ng version`), strict TypeScript, Vitest, Spartan UI (`@spartan-ng/brain` + CLI-copied Helm components) with Tailwind CSS, CesiumJS
 - TypeScript SDK generated from the OpenAPI spec with `@hey-api/openapi-ts` (dev dependency, output in `client/src/app/api`)
 - Docker Compose with a pinned `postgis/postgis` image; Testcontainers uses the same image.
 - Formatting and linting: Prettier (`client/`), Spotless with google-java-format (`server/`), angular-eslint.
 - Not yet approved (ask first): commitlint/husky, Lombok (not wanted: see Don'ts), spring-boot-devtools, or any other tooling.
-- Generate the backend via start.spring.io. Boot 4 starters are modular (e.g. `spring-boot-starter-webmvc`). Jackson 3 is in use: verify GeoJSON/JTS serializer support, write our own if needed.
+- Generate the backend via start.spring.io. Boot 4 starters are modular (e.g. `spring-boot-starter-webmvc`). Jackson 3 is in use: GeoJSON/JTS serialization comes from `org.n52.jackson:jackson-datatype-jts` (3.x line, built on `tools.jackson`). Don't write our own serializer; prove it with a round-trip test against the app's own `JsonMapper`.
 
 # Backend
 
