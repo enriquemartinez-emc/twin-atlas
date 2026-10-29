@@ -49,14 +49,16 @@ Single Maven module. Package by feature, never by layer.
 
 ```
 com.twinatlas
-├── annotation/   core/ (pure), one Endpoint class per use case, entity, repository, mapper, AnnotationQueries (reads)
+├── annotation/   the shapes it returns (kind, status, responses); core/ (pure), web/ (one Endpoint class per use case, requests), persistence/ (entity, repository, mapper, AnnotationQueries reads)
 ├── scene/        plain CRUD, no core
 ├── asset/        plain CRUD, no core
 ├── importing/    core/ (pure OSM -> annotation transforms)
-├── platform/     Problems (ProblemDetail mapping), clock/id beans, security
+├── platform/     Problems (ProblemDetail mapping), config/ (clock/id beans, OpenAPI), security
 │   └── kernel/   Decision and Rejection, the vocabulary every core shares (pure, not a feature core)
 └── geo/          Wgs84: SRID, geometry factory, the rule for a usable geometry (pure)
 ```
+
+A feature splits into role folders (`web/`, `persistence/`, `core/`) once its package passes about 8 files; smaller ones stay flat. Dependencies run one way inside it: `web` to `persistence` to the base package and `core`. ArchUnit enforces it. Never split by layer across features.
 
 ### Functional core (`..core..` packages)
 

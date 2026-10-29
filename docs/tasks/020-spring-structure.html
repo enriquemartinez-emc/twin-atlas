@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spring Boot structure - Twin Atlas docs</title>
+<meta name="description" content="Spring Boot structure: role folders inside the big feature.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Spring Boot structure</h1>
+<div class="tags"><span class="tag c-white">Task 020</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/spring-structure</code></span></div>
+<p class="lead">The server's biggest feature folder had 21 files of mixed roles. It is now split into web, persistence and core, with the dependencies between them one-way and enforced by the build. Nothing changes for the API or the screen.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Open <code>server/src/main/java/com/twinatlas/annotation</code> in your editor: six files at the top, and three folders. Nothing needs to run. I have not started the app for this task.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>Role folders inside the big feature.</strong> <code>web/</code> has the endpoints and the request shapes. <code>persistence/</code> has the database side: entity, repository, mapper, the facts the rules need, the SQL reads and their inputs. The base folder keeps only what the feature returns. <code>core/</code> is unchanged.</li>
+<li><strong>Configuration in its own place.</strong> The two configuration classes moved to <code>platform/config/</code>, the conventional name.</li>
+<li><strong>One-way dependencies, checked.</strong> Web calls persistence, persistence returns the shapes in the base folder, and both use the core. Three rules fail the build if anything points the other way.</li>
+<li><strong>Small features stay flat.</strong> <code>scene</code> has 6 files and <code>importing</code> has 4, so folders would be noise. The rule of thumb is to split once a package passes about 8 files, and it is written in the rulebook.</li>
+</ul>
+<h2>What I did not do, and why</h2>
+<p>I did not switch to top-level <code>controller/</code>, <code>service/</code> and <code>repository/</code> packages. That is packaging by layer across the whole app, which your rulebook and <a href="../adr/0013-modular-monolith-with-feature-slices.md">ADR 0013</a> forbid, and Spring Boot's own guide shows feature packages. If you want the layered style anyway, it is a rule change first and a big move after. Spring Modulith would make these module boundaries a Spring feature, with its own verification test. It is a new dependency, so it is a proposal and needs your approval.</p>
+<h2>Measured</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Measured</th><th class="">Before</th><th class="">After</th></tr></thead><tbody><tr><td class="">Files in the <code>annotation</code> package</td><td class="">21</td><td class="">6 (the shapes it returns)</td></tr><tr><td class="">Role folders in <code>annotation</code></td><td class=""><code>core/</code> only</td><td class=""><code>core/</code> (11), <code>web/</code> (7), <code>persistence/</code> (8)</td></tr><tr><td class="">Configuration classes</td><td class="">beside the error code in <code>platform/</code></td><td class="">their own <code>platform/config/</code></td></tr><tr><td class="">Rules the build enforces on folders</td><td class="">purity of the cores, slices apart, kernel and geo</td><td class="">plus three one-way rules inside a feature</td></tr><tr><td class="">Backend tests</td><td class="">192</td><td class="">193</td></tr></tbody></table></div></div>
+<figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 360" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Inside the annotation feature</title><desc id="d">Web calls persistence, persistence returns the shapes in the base package, and both use the pure core. Dependencies only point this way.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-butter" x="10" y="30" width="230" height="90" rx="10"/><text class="t-title" x="24" y="52">web/</text><text class="t-small" x="24" y="71">four endpoints</text><text class="t-small" x="24" y="88">three request shapes</text><rect class="c-butter" x="320" y="30" width="270" height="90" rx="10"/><text class="t-title" x="334" y="52">persistence/</text><text class="t-small" x="334" y="71">entity, repository, mapper</text><text class="t-small" x="334" y="88">facts, SQL reads, query inputs</text><rect class="c-lilac" x="670" y="30" width="220" height="90" rx="10"/><text class="t-title" x="684" y="52">annotation/ (base)</text><text class="t-small" x="684" y="71">kind, status, responses</text><text class="t-small" x="684" y="88">summaries, pages</text><rect class="c-mint" x="320" y="190" width="270" height="80" rx="10"/><text class="t-title" x="334" y="212">core/</text><text class="t-small" x="334" y="231">pure rules and transforms</text><path class="arrow" d="M240,75 L320,75" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="280" y="67">calls</text><path class="arrow" d="M590,75 L670,75" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="630" y="67">returns</text><path class="arrow" d="M455,120 L455,190" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="467" y="160">uses</text><path class="arrow" d="M125,120 L125,230 L320,230" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="200" y="222">uses</text><rect class="c-blush" x="10" y="310" width="880" height="38" rx="10"/><text class="t-title" x="24" y="332">Persistence may not use web, the base may not use either, and core may not use any of them. The build fails if it does.</text></svg></div><figcaption>Inside the annotation feature. Dependencies only point the way the arrows do.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">The whole backend build</td><td class="">Formatting check and 193 tests pass against a real PostGIS database, on the final tree.</td></tr><tr><td class="">The API did not change</td><td class="">The committed contract is identical and its drift test passes without regenerating. The client was not touched.</td></tr><tr><td class="">The new rules can fail</td><td class="">A persistence class using a web class, a returned shape using persistence, and a core using persistence each failed their rule. All three were undone.</td></tr><tr><td class="">A mistake, found and fixed</td><td class="">A malformed test command of mine left a stray line in <code>AnnotationPage.java</code>. The build still passed with it. I found it by reading the diff, removed it and ran everything again.</td></tr><tr><td class="">Docker went away</td><td class="">Docker vanished from this machine's Linux side mid-task and killed one build. The tests that need no Docker ran meanwhile, and the full build ran again once Docker was back.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The running app. The tests exercise every endpoint against a real database, but I did not start the server and client after the move.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>Classes the endpoints use from <code>persistence/</code> are now public instead of package-private. Other features still cannot reach them, and the build checks it.</li>
+<li>The folders inside <code>annotation</code> are a judgement about readability. They do not change behaviour, so another split would be just as valid.</li>
+<li>Splitting <code>scene</code> and <code>importing</code> is left for when they grow.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="019-angular-structure.html">Previous: Angular structure and routes</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

@@ -6,16 +6,21 @@ Twin Atlas is a modular monolith: one Spring Boot module, packaged by feature, w
 
 ```
 com.twinatlas
-├── annotation/   markers, notes, outlines on a scene
-│   └── core/     pure rules and transforms (no Spring, Jakarta or Hibernate)
+├── annotation/   what the feature returns: kind, status, responses, summaries, pages
+│   ├── core/         pure rules and transforms (no Spring, Jakarta or Hibernate)
+│   ├── web/          the four endpoints and the request shapes
+│   └── persistence/  entity, repository, mapper, facts, SQL reads, query inputs
 ├── importing/    OpenStreetMap import: one bulk endpoint, judged element by element
 │   └── core/     pure OSM → annotation transforms and the batch rules
 ├── scene/        plain CRUD: the area an annotation must fall inside
 ├── asset/        (planned) plain CRUD
-├── platform/     problems, clock/id beans, JSON, OpenAPI
+├── platform/     problems and the error handler
+│   ├── config/   clock, id and geometry beans, JSON, OpenAPI
 │   └── kernel/   Decision and Rejection: the vocabulary every core shares (not a feature core)
 └── geo/          WGS 84: the SRID, the geometry factory and the rule for a usable geometry
 ```
+
+A feature splits into role folders once its package passes about 8 files: `annotation` has, `scene` (6 files) and `importing` (4) have not. Inside a split feature the dependencies run one way, `web` to `persistence` to the base package and `core` ([ADR 0013](docs/adr/0013-modular-monolith-with-feature-slices.md)).
 
 ArchUnit enforces the boundaries: `..core..`, `platform.kernel` and `geo` are pure, a slice may only use another slice's `core`, `platform` depends on no slice, and `kernel` and `geo` depend on neither a slice nor the shell around them (ADR 0012).
 
