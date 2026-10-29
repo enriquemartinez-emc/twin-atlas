@@ -1,7 +1,7 @@
 import type { AnnotationSummary } from '@api/index';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
-import { PALETTE } from '@map/palette';
+import { PALETTE } from '@features/scene/map/palette';
 import { AnnotationList } from './annotation-list';
 
 const item = (id: string, title: string, kind: AnnotationSummary['kind'], body: string | null) => ({

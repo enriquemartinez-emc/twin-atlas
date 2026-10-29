@@ -66,11 +66,11 @@ Angular 22: zoneless, standalone, signals, single-file components. Organized by 
 client/src/app
 ├── api/                 generated SDK (from docs/openapi.json), never edited
 ├── core/problems/       server error code → message, the Outcome type (app-wide, no UI)
-├── map/                 the only code that touches Cesium: MapViewer, feature layer, pure descriptors, GeoJSON helpers
 ├── app.ts, app.config.ts, app.routes.ts, not-found.ts
 ├── features/scene/     the only feature: scene.ts (the route-level page, wiring only),
 │   │                    scene.routes.ts, scene-data.ts, scene-workspace.ts, scene-creation.ts,
 │   │                    link-copy.ts, map-status.ts (feature state as functions fed with signals)
+│   ├── map/             the only code that touches Cesium: MapViewer, feature layer, pure descriptors, GeoJSON helpers
 │   ├── scene-bar/       the top bar: scene chooser, new-scene form, token panel and store
 │   ├── tools/           tool rail, hint, drawing state
 │   └── annotation/      annotation-data.ts (httpResource), annotation-draft.ts (pure logic),

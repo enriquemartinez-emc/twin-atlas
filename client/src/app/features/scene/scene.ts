@@ -21,8 +21,8 @@ import { AnnotationEditor } from './annotation/annotation-editor';
 import { AnnotationForm } from './annotation/annotation-form';
 import { AnnotationList } from './annotation/annotation-list';
 import { focusPoint, toMapFeature } from './annotation/annotation-draft';
-import type { MapClick } from '@map/feature.model';
-import type { MapViewer } from '@map/map-viewer';
+import type { MapClick } from './map/feature.model';
+import type { MapViewer } from './map/map-viewer';
 import { ProblemAlert } from '@shared/problem-alert';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
@@ -319,7 +319,7 @@ const FOCUS_HEIGHT = 250;
   `,
 })
 export class Scene {
-  private readonly loadMap = injectAsync(() => import('@map/map-viewer').then((m) => m.MapViewer));
+  private readonly loadMap = injectAsync(() => import('./map/map-viewer').then((m) => m.MapViewer));
   readonly sceneId = input<string>();
   readonly annotation = input<string>();
 

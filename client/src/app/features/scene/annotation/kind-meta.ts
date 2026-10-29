@@ -1,5 +1,5 @@
 import { lucideHexagon, lucideMapPin, lucideMessageSquareText } from '@ng-icons/lucide';
-import { PALETTE } from '@map/palette';
+import { PALETTE } from '@features/scene/map/palette';
 import type { AnnotationKind } from './annotation-draft';
 
 export interface KindMeta {

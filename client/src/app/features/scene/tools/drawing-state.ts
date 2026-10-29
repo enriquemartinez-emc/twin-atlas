@@ -6,7 +6,7 @@ import {
   isDraftReady,
 } from '@features/scene/annotation/annotation-draft';
 import { problemMessage } from '@app/core/problems/problem-message';
-import type { LonLat } from '@map/feature.model';
+import type { LonLat } from '@features/scene/map/feature.model';
 import type { Tool } from './tool-rail';
 
 /** What drawing needs from the rest of the page. */

@@ -1,5 +1,5 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
-import { PALETTE } from '@map/palette';
+import { PALETTE } from '@features/scene/map/palette';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ToolRail, type Tool } from './tool-rail';
 

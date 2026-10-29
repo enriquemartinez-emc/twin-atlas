@@ -6,10 +6,10 @@ import { Router, provideRouter, withComponentInputBinding } from '@angular/route
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from '@app/app.routes';
 import { client } from '@api/client.gen';
-import { MapViewer } from '@map/map-viewer';
-import type { Bbox } from '@map/bbox';
-import type { MapClick } from '@map/feature.model';
-import type { MapMode } from '@map/map-viewer';
+import { MapViewer } from './map/map-viewer';
+import type { Bbox } from './map/bbox';
+import type { MapClick } from './map/feature.model';
+import type { MapMode } from './map/map-viewer';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Scene } from './scene';
 

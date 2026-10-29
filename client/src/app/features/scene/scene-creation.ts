@@ -1,8 +1,8 @@
 import { computed, inject, signal, type Signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { problemMessage } from '@app/core/problems/problem-message';
-import { type Bbox } from '@map/bbox';
-import { bboxPolygon } from '@map/geojson';
+import { type Bbox } from './map/bbox';
+import { bboxPolygon } from './map/geojson';
 import { SceneData } from './scene-data';
 
 /** Creates a scene that covers what the map shows, then opens it. */
