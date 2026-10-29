@@ -21,6 +21,6 @@ The client must not hand-write API types: they drift from the server. Other syst
 
 ## Consequences
 
-- A new error code in the server stops the client from compiling until `shared/problems/problem-message.ts` has a message for it, because that map is typed over the generated `code` enum.
+- A new error code in the server stops the client from compiling until `core/problems/problem-message.ts` has a message for it, because that map is typed over the generated `code` enum.
 - Regenerating is deterministic (springdoc writes keys in order), so a regeneration with no API change leaves no diff.
 - The generated runtime contains two `any` types. They are generated, not ours, and the folder is excluded from the no-`any` lint rule.

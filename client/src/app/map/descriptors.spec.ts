@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { LABEL_RANGE_METRES, describeDraft, describeFeature, ringToDegrees } from './descriptors';
-import type { MapFeature } from './features';
+import type { MapFeature } from './feature.model';
 import { PALETTE } from './palette';
 
 const ring = [

@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { signal, type WritableSignal } from '@angular/core';
 import { TestBed } from '@angular/core/testing';
 import { client } from '@api/client.gen';
-import type { Bbox } from '@map/public-api';
+import type { Bbox } from '@map';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { type AnnotationData, annotationData } from './annotation-data';
 

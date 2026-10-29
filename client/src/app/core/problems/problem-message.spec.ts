@@ -1,6 +1,6 @@
 import type { ProblemResponse } from '@api/index';
 import { describe, expect, it } from 'vitest';
-import { failed, succeeded } from './outcome';
+import { failed, succeeded } from './outcome.model';
 import { type ProblemCode, problemMessage } from './problem-message';
 
 const ALL_CODES: readonly ProblemCode[] = [

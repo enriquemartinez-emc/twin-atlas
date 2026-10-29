@@ -7,7 +7,7 @@ import {
   type SceneResponse,
   createScene,
 } from '@api/index';
-import { type Outcome, asProblem, failed, succeeded } from '@shared/problems/outcome';
+import { type Outcome, asProblem, failed, succeeded } from '@app/core/problems/outcome.model';
 
 const STORAGE_KEY = 'twinatlas.sceneId';
 

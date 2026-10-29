@@ -119,7 +119,7 @@ Spatial queries (bbox, nearest-N, intersects, keyset-paginated lists) **bypass t
 - State with signals (`signal`, `computed`, `resource`/`httpResource` where suitable); RxJS only where streams are genuinely needed.
 - Angular 22: forms use Signal Forms. Services use `@Service` (never constructor injection). Heavy services (the Cesium wrapper) are lazy-loaded with `injectAsync`. Experimental APIs (`debounced`, WebMCP) stay out of core paths.
 - Accessibility primitives come from Spartan Brain. `@angular/aria` is not added unless Spartan lacks a needed primitive.
-- **Structure follows Angular's style guide** (the Angular developer skill's layout). A feature folder holds its main component named after the feature (`features/scene/scene.ts`, class `Scene`), a `components/` folder for its parts, its routes (`scene.routes.ts`), and services named for the data they hold (`scene-data.ts`, `annotation-data.ts`). No `.page.ts`, `.service.ts` or `.component.ts` suffixes. Feature folders mirror backend slices (`annotation/`, `scene/`; `asset/` when it is built, no empty placeholders). `shared/components/` holds reusable parts, `shared/ui/` the Spartan Helm components (the CLI's path). `api/` (generated) and `map/` (the `@map` alias) keep their place because tools and aliases fix it. There is no `core/` until the app has a global singleton to put there.
+- **Structure follows Angular's style guide** (the Angular developer skill's layout). A feature folder holds its main component named after the feature (`features/scene/scene.ts`, class `Scene`), a `components/` folder for its parts, its routes (`scene.routes.ts`), and services named for the data they hold (`scene-data.ts`, `annotation-data.ts`). No `.page.ts`, `.service.ts` or `.component.ts` suffixes; plain data shapes end in `.model.ts`. Feature folders mirror backend slices (`annotation/`, `scene/`; `asset/` when it is built, no empty placeholders). `shared/` holds reusable parts with no business logic (`components/`, `forms/`, and `ui/` for the Spartan Helm components, the CLI's path). `core/` holds app-wide code that is not a feature and not UI (today: `core/problems/`, the server-error messages and the `Outcome` type). `api/` (generated) and `map/` (the Cesium wrapper and its geometry helpers, the `@map` alias) keep their place because tools and aliases fix it.
 - **Routes carry state.** The URL says which scene and annotation are open (`/scenes/:sceneId?annotation=<id>`), bound to signal inputs with `withComponentInputBinding()`. Unknown addresses show a not-found page. Do not use an `effect` to copy one signal into another: derive it with `computed`, `linkedSignal` or a resource. Effects are for syncing to imperative APIs (the map).
 - Smart (route-level) components fetch via the generated SDK (never hand-write API types); presentational components take inputs and emit outputs.
 - Cesium code lives behind a thin service/wrapper so components don't touch the Cesium API directly, and Cesium objects are destroyed on teardown.
@@ -138,12 +138,12 @@ Use aliases for every import that crosses a folder boundary. Defined in `tsconfi
 | `@app/*`      | `src/app/*`          | app shell, routing, config                      |
 | `@features/*` | `src/app/features/*` | feature slices (`annotation`, `scene`) |
 | `@shared/*`   | `src/app/shared/*`   | shared UI (Helm components), utilities          |
-| `@map/*`      | `src/app/map/*`      | Cesium wrapper services                         |
+| `@map`, `@map/*` | `src/app/map/index.ts`, `src/app/map/*` | Cesium wrapper: `@map` is its entry point, `@map/map-viewer` the lazy-loaded viewer |
 | `@api/*`      | `src/app/api/*`      | generated SDK (never edited by hand)            |
 | `@env/*`      | `src/environments/*` | environment config                              |
 
 - No climbing out of a folder. A file may import a sibling, a direct child, or a file in its parent folder (`../annotation-draft`, which is how `components/` reaches its feature). `../../` and `../other-folder/` are forbidden (ESLint).
-- Cross-feature imports go through the other feature's public entry point (`@features/annotation/public-api`), never its internal files.
+- Cross-feature imports go through the other feature's entry point, its `index.ts` (`@features/annotation`), never its internal files.
 - Don't add or rename aliases without approval. Exception: the Spartan CLI adds one `@shared/ui/<component>` entry per copied Helm component (config in `client/components.json`); that is expected. When one changes, update `tsconfig.json`, the test config, and lint rules together.
 - Enforce with `no-restricted-imports` (deep relative paths and cross-feature internals) as an error.
 

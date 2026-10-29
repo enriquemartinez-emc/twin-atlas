@@ -3,7 +3,7 @@ import { Component, input, linkedSignal, output } from '@angular/core';
 import type { SceneResponse } from '@api/index';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideLink, lucidePlus, lucideSettings } from '@ng-icons/lucide';
-import type { MapMode } from '@map/public-api';
+import type { MapMode } from '@map';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmDialogImports } from '@shared/ui/dialog';
 import { HlmTooltipImports } from '@shared/ui/tooltip';

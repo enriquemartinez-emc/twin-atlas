@@ -65,14 +65,15 @@ Angular 22: zoneless, standalone, signals, single-file components. Feature folde
 ```
 client/src/app
 ├── api/                 generated SDK (from docs/openapi.json), never edited
-├── map/                 the only code that touches Cesium: MapService, feature layer, pure descriptors
+├── core/problems/       server error code → message, the Outcome type (app-wide, no UI)
+├── map/                 the only code that touches Cesium: MapViewer, feature layer, pure descriptors, GeoJSON helpers
 ├── app.ts, app.config.ts, app.routes.ts, not-found.ts
 ├── features/
 │   ├── scene/           scene.ts (the route-level page), scene.routes.ts, scene-data.ts,
-│   │                    ion-token-store.ts, components/ (picker, token panel)
+│   │                    ion-token-store.ts, components/ (scene bar, tool rail, status bar, token panel)
 │   └── annotation/      annotation-data.ts (httpResource), annotation-draft.ts (pure logic),
 │                        components/ (form with Signal Forms, editor, list)
-└── shared/              components/ (problem alert), problems/ (code → message), geo/, forms/,
+└── shared/              components/ (problem alert, badge), forms/,
                          ui/ (Spartan Helm components, path set by the CLI)
 ```
 
@@ -81,8 +82,8 @@ Routes: `/` goes to `/scenes`, `/scenes` shows the scene used last, `/scenes/:sc
 The UI is built from Spartan components and the Figtree font, and templates keep to a few classes ([ADR 0014](docs/adr/0014-spartan-ui.md)).
 
 - **Contract first.** The server commits `docs/openapi.json`; a test fails when it is stale. The SDK is generated from it, with typed GeoJSON and a typed enum of error codes ([ADR 0008](docs/adr/0008-contract-first-sdk.md)).
-- **Smart and presentational.** `Scene` owns the state and talks to the services. The form, editor, list, picker and token panel only take inputs and emit outputs. The annotation data is a function fed with the scene, the map view and the selection as signals, so there is nothing to keep in sync.
+- **Smart and presentational.** `Scene` owns the state and talks to the services. The form, editor, list, scene bar, tool rail and token panel only take inputs and emit outputs. The annotation data is a function fed with the scene, the map view and the selection as signals, so there is nothing to keep in sync.
 - **Reads** use `httpResource` over the SDK's request builders. The list keeps the previous result while a new view loads, so the map does not flicker.
-- **The map is isolated.** Components never import `cesium`. `MapService` is lazy-loaded with `injectAsync` (Cesium is a separate 5 MB chunk), draws annotations and the draft through a `FeatureLayer`, reports clicks and the visible bbox as signals, and releases everything on destroy.
+- **The map is isolated.** Components never import `cesium`. `MapViewer` is lazy-loaded with `injectAsync` (Cesium is a separate 5 MB chunk), draws annotations and the draft through a `FeatureLayer`, reports clicks and the visible bbox as signals, and releases everything on destroy.
 
 See [client/README.md](client/README.md) for running it.

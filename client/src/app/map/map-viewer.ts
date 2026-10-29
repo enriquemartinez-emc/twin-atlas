@@ -3,7 +3,7 @@ import type { ScreenSpaceEventHandler, Viewer } from 'cesium';
 import { type Bbox, type CameraPosition, bboxFromRadians, cameraPositionFromRadians } from './bbox';
 import { debounce, type Debounced } from './debounce';
 import { FeatureLayer } from './feature-layer';
-import type { LonLat, MapClick, MapFeature } from './features';
+import type { LonLat, MapClick, MapFeature } from './feature.model';
 
 declare global {
   interface Window {
@@ -53,7 +53,7 @@ const OSM_TILE_URL = 'https://tile.openstreetmap.org/{z}/{x}/{y}.png';
  * lands in its own lazy chunk. Every Cesium object created here is released in `destroy()`.
  */
 @Service()
-export class MapService {
+export class MapViewer {
   private readonly cameraPositionState = signal<CameraPosition | null>(null);
   private readonly visibleBboxState = signal<Bbox | null>(null);
   private readonly modeState = signal<MapMode | null>(null);

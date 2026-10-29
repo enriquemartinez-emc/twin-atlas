@@ -1,9 +1,9 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import type { MapFeature } from './features';
+import type { MapFeature } from './feature.model';
 import { PALETTE } from './palette';
 import { LABEL_RANGE_METRES } from './descriptors';
-import { MapService } from './map.service';
+import { MapViewer } from './map-viewer';
 
 const cesium = vi.hoisted(() => {
   type Listener = () => void;
@@ -224,8 +224,8 @@ const outline: MapFeature = {
   },
 };
 
-describe('MapService', () => {
-  let service: MapService;
+describe('MapViewer', () => {
+  let service: MapViewer;
   let container: HTMLElement;
 
   beforeEach(() => {
@@ -236,7 +236,7 @@ describe('MapService', () => {
     cesium.state.pickResult = undefined;
     cesium.state.groundPoint = undefined;
     container = document.createElement('div');
-    service = TestBed.inject(MapService);
+    service = TestBed.inject(MapViewer);
   });
 
   afterEach(() => {

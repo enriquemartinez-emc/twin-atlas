@@ -1,4 +1,4 @@
-import { OUTLINE_MIN_POINTS } from '@features/annotation/public-api';
+import { OUTLINE_MIN_POINTS } from '@features/annotation';
 import type { Tool } from './components/tool-rail';
 
 export interface HintState {

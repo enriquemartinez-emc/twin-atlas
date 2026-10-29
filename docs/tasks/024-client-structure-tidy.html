@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client structure tidy - Twin Atlas docs</title>
+<meta name="description" content="Names and homes in the Angular client brought in line with Angular's recommendations.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../guide.html"><span>Using the app</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="../tasks/022-ui-panel-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li><li><a href="../tasks/023-ui-redesign.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">023</span><span>Redesign: tools and panel</span></a></li><li><a href="../tasks/024-client-structure-tidy.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">024</span><span>Client structure tidy</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Client structure tidy</h1>
+<div class="tags"><span class="tag c-white">Task 024</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/client-structure-tidy</code></span></div>
+<p class="lead">A review of the Angular client against Angular&#39;s own recommendations found a few names and homes that did not fit. They are fixed, and nothing the app does has changed.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Nothing looks different. Read the folder tree in <a href="../architecture.html">How it fits together</a>, or open <code>client/src/app</code>.</p></aside>
+<h2>What changed</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Before</th><th class="">After</th><th class="">Why</th></tr></thead><tbody>
+<tr><td class=""><code>public-api.ts</code>, imported as <code>@features/annotation/public-api</code></td><td class=""><code>index.ts</code>, imported as <code>@features/annotation</code></td><td class="">The old name sounded like a REST API. <code>index.ts</code> is the usual name for a folder&#39;s entry point. The lint rule still blocks reaching into a feature&#39;s other files; it was tried with a deliberate deep import.</td></tr>
+<tr><td class=""><code>map/map.service.ts</code>, <code>MapService</code></td><td class=""><code>map/map-viewer.ts</code>, <code>MapViewer</code></td><td class="">The last file with a role suffix. Angular&#39;s current style names a file for what it is for.</td></tr>
+<tr><td class=""><code>shared/problems/</code></td><td class=""><code>core/problems/</code></td><td class="">Turning server error codes into messages is app-wide error handling, which is not a reusable UI part. <code>shared/</code> is meant to hold no business logic.</td></tr>
+<tr><td class=""><code>shared/geo/geojson.ts</code></td><td class=""><code>map/geojson.ts</code></td><td class="">Two features use these map geometry helpers, so they belong with the map code.</td></tr>
+<tr><td class=""><code>map/features.ts</code>, <code>outcome.ts</code></td><td class=""><code>feature.model.ts</code>, <code>outcome.model.ts</code></td><td class="">Angular keeps the <code>.model.ts</code> ending for plain data shapes.</td></tr>
+</tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 640 250" width="640" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Who may use what in the client</title><desc id="d">Features use shared, core, map and the generated API. Nothing outside features points back to a feature.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker></defs><rect class="c-sky" x="20" y="20" width="600" height="56" rx="8"/><text class="t-title" x="32" y="44">features/</text><text class="t-small" x="32" y="62">scene, annotation: pages, components, feature data (each has an index.ts)</text><rect class="c-sky" x="20" y="150" width="140" height="64" rx="8"/><text class="t-title" x="32" y="174">shared/</text><text class="t-small" x="32" y="192">UI parts, forms</text><rect class="c-sky" x="180" y="150" width="140" height="64" rx="8"/><text class="t-title" x="192" y="174">core/</text><text class="t-small" x="192" y="192">error messages</text><rect class="c-sky" x="340" y="150" width="140" height="64" rx="8"/><text class="t-title" x="352" y="174">map/</text><text class="t-small" x="352" y="192">Cesium wrapper</text><rect class="c-slate" x="500" y="150" width="120" height="64" rx="8"/><text class="t-title" x="512" y="174">api/</text><text class="t-small" x="512" y="192">generated SDK</text><path class="arrow" d="M90,76 L90,150" marker-end="url(#ah)"/><path class="arrow" d="M250,76 L250,150" marker-end="url(#ah)"/><path class="arrow" d="M410,76 L410,150" marker-end="url(#ah)"/><path class="arrow" d="M560,76 L560,150" marker-end="url(#ah)"/><path class="arrow" d="M480,182 L496,182" marker-end="url(#ah)"/><text class="t-small" x="20" y="236">Arrows show the main directions of use. Nothing outside features/ uses a feature.</text></svg></div><figcaption>The client&#39;s folders and the direction of use.</figcaption></figure><div class="col">
+<h2>One new alias</h2>
+<p>Importing <code>@map</code> needs its own entry in <code>tsconfig.json</code>, next to <code>@map/*</code>. The features already worked because a path ending in a folder name finds its <code>index.ts</code>.</p>
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Behaviour</td><td class="">All 243 client tests pass. Only import paths and the renamed class changed in them.</td></tr><tr><td class="">Boundaries</td><td class="">Lint passes, and a deliberate import of <code>@features/annotation/kind-meta</code> from the scene feature failed it with the new message.</td></tr><tr><td class="">Build</td><td class="">Formatting, lint with the class check and the production build are clean.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The app was not opened after the move. The tests and the production build cover the imports, but nobody has clicked through it.</p></div>
+<h2>Next</h2>
+<p>The scene page component is still 613 lines. Splitting it into a thin component and feature state is the next task.</p>
+</div>
+<nav class="pager" aria-label="Pages"><a href="023-ui-redesign.html">Previous: Redesign: tools and panel</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

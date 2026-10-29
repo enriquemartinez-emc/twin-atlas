@@ -30,10 +30,10 @@ import {
   focusPoint,
   isDraftReady,
   toMapFeature,
-} from '@features/annotation/public-api';
-import type { LonLat, MapClick, MapService } from '@map/public-api';
-import { bboxPolygon } from '@shared/geo/geojson';
-import { problemMessage } from '@shared/problems/problem-message';
+} from '@features/annotation';
+import type { LonLat, MapClick, MapViewer } from '@map';
+import { bboxPolygon } from '@map';
+import { problemMessage } from '@app/core/problems/problem-message';
 import { ProblemAlert } from '@shared/components/problem-alert';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
@@ -311,9 +311,7 @@ const FOCUS_HEIGHT = 250;
   `,
 })
 export class Scene {
-  private readonly loadMap = injectAsync(() =>
-    import('@map/map.service').then((m) => m.MapService),
-  );
+  private readonly loadMap = injectAsync(() => import('@map/map-viewer').then((m) => m.MapViewer));
   readonly sceneId = input<string>();
   readonly annotation = input<string>();
 
@@ -325,7 +323,7 @@ export class Scene {
 
   protected readonly scenes = inject(SceneData);
 
-  protected readonly map = signal<MapService | null>(null);
+  protected readonly map = signal<MapViewer | null>(null);
   protected readonly loadError = signal<string | null>(null);
 
   protected readonly selectedSceneId = computed(() => this.sceneId() ?? this.scenes.defaultId());

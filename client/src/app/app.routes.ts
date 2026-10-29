@@ -4,7 +4,7 @@ export const routes: Routes = [
   { path: '', pathMatch: 'full', redirectTo: 'scenes' },
   {
     path: 'scenes',
-    loadChildren: () => import('@features/scene/public-api').then((m) => m.SCENE_ROUTES),
+    loadChildren: () => import('@features/scene').then((m) => m.SCENE_ROUTES),
   },
   {
     path: '**',

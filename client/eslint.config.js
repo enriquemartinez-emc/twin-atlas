@@ -56,9 +56,9 @@ module.exports = defineConfig([
                 'Do not climb out of a folder. A file may import a sibling, a direct child, or a file in its parent folder (../name), which is how components reach their own feature. Everything else uses a path alias (@app, @features, @shared, @map, @api, @env).',
             },
             {
-              group: ['@features/*/**', '!@features/*/public-api'],
+              group: ['@features/*/**'],
               message:
-                'Import a feature only through its public entry point (@features/<feature>/public-api). Inside a feature, use relative imports.',
+                'Import a feature only through its entry point (@features/<feature>, which is its index.ts). Inside a feature, use relative imports.',
             },
           ],
         },

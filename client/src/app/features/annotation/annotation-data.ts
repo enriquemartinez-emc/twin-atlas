@@ -11,8 +11,13 @@ import {
   createAnnotation,
   updateAnnotation,
 } from '@api/index';
-import type { Bbox } from '@map/public-api';
-import { type Outcome, asProblem, failed as failure, succeeded } from '@shared/problems/outcome';
+import type { Bbox } from '@map';
+import {
+  type Outcome,
+  asProblem,
+  failed as failure,
+  succeeded,
+} from '@app/core/problems/outcome.model';
 import { bboxParam } from './annotation-draft';
 
 const PAGE_SIZE = 200;

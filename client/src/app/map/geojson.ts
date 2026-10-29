@@ -1,5 +1,6 @@
 import type { GeoJsonPolygon } from '@api/index';
-import type { Bbox, LonLat } from '@map/public-api';
+import type { Bbox } from './bbox';
+import type { LonLat } from './feature.model';
 
 /** A closed ring: the first position is repeated at the end, as GeoJSON requires. */
 export function ringGeometry(points: readonly LonLat[]): GeoJsonPolygon {

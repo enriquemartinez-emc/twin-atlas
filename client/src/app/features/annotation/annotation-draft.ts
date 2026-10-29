@@ -4,8 +4,8 @@ import type {
   CreateAnnotationRequest,
   UpdateAnnotationRequest,
 } from '@api/index';
-import type { Bbox, LonLat, MapFeature } from '@map/public-api';
-import { ringGeometry } from '@shared/geo/geojson';
+import type { Bbox, LonLat, MapFeature } from '@map';
+import { ringGeometry } from '@map';
 
 export type AnnotationKind = CreateAnnotationRequest['kind'];
 

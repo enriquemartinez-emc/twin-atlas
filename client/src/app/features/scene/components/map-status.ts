@@ -2,7 +2,7 @@ import { DecimalPipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideHouse } from '@ng-icons/lucide';
-import type { MapMode } from '@map/public-api';
+import type { MapMode } from '@map';
 import { BadgeDot } from '@shared/components/badge-dot';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmSpinner } from '@shared/ui/spinner';

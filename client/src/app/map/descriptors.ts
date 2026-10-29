@@ -1,4 +1,4 @@
-import type { LonLat, MapFeature } from './features';
+import type { LonLat, MapFeature } from './feature.model';
 import { PALETTE } from './palette';
 
 /**

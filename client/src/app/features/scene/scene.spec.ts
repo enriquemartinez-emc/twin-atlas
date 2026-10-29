@@ -6,8 +6,8 @@ import { Router, provideRouter, withComponentInputBinding } from '@angular/route
 import { RouterTestingHarness } from '@angular/router/testing';
 import { routes } from '@app/app.routes';
 import { client } from '@api/client.gen';
-import { MapService } from '@map/map.service';
-import type { Bbox, MapClick, MapMode } from '@map/public-api';
+import { MapViewer } from '@map/map-viewer';
+import type { Bbox, MapClick, MapMode } from '@map';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { Scene } from './scene';
 
@@ -135,7 +135,7 @@ describe('Scene', () => {
         provideRouter(routes, withComponentInputBinding()),
         provideHttpClient(),
         provideHttpClientTesting(),
-        { provide: MapService, useValue: map },
+        { provide: MapViewer, useValue: map },
       ],
     });
     client.setConfig({ httpClient: TestBed.inject(HttpClient), baseUrl: '' });

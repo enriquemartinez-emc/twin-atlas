@@ -1,7 +1,7 @@
 import type * as CesiumNamespace from 'cesium';
 import type { CustomDataSource, Entity, Viewer } from 'cesium';
 import { type FeatureDescriptor, describeDraft, describeFeature } from './descriptors';
-import type { LonLat, MapFeature } from './features';
+import type { LonLat, MapFeature } from './feature.model';
 import { PALETTE } from './palette';
 
 type Cesium = typeof CesiumNamespace;
