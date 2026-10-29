@@ -38,7 +38,7 @@ check_machine() {
   echo "Checking this machine"
 
   if ! command -v docker >/dev/null 2>&1; then
-    problem "Docker is not installed. Install Docker, then try again."
+    problem "Docker is not available in this shell. Install Docker, or on WSL turn on Docker Desktop's WSL integration for this distribution (Settings, Resources, WSL integration), then try again."
   elif ! docker info >/dev/null 2>&1; then
     problem "Docker is installed but not running. Start Docker (on Windows, start Docker Desktop), then try again."
   elif ! docker compose version >/dev/null 2>&1; then
