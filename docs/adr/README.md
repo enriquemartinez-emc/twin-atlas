@@ -6,3 +6,5 @@ Short records of decisions that are costly to reverse. Format: context, decision
 | ---- | ------------------------------------------------------- | -------- |
 | 0001 | [Store geometry in SRID 4326, not geography](0001-geometry-vs-geography.md) | Accepted |
 | 0002 | [Maven as the backend build tool](0002-maven-build-tool.md)                 | Accepted |
+| 0003 | [Functional core with decision functions and explicit context](0003-fcis-decision-functions.md) | Accepted |
+| 0004 | [Entities stay in the shell; MapStruct maps at the boundary](0004-entity-mapping-at-the-shell-boundary.md) | Accepted |

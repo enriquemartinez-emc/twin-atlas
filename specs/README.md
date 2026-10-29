@@ -10,7 +10,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 002 | [Backend housekeeping](002-bootstrap-backend.md)           | `chore/bootstrap-backend`        | Done        |
 | 003 | [Angular 22 client init](003-init-client.md)               | `chore/init-client`              | In progress |
 | 004 | [Backend foundation](004-backend-foundation.md)            | `chore/backend-foundation`       | In progress |
-| 005 | [Annotation create (FCIS slice)](005-annotation-create.md) | `feat/annotation-create`         | Proposed    |
+| 005 | [Annotation create (FCIS slice)](005-annotation-create.md) | `feat/annotation-create`         | In progress |
 | 006 | [Annotation spatial reads](006-annotation-reads.md)        | `feat/annotation-reads`          | Proposed    |
 | 007 | [Map viewer](007-map-viewer.md)                            | `feat/map-viewer`                | Proposed    |
 | 008 | [Annotation UI and SDK](008-annotation-ui.md)              | `feat/annotation-ui`             | Proposed    |
