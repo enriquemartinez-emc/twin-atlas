@@ -32,6 +32,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 024 | [Client structure tidy: names and homes](024-client-structure-tidy.md) | `chore/client-structure-tidy` | In progress |
 | 025 | [Scene page split: a thin component and feature-scoped state](025-scene-page-split.md) | `chore/scene-state-split` | In progress |
 | 026 | [Client without barrels: one feature, grouped by concept](026-client-no-barrels.md) | `chore/client-no-barrels` | In progress |
+| 027 | [A loading notice while the map loads](027-map-loading-notice.md) | `feat/map-loading-notice` | In progress |
 
 ## File template
 
