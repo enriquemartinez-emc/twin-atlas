@@ -54,7 +54,7 @@ Colour stays as it is: neutral chrome, and the three kind colours as the only st
 - [x] **Hint.** A status pill states the next step for each tool and each drawing stage (for example, an outline needs three points), and disappears in Select mode unless something is being moved.
 - [x] **Panel.** It shows the list (count, kind filter with a count per kind, rows), or the form, or the editor, never two at once. Cancel and Close return to the list. The token box lives in the settings dialog.
 - [x] **Rows.** Each row has the kind's icon in its colour, the title and the first line of the body; imported places show an "OSM" badge with an explanation in its tooltip. The earlier "In this view" heading and its one-line explanation remain.
-- [x] **Map status bar.** Source, camera and Reset view sit at the bottom of the map; the Map section leaves the panel.
+- [x] **Map status bar.** Source, camera and Reset view sit at the top of the map beside the tools (the bottom edge belongs to Cesium's credits); the Map section leaves the panel.
 - [x] **Loading and empty.** A spinner while the 3D viewer starts; skeleton rows and the empty message keep working as now.
 - [x] **Small screens.** The panel is a bottom sheet, the rail runs along the bottom, and nothing overflows horizontally.
 - [x] **Unchanged behaviour.** Routes, `?annotation=`, the draft and edit rules, the conflict handling and the map code keep working; no endpoint, contract or SDK changes.
@@ -66,3 +66,11 @@ Colour stays as it is: neutral chrome, and the three kind colours as the only st
 - Map symbols with the same icons as the rail (Cesium billboards). Worth doing next, and it would make the map and the list match, but it changes the Cesium wrapper.
 - Sim UI's full Sidebar block.
 - The paused sign-in work and the browser end-to-end suite.
+
+## Found in the browser run (approved by the owner)
+
+- A list pick left the selected dot blue: Cesium merges a remove and a re-add of one id inside a batch and keeps the old colour. Fixed in the layer, with a test that models the batching.
+- Phone layout overflowed (scene bar, status bar over the tools): fixed.
+- The status bar covered the map credits: moved to the top.
+- Label range 1500 m to 300 m after seeing a crowded real import.
+- Not exercised, because they write data: the conflict message and moving a place. README screenshots still show the earlier layout.
