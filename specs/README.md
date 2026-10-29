@@ -31,6 +31,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 023 | [Redesign: a tool rail, a scene bar and a panel that does one thing at a time](023-ui-redesign.md) | `feat/ui-redesign` | In progress |
 | 024 | [Client structure tidy: names and homes](024-client-structure-tidy.md) | `chore/client-structure-tidy` | In progress |
 | 025 | [Scene page split: a thin component and feature-scoped state](025-scene-page-split.md) | `chore/scene-state-split` | In progress |
+| 026 | [Client without barrels: one feature, grouped by concept](026-client-no-barrels.md) | `chore/client-no-barrels` | In progress |
 
 ## File template
 
