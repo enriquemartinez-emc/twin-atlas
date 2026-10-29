@@ -25,7 +25,16 @@
       "@shared/ui/utils": ["./src/app/shared/ui/utils/src/index.ts"],
       "@shared/ui/input": ["./src/app/shared/ui/input/src/index.ts"],
       "@shared/ui/label": ["./src/app/shared/ui/label/src/index.ts"],
-      "@shared/ui/textarea": ["./src/app/shared/ui/textarea/src/index.ts"]
+      "@shared/ui/textarea": ["./src/app/shared/ui/textarea/src/index.ts"],
+      "@shared/ui/card": ["./src/app/shared/ui/card/src/index.ts"],
+      "@shared/ui/alert": ["./src/app/shared/ui/alert/src/index.ts"],
+      "@shared/ui/badge": ["./src/app/shared/ui/badge/src/index.ts"],
+      "@shared/ui/separator": ["./src/app/shared/ui/separator/src/index.ts"],
+      "@shared/ui/toggle-group": ["./src/app/shared/ui/toggle-group/src/index.ts"],
+      "@shared/ui/toggle": ["./src/app/shared/ui/toggle/src/index.ts"],
+      "@shared/ui/item": ["./src/app/shared/ui/item/src/index.ts"],
+      "@shared/ui/field": ["./src/app/shared/ui/field/src/index.ts"],
+      "@shared/ui/typography": ["./src/app/shared/ui/typography/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
