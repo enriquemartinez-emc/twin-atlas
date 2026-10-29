@@ -1,0 +1,30 @@
+{
+  "version": 0.6,
+  "generator": "Overpass API 0.7.62",
+  "osm3s": {
+    "timestamp_osm_base": "2026-10-01T10:00:00Z",
+    "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+  },
+  "elements": [
+    {"type": "node", "id": 1001, "lat": 41.4036, "lon": 2.1744, "tags": {"name": "Bar Pep", "amenity": "bar"}},
+    {"type": "node", "id": 1002, "lat": 41.4041, "lon": 2.1749, "tags": {"name": "Font", "amenity": "drinking_water", "description": "Dry in summer"}},
+    {"type": "node", "id": 1003, "lat": 41.4038, "lon": 2.1751, "tags": {"shop": "bakery"}},
+    {"type": "node", "id": 1004, "lat": 41.4045, "lon": 2.1756},
+    {"type": "node", "id": 1005, "lat": 41.9000, "lon": 2.1744, "tags": {"name": "Far away", "amenity": "cafe"}},
+    {"type": "way", "id": 2001, "nodes": [1, 2, 3, 4, 1],
+     "bounds": {"minlat": 41.4030, "minlon": 2.1730, "maxlat": 41.4034, "maxlon": 2.1740},
+     "geometry": [
+       {"lat": 41.4030, "lon": 2.1730}, {"lat": 41.4030, "lon": 2.1740},
+       {"lat": 41.4034, "lon": 2.1740}, {"lat": 41.4034, "lon": 2.1730}, {"lat": 41.4030, "lon": 2.1730}],
+     "tags": {"building": "yes", "name": "Parish hall"}},
+    {"type": "way", "id": 2002, "nodes": [5, 6, 7],
+     "geometry": [{"lat": 41.4020, "lon": 2.1720}, {"lat": 41.4025, "lon": 2.1730}, {"lat": 41.4030, "lon": 2.1740}],
+     "tags": {"highway": "residential", "name": "Carrer de Mallorca"}},
+    {"type": "way", "id": 2003, "nodes": [8, 9, 10, 11, 8],
+     "geometry": [
+       {"lat": 41.4060, "lon": 2.1720}, {"lat": 41.4090, "lon": 2.1790},
+       {"lat": 41.4060, "lon": 2.1790}, {"lat": 41.4090, "lon": 2.1720}, {"lat": 41.4060, "lon": 2.1720}],
+     "tags": {"building": "yes", "name": "Bow tie"}},
+    {"type": "relation", "id": 3001, "members": [], "tags": {"type": "multipolygon", "building": "yes"}}
+  ]
+}

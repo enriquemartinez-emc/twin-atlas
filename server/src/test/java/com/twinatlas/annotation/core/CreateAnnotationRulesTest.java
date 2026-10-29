@@ -150,6 +150,9 @@ class CreateAnnotationRulesTest {
             "ANNOTATION_NOT_FOUND",
             "STALE_VERSION",
             "GEOMETRY_KIND_MISMATCH",
-            "TEXT_ONLY_FOR_NOTES");
+            "TEXT_ONLY_FOR_NOTES",
+            "UNSUPPORTED_SOURCE_ELEMENT",
+            "OPEN_WAY",
+            "UNTAGGED_ELEMENT");
   }
 }

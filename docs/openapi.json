@@ -572,6 +572,65 @@
         "summary" : "Rename, retext or move an annotation",
         "tags" : [ "update-annotation-endpoint" ]
       }
+    },
+    "/api/scenes/{sceneId}/imports/osm" : {
+      "post" : {
+        "description" : "Turns nodes into markers (notes when they carry a description) and closed ways into outlines. Elements that cannot be imported are reported one by one with a stable code, and do not stop the others. Importing the same extract twice creates nothing the second time. Map data © OpenStreetMap contributors, ODbL.",
+        "operationId" : "importOsm",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/OsmImportRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/OsmImportResponse"
+                }
+              }
+            },
+            "description" : "Processed. Check rejected for elements that were skipped."
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "Request shape is invalid, or more than 5000 elements"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND"
+          }
+        },
+        "summary" : "Import OpenStreetMap elements into a scene",
+        "tags" : [ "osm-import-endpoint" ]
+      }
     }
   },
   "components" : {
@@ -662,6 +721,48 @@
         },
         "required" : [ "createdAt", "geometry", "id", "kind", "sceneId", "status", "title" ]
       },
+      "Coordinate" : {
+        "type" : "object",
+        "properties" : {
+          "coordinate" : {
+            "$ref" : "#/components/schemas/Coordinate",
+            "writeOnly" : true
+          },
+          "m" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "x" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "y" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "z" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }
+      },
+      "CoordinateSequence" : {
+        "type" : "object",
+        "properties" : {
+          "dimension" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "measures" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "CoordinateSequenceFactory" : { },
       "CreateAnnotationRequest" : {
         "type" : "object",
         "properties" : {
@@ -699,6 +800,84 @@
           }
         },
         "required" : [ "extent", "name" ]
+      },
+      "Element" : {
+        "type" : "object",
+        "properties" : {
+          "geometry" : {
+            "type" : "array",
+            "description" : "Points of a way, as produced by out geom",
+            "items" : {
+              "$ref" : "#/components/schemas/Point"
+            }
+          },
+          "id" : {
+            "type" : "integer",
+            "format" : "int64"
+          },
+          "lat" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Latitude of a node"
+          },
+          "lon" : {
+            "type" : "number",
+            "format" : "double",
+            "description" : "Longitude of a node"
+          },
+          "tags" : {
+            "type" : "object",
+            "additionalProperties" : {
+              "type" : "string"
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "description" : "node, way or relation",
+            "minLength" : 1
+          }
+        },
+        "required" : [ "id", "type" ]
+      },
+      "Envelope" : {
+        "type" : "object",
+        "properties" : {
+          "area" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "diameter" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "height" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "maxX" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "maxY" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "minX" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "minY" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "null" : {
+            "type" : "boolean"
+          },
+          "width" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }
       },
       "GeoJsonGeometry" : {
         "description" : "A GeoJSON geometry the API accepts: Point or Polygon",
@@ -761,6 +940,114 @@
         },
         "required" : [ "coordinates", "type" ]
       },
+      "Geometry" : {
+        "type" : "object",
+        "properties" : {
+          "area" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "boundary" : {
+            "$ref" : "#/components/schemas/Geometry"
+          },
+          "boundaryDimension" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "centroid" : {
+            "$ref" : "#/components/schemas/Point"
+          },
+          "coordinate" : {
+            "$ref" : "#/components/schemas/Coordinate"
+          },
+          "coordinates" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Coordinate"
+            }
+          },
+          "dimension" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "empty" : {
+            "type" : "boolean"
+          },
+          "envelope" : {
+            "$ref" : "#/components/schemas/Geometry"
+          },
+          "envelopeInternal" : {
+            "$ref" : "#/components/schemas/Envelope"
+          },
+          "factory" : {
+            "$ref" : "#/components/schemas/GeometryFactory"
+          },
+          "geometryType" : {
+            "type" : "string"
+          },
+          "interiorPoint" : {
+            "$ref" : "#/components/schemas/Point"
+          },
+          "length" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "numGeometries" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "numPoints" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "precisionModel" : {
+            "$ref" : "#/components/schemas/PrecisionModel"
+          },
+          "rectangle" : {
+            "type" : "boolean"
+          },
+          "simple" : {
+            "type" : "boolean"
+          },
+          "srid" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "userData" : { },
+          "valid" : {
+            "type" : "boolean"
+          }
+        }
+      },
+      "GeometryFactory" : {
+        "type" : "object",
+        "properties" : {
+          "coordinateSequenceFactory" : {
+            "$ref" : "#/components/schemas/CoordinateSequenceFactory"
+          },
+          "precisionModel" : {
+            "$ref" : "#/components/schemas/PrecisionModel"
+          },
+          "srid" : {
+            "type" : "integer",
+            "format" : "int32"
+          }
+        }
+      },
+      "ItemRejection" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "Stable code of the rule the element failed",
+            "enum" : [ "SCENE_NOT_FOUND", "INVALID_GEOMETRY", "GEOMETRY_OUTSIDE_SCENE_EXTENT", "TITLE_ALREADY_USED", "ANNOTATION_NOT_FOUND", "STALE_VERSION", "GEOMETRY_KIND_MISMATCH", "TEXT_ONLY_FOR_NOTES", "UNSUPPORTED_SOURCE_ELEMENT", "OPEN_WAY", "UNTAGGED_ELEMENT" ]
+          },
+          "reference" : {
+            "type" : "string",
+            "description" : "The element, for example node/123 or way/456"
+          }
+        }
+      },
       "NearestAnnotation" : {
         "type" : "object",
         "properties" : {
@@ -774,13 +1061,167 @@
         },
         "required" : [ "annotation" ]
       },
+      "OsmImportRequest" : {
+        "type" : "object",
+        "properties" : {
+          "elements" : {
+            "type" : "array",
+            "description" : "Elements of an Overpass JSON answer, at most 5000 per request",
+            "items" : {
+              "$ref" : "#/components/schemas/Element"
+            },
+            "maxItems" : 5000,
+            "minItems" : 1
+          }
+        },
+        "required" : [ "elements" ]
+      },
+      "OsmImportResponse" : {
+        "type" : "object",
+        "properties" : {
+          "imported" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Annotations created, as drafts"
+          },
+          "received" : {
+            "type" : "integer",
+            "format" : "int32",
+            "description" : "Elements in the request"
+          },
+          "rejected" : {
+            "type" : "array",
+            "description" : "Every element that was not imported, with the reason",
+            "items" : {
+              "$ref" : "#/components/schemas/ItemRejection"
+            }
+          }
+        }
+      },
+      "Point" : {
+        "type" : "object",
+        "properties" : {
+          "area" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "boundary" : {
+            "$ref" : "#/components/schemas/Geometry"
+          },
+          "boundaryDimension" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "centroid" : {
+            "$ref" : "#/components/schemas/Point"
+          },
+          "coordinate" : {
+            "$ref" : "#/components/schemas/Coordinate"
+          },
+          "coordinateSequence" : {
+            "$ref" : "#/components/schemas/CoordinateSequence"
+          },
+          "coordinates" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/Coordinate"
+            }
+          },
+          "dimension" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "empty" : {
+            "type" : "boolean"
+          },
+          "envelope" : {
+            "$ref" : "#/components/schemas/Geometry"
+          },
+          "envelopeInternal" : {
+            "$ref" : "#/components/schemas/Envelope"
+          },
+          "factory" : {
+            "$ref" : "#/components/schemas/GeometryFactory"
+          },
+          "geometryType" : {
+            "type" : "string"
+          },
+          "interiorPoint" : {
+            "$ref" : "#/components/schemas/Point"
+          },
+          "length" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "numGeometries" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "numPoints" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "precisionModel" : {
+            "$ref" : "#/components/schemas/PrecisionModel"
+          },
+          "rectangle" : {
+            "type" : "boolean"
+          },
+          "simple" : {
+            "type" : "boolean"
+          },
+          "srid" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "userData" : { },
+          "valid" : {
+            "type" : "boolean"
+          },
+          "x" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "y" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }
+      },
+      "PrecisionModel" : {
+        "type" : "object",
+        "properties" : {
+          "floating" : {
+            "type" : "boolean"
+          },
+          "maximumSignificantDigits" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "offsetX" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "offsetY" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "scale" : {
+            "type" : "number",
+            "format" : "double"
+          },
+          "type" : {
+            "$ref" : "#/components/schemas/Type"
+          }
+        }
+      },
       "ProblemResponse" : {
         "type" : "object",
         "properties" : {
           "code" : {
             "type" : "string",
             "description" : "Stable machine-readable error code",
-            "enum" : [ "ANNOTATION_NOT_FOUND", "CONCURRENT_MODIFICATION", "GEOMETRY_KIND_MISMATCH", "GEOMETRY_OUTSIDE_SCENE_EXTENT", "INTERNAL_ERROR", "INVALID_CURSOR", "INVALID_GEOMETRY", "NOT_FOUND", "PRECONDITION_REQUIRED", "REQUEST_INVALID", "SCENE_NOT_FOUND", "STALE_VERSION", "TEXT_ONLY_FOR_NOTES", "TITLE_ALREADY_USED", "VALIDATION_FAILED" ]
+            "enum" : [ "ANNOTATION_NOT_FOUND", "CONCURRENT_MODIFICATION", "GEOMETRY_KIND_MISMATCH", "GEOMETRY_OUTSIDE_SCENE_EXTENT", "INTERNAL_ERROR", "INVALID_CURSOR", "INVALID_GEOMETRY", "NOT_FOUND", "OPEN_WAY", "PRECONDITION_REQUIRED", "REQUEST_INVALID", "SCENE_NOT_FOUND", "STALE_VERSION", "TEXT_ONLY_FOR_NOTES", "TITLE_ALREADY_USED", "UNSUPPORTED_SOURCE_ELEMENT", "UNTAGGED_ELEMENT", "VALIDATION_FAILED" ]
           },
           "detail" : {
             "type" : "string"
@@ -839,6 +1280,7 @@
         },
         "required" : [ "zone" ]
       },
+      "Type" : { },
       "UpdateAnnotationRequest" : {
         "type" : "object",
         "properties" : {

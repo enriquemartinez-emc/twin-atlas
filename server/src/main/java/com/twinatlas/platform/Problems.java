@@ -30,7 +30,10 @@ public final class Problems {
           case INVALID_GEOMETRY,
               GEOMETRY_OUTSIDE_SCENE_EXTENT,
               GEOMETRY_KIND_MISMATCH,
-              TEXT_ONLY_FOR_NOTES ->
+              TEXT_ONLY_FOR_NOTES,
+              UNSUPPORTED_SOURCE_ELEMENT,
+              OPEN_WAY,
+              UNTAGGED_ELEMENT ->
               HttpStatus.UNPROCESSABLE_ENTITY;
           case STALE_VERSION -> HttpStatus.PRECONDITION_FAILED;
           case TITLE_ALREADY_USED -> HttpStatus.CONFLICT;
@@ -45,6 +48,9 @@ public final class Problems {
           case STALE_VERSION -> "Annotation changed";
           case GEOMETRY_KIND_MISMATCH -> "Wrong kind of shape";
           case TEXT_ONLY_FOR_NOTES -> "Text is only for notes";
+          case UNSUPPORTED_SOURCE_ELEMENT -> "Unsupported source element";
+          case OPEN_WAY -> "Way is not an area";
+          case UNTAGGED_ELEMENT -> "Element has no tags";
         };
     String detail =
         switch (rejection) {
@@ -59,6 +65,12 @@ public final class Problems {
               "The annotation changed since you read it. Load the latest version and try again.";
           case GEOMETRY_KIND_MISMATCH -> "Markers and notes need a point, outlines need a polygon.";
           case TEXT_ONLY_FOR_NOTES -> "Only notes have text.";
+          case UNSUPPORTED_SOURCE_ELEMENT ->
+              "Only nodes and ways can be imported, and they need coordinates.";
+          case OPEN_WAY ->
+              "A way becomes an outline only when it is a closed ring of at least four points.";
+          case UNTAGGED_ELEMENT ->
+              "An element with no tags says nothing about the place, so it is not imported.";
         };
     ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
     problem.setTitle(title);
