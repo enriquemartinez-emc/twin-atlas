@@ -53,4 +53,21 @@ PostgreSQL with PostGIS. Flyway owns the schema, Hibernate only validates it (`d
 
 ## Client
 
-Angular 22 (zoneless, standalone, signals). The 3D scene is CesiumJS behind a lazily loaded `MapService` in `client/src/app/map`. See [client/README.md](client/README.md).
+Angular 22: zoneless, standalone, signals, single-file components. Feature folders mirror the backend slices.
+
+```
+client/src/app
+├── api/                 generated SDK (from docs/openapi.json), never edited
+├── map/                 the only code that touches Cesium: MapService, feature layer, pure descriptors
+├── features/
+│   ├── scene/           route-level SceneViewerPage (smart), scenes service, picker, token panel
+│   └── annotation/      AnnotationData (httpResource), form (Signal Forms), list, draft logic
+└── shared/              problems (code → message), geo helpers, Spartan UI components
+```
+
+- **Contract first.** The server commits `docs/openapi.json`; a test fails when it is stale. The SDK is generated from it, with typed GeoJSON and a typed enum of error codes ([ADR 0008](docs/adr/0008-contract-first-sdk.md)).
+- **Smart and presentational.** `SceneViewerPage` owns the state and talks to the services. The form, list, picker and token panel only take inputs and emit outputs.
+- **Reads** use `httpResource` over the SDK's request builders. The list keeps the previous result while a new view loads, so the map does not flicker.
+- **The map is isolated.** Components never import `cesium`. `MapService` is lazy-loaded with `injectAsync` (Cesium is a separate 5 MB chunk), draws annotations and the draft through a `FeatureLayer`, reports clicks and the visible bbox as signals, and releases everything on destroy.
+
+See [client/README.md](client/README.md) for running it.

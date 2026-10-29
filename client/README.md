@@ -11,6 +11,35 @@ Angular 22 (zoneless, standalone, Vitest) with CesiumJS for the 3D scene and Spa
 | `npm test`             | Unit tests (Vitest), watch mode         |
 | `npx ng lint`          | angular-eslint (no `any`, import rules) |
 | `npm run format:check` | Prettier check (`npm run format` fixes) |
+| `npm run api:generate` | Regenerate the SDK in `src/app/api`     |
+
+## Run the whole app
+
+```bash
+docker compose up -d                     # database (repo root)
+cd server && ./mvnw spring-boot:run      # API on :8080
+cd client && npm start                   # UI on :4200, proxies /api to :8080
+```
+
+The dev server forwards `/api` to the backend (`proxy.conf.json`), so there is no CORS setup and the client calls the API on its own origin (`environment.apiBaseUrl` is empty).
+
+## Using it
+
+1. **Scene.** Fly the map to a place and create a scene from the current view. Annotations must fall inside their scene. Pick any existing scene from the list.
+2. **Add.** Choose Marker, Note or Outline, click the map (an outline takes three or more corners), give it a title and save. The server's rules come back as readable messages, for example when a title is already used in the scene.
+3. **Browse.** The list and the map show the annotations that are in the current view. Click one in the list to fly to it, or click it on the map in Select mode.
+
+## The API SDK
+
+`src/app/api` is generated from the contract the server commits ([`docs/openapi.json`](../docs/openapi.json)) with `@hey-api/openapi-ts`. Never edit it by hand.
+
+```bash
+# after changing the API: refresh the contract, then the SDK
+cd server && ./mvnw test -Dtest=OpenApiSpecTest -Dopenapi.update=true
+cd client && npm run api:generate
+```
+
+A server test fails when the committed spec is stale, and a new error `code` in the spec stops `shared/problems/problem-message.ts` from compiling until it has a message. The generated runtime contains two `any` types that we cannot change; our own code has none.
 
 ## The 3D scene and where its data comes from
 
