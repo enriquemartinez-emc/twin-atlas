@@ -15,6 +15,9 @@ const MESSAGES: Readonly<Record<ProblemCode, string>> = {
   GEOMETRY_KIND_MISMATCH:
     'That is the wrong kind of shape: pins take a point, outlines take an area.',
   TEXT_ONLY_FOR_NOTES: 'Only notes have text.',
+  UNSUPPORTED_SOURCE_ELEMENT: 'Only nodes and ways with coordinates can be imported.',
+  OPEN_WAY: 'That line is not a closed area, so it cannot become an outline.',
+  UNTAGGED_ELEMENT: 'That map element has no tags, so there is nothing to import.',
   TITLE_ALREADY_USED: 'Another annotation in this scene already has that title.',
   VALIDATION_FAILED: 'Some fields are not valid. Check them and try again.',
   REQUEST_INVALID: 'The request was not understood. Try again.',

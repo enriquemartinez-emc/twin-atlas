@@ -4,7 +4,7 @@ import { type HttpRequest, httpResource } from '@angular/common/http';
 
 import { client } from '../client.gen';
 import type { Options } from '../sdk.gen';
-import type { CreateAnnotationData, CreateAnnotationResponse, CreateSceneData, CreateSceneResponse, GetAnnotationData, GetAnnotationResponse, GetSceneData, GetSceneResponse, ListAnnotationsData, ListAnnotationsResponse, ListScenesData, ListScenesResponse, NearestAnnotationsData, NearestAnnotationsResponse, SearchAnnotationsData, SearchAnnotationsResponse, UpdateAnnotationData, UpdateAnnotationResponse } from '../types.gen';
+import type { CreateAnnotationData, CreateAnnotationResponse, CreateSceneData, CreateSceneResponse, GetAnnotationData, GetAnnotationResponse, GetSceneData, GetSceneResponse, ImportOsmData, ImportOsmResponse, ListAnnotationsData, ListAnnotationsResponse, ListScenesData, ListScenesResponse, NearestAnnotationsData, NearestAnnotationsResponse, SearchAnnotationsData, SearchAnnotationsResponse, UpdateAnnotationData, UpdateAnnotationResponse } from '../types.gen';
 
 /**
  * List scenes
@@ -111,6 +111,18 @@ export const updateAnnotationRequest = <ThrowOnError extends boolean = false>(op
 });
 
 /**
+ * Import OpenStreetMap elements into a scene
+ *
+ * Turns nodes into markers (notes when they carry a description) and closed ways into outlines. Elements that cannot be imported are reported one by one with a stable code, and do not stop the others. Importing the same extract twice creates nothing the second time. Map data © OpenStreetMap contributors, ODbL.
+ */
+export const importOsmRequest = <ThrowOnError extends boolean = false>(options: Options<ImportOsmData, ThrowOnError>): HttpRequest<ImportOsmResponse> => (options?.client ?? client).requestOptions<ImportOsmResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'POST',
+    url: '/api/scenes/{sceneId}/imports/osm',
+    ...options
+});
+
+/**
  * List scenes
  *
  * The 100 newest scenes, newest first.
@@ -194,4 +206,14 @@ export const getAnnotationResource = <ThrowOnError extends boolean = false>(opti
 export const updateAnnotationResource = <ThrowOnError extends boolean = false>(options: () => Options<UpdateAnnotationData, ThrowOnError> | undefined) => httpResource<UpdateAnnotationResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? updateAnnotationRequest(opts) : undefined;
+});
+
+/**
+ * Import OpenStreetMap elements into a scene
+ *
+ * Turns nodes into markers (notes when they carry a description) and closed ways into outlines. Elements that cannot be imported are reported one by one with a stable code, and do not stop the others. Importing the same extract twice creates nothing the second time. Map data © OpenStreetMap contributors, ODbL.
+ */
+export const importOsmResource = <ThrowOnError extends boolean = false>(options: () => Options<ImportOsmData, ThrowOnError> | undefined) => httpResource<ImportOsmResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? importOsmRequest(opts) : undefined;
 });

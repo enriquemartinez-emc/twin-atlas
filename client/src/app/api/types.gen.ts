@@ -40,6 +40,21 @@ export type AnnotationSummary = {
     title: string;
 };
 
+export type Coordinate = {
+    m?: number;
+    valid?: boolean;
+    x?: number;
+    y?: number;
+    z?: number;
+};
+
+export type CoordinateSequence = {
+    dimension?: number;
+    measures?: number;
+};
+
+export type CoordinateSequenceFactory = unknown;
+
 export type CreateAnnotationRequest = {
     /**
      * Required for NOTE, not allowed for the other kinds
@@ -53,6 +68,41 @@ export type CreateAnnotationRequest = {
 export type CreateSceneRequest = {
     extent: GeoJsonPolygon;
     name: string;
+};
+
+export type Element = {
+    /**
+     * Points of a way, as produced by out geom
+     */
+    geometry?: Array<Point>;
+    id: number;
+    /**
+     * Latitude of a node
+     */
+    lat?: number;
+    /**
+     * Longitude of a node
+     */
+    lon?: number;
+    tags?: {
+        [key: string]: string;
+    };
+    /**
+     * node, way or relation
+     */
+    type: string;
+};
+
+export type Envelope = {
+    area?: number;
+    diameter?: number;
+    height?: number;
+    maxX?: number;
+    maxY?: number;
+    minX?: number;
+    minY?: number;
+    null?: boolean;
+    width?: number;
 };
 
 /**
@@ -83,16 +133,117 @@ export type GeoJsonPolygon = {
     type: 'Polygon';
 };
 
+export type Geometry = {
+    area?: number;
+    boundary?: Geometry;
+    boundaryDimension?: number;
+    centroid?: Point;
+    coordinate?: Coordinate;
+    coordinates?: Array<Coordinate>;
+    dimension?: number;
+    empty?: boolean;
+    envelope?: Geometry;
+    envelopeInternal?: Envelope;
+    factory?: GeometryFactory;
+    geometryType?: string;
+    interiorPoint?: Point;
+    length?: number;
+    numGeometries?: number;
+    numPoints?: number;
+    precisionModel?: PrecisionModel;
+    rectangle?: boolean;
+    simple?: boolean;
+    srid?: number;
+    userData?: unknown;
+    valid?: boolean;
+};
+
+export type GeometryFactory = {
+    coordinateSequenceFactory?: CoordinateSequenceFactory;
+    precisionModel?: PrecisionModel;
+    srid?: number;
+};
+
+export type ItemRejection = {
+    /**
+     * Stable code of the rule the element failed
+     */
+    code?: 'SCENE_NOT_FOUND' | 'INVALID_GEOMETRY' | 'GEOMETRY_OUTSIDE_SCENE_EXTENT' | 'TITLE_ALREADY_USED' | 'ANNOTATION_NOT_FOUND' | 'STALE_VERSION' | 'GEOMETRY_KIND_MISMATCH' | 'TEXT_ONLY_FOR_NOTES' | 'UNSUPPORTED_SOURCE_ELEMENT' | 'OPEN_WAY' | 'UNTAGGED_ELEMENT';
+    /**
+     * The element, for example node/123 or way/456
+     */
+    reference?: string;
+};
+
 export type NearestAnnotation = {
     annotation: AnnotationSummary;
     distanceMeters?: number;
+};
+
+export type OsmImportRequest = {
+    /**
+     * Elements of an Overpass JSON answer, at most 5000 per request
+     */
+    elements: Array<Element>;
+};
+
+export type OsmImportResponse = {
+    /**
+     * Annotations created, as drafts
+     */
+    imported?: number;
+    /**
+     * Elements in the request
+     */
+    received?: number;
+    /**
+     * Every element that was not imported, with the reason
+     */
+    rejected?: Array<ItemRejection>;
+};
+
+export type Point = {
+    area?: number;
+    boundary?: Geometry;
+    boundaryDimension?: number;
+    centroid?: Point;
+    coordinate?: Coordinate;
+    coordinateSequence?: CoordinateSequence;
+    coordinates?: Array<Coordinate>;
+    dimension?: number;
+    empty?: boolean;
+    envelope?: Geometry;
+    envelopeInternal?: Envelope;
+    factory?: GeometryFactory;
+    geometryType?: string;
+    interiorPoint?: Point;
+    length?: number;
+    numGeometries?: number;
+    numPoints?: number;
+    precisionModel?: PrecisionModel;
+    rectangle?: boolean;
+    simple?: boolean;
+    srid?: number;
+    userData?: unknown;
+    valid?: boolean;
+    x?: number;
+    y?: number;
+};
+
+export type PrecisionModel = {
+    floating?: boolean;
+    maximumSignificantDigits?: number;
+    offsetX?: number;
+    offsetY?: number;
+    scale?: number;
+    type?: Type;
 };
 
 export type ProblemResponse = {
     /**
      * Stable machine-readable error code
      */
-    code: 'ANNOTATION_NOT_FOUND' | 'CONCURRENT_MODIFICATION' | 'GEOMETRY_KIND_MISMATCH' | 'GEOMETRY_OUTSIDE_SCENE_EXTENT' | 'INTERNAL_ERROR' | 'INVALID_CURSOR' | 'INVALID_GEOMETRY' | 'NOT_FOUND' | 'PRECONDITION_REQUIRED' | 'REQUEST_INVALID' | 'SCENE_NOT_FOUND' | 'STALE_VERSION' | 'TEXT_ONLY_FOR_NOTES' | 'TITLE_ALREADY_USED' | 'VALIDATION_FAILED';
+    code: 'ANNOTATION_NOT_FOUND' | 'CONCURRENT_MODIFICATION' | 'GEOMETRY_KIND_MISMATCH' | 'GEOMETRY_OUTSIDE_SCENE_EXTENT' | 'INTERNAL_ERROR' | 'INVALID_CURSOR' | 'INVALID_GEOMETRY' | 'NOT_FOUND' | 'OPEN_WAY' | 'PRECONDITION_REQUIRED' | 'REQUEST_INVALID' | 'SCENE_NOT_FOUND' | 'STALE_VERSION' | 'TEXT_ONLY_FOR_NOTES' | 'TITLE_ALREADY_USED' | 'UNSUPPORTED_SOURCE_ELEMENT' | 'UNTAGGED_ELEMENT' | 'VALIDATION_FAILED';
     detail: string;
     instance?: string;
     status?: number;
@@ -113,6 +264,8 @@ export type SearchRequest = {
     zone: GeoJsonPolygon;
 };
 
+export type Type = unknown;
+
 export type UpdateAnnotationRequest = {
     /**
      * New text. Only notes have text
@@ -123,6 +276,98 @@ export type UpdateAnnotationRequest = {
      * New title
      */
     title?: string | null;
+};
+
+export type CoordinateWritable = {
+    coordinate?: CoordinateWritable;
+    m?: number;
+    valid?: boolean;
+    x?: number;
+    y?: number;
+    z?: number;
+};
+
+export type ElementWritable = {
+    /**
+     * Points of a way, as produced by out geom
+     */
+    geometry?: Array<PointWritable>;
+    id: number;
+    /**
+     * Latitude of a node
+     */
+    lat?: number;
+    /**
+     * Longitude of a node
+     */
+    lon?: number;
+    tags?: {
+        [key: string]: string;
+    };
+    /**
+     * node, way or relation
+     */
+    type: string;
+};
+
+export type GeometryWritable = {
+    area?: number;
+    boundary?: GeometryWritable;
+    boundaryDimension?: number;
+    centroid?: PointWritable;
+    coordinate?: CoordinateWritable;
+    coordinates?: Array<CoordinateWritable>;
+    dimension?: number;
+    empty?: boolean;
+    envelope?: GeometryWritable;
+    envelopeInternal?: Envelope;
+    factory?: GeometryFactory;
+    geometryType?: string;
+    interiorPoint?: PointWritable;
+    length?: number;
+    numGeometries?: number;
+    numPoints?: number;
+    precisionModel?: PrecisionModel;
+    rectangle?: boolean;
+    simple?: boolean;
+    srid?: number;
+    userData?: unknown;
+    valid?: boolean;
+};
+
+export type OsmImportRequestWritable = {
+    /**
+     * Elements of an Overpass JSON answer, at most 5000 per request
+     */
+    elements: Array<ElementWritable>;
+};
+
+export type PointWritable = {
+    area?: number;
+    boundary?: GeometryWritable;
+    boundaryDimension?: number;
+    centroid?: PointWritable;
+    coordinate?: CoordinateWritable;
+    coordinateSequence?: CoordinateSequence;
+    coordinates?: Array<CoordinateWritable>;
+    dimension?: number;
+    empty?: boolean;
+    envelope?: GeometryWritable;
+    envelopeInternal?: Envelope;
+    factory?: GeometryFactory;
+    geometryType?: string;
+    interiorPoint?: PointWritable;
+    length?: number;
+    numGeometries?: number;
+    numPoints?: number;
+    precisionModel?: PrecisionModel;
+    rectangle?: boolean;
+    simple?: boolean;
+    srid?: number;
+    userData?: unknown;
+    valid?: boolean;
+    x?: number;
+    y?: number;
 };
 
 export type ListScenesData = {
@@ -424,3 +669,34 @@ export type UpdateAnnotationResponses = {
 };
 
 export type UpdateAnnotationResponse = UpdateAnnotationResponses[keyof UpdateAnnotationResponses];
+
+export type ImportOsmData = {
+    body: OsmImportRequestWritable;
+    path: {
+        sceneId: string;
+    };
+    query?: never;
+    url: '/api/scenes/{sceneId}/imports/osm';
+};
+
+export type ImportOsmErrors = {
+    /**
+     * Request shape is invalid, or more than 5000 elements
+     */
+    400: ProblemResponse;
+    /**
+     * SCENE_NOT_FOUND
+     */
+    404: ProblemResponse;
+};
+
+export type ImportOsmError = ImportOsmErrors[keyof ImportOsmErrors];
+
+export type ImportOsmResponses = {
+    /**
+     * Processed. Check rejected for elements that were skipped.
+     */
+    200: OsmImportResponse;
+};
+
+export type ImportOsmResponse = ImportOsmResponses[keyof ImportOsmResponses];

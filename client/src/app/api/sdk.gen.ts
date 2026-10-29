@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateAnnotationData, CreateAnnotationErrors, CreateAnnotationResponses, CreateSceneData, CreateSceneErrors, CreateSceneResponses, GetAnnotationData, GetAnnotationErrors, GetAnnotationResponses, GetSceneData, GetSceneErrors, GetSceneResponses, ListAnnotationsData, ListAnnotationsErrors, ListAnnotationsResponses, ListScenesData, ListScenesResponses, NearestAnnotationsData, NearestAnnotationsErrors, NearestAnnotationsResponses, SearchAnnotationsData, SearchAnnotationsErrors, SearchAnnotationsResponses, UpdateAnnotationData, UpdateAnnotationErrors, UpdateAnnotationResponses } from './types.gen';
+import type { CreateAnnotationData, CreateAnnotationErrors, CreateAnnotationResponses, CreateSceneData, CreateSceneErrors, CreateSceneResponses, GetAnnotationData, GetAnnotationErrors, GetAnnotationResponses, GetSceneData, GetSceneErrors, GetSceneResponses, ImportOsmData, ImportOsmErrors, ImportOsmResponses, ListAnnotationsData, ListAnnotationsErrors, ListAnnotationsResponses, ListScenesData, ListScenesResponses, NearestAnnotationsData, NearestAnnotationsErrors, NearestAnnotationsResponses, SearchAnnotationsData, SearchAnnotationsErrors, SearchAnnotationsResponses, UpdateAnnotationData, UpdateAnnotationErrors, UpdateAnnotationResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -98,6 +98,20 @@ export const getAnnotation = <ThrowOnError extends boolean = false>(options: Opt
  */
 export const updateAnnotation = <ThrowOnError extends boolean = false>(options: Options<UpdateAnnotationData, ThrowOnError>): RequestResult<UpdateAnnotationResponses, UpdateAnnotationErrors, ThrowOnError> => (options.client ?? client).patch<UpdateAnnotationResponses, UpdateAnnotationErrors, ThrowOnError>({
     url: '/api/scenes/{sceneId}/annotations/{id}',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Import OpenStreetMap elements into a scene
+ *
+ * Turns nodes into markers (notes when they carry a description) and closed ways into outlines. Elements that cannot be imported are reported one by one with a stable code, and do not stop the others. Importing the same extract twice creates nothing the second time. Map data © OpenStreetMap contributors, ODbL.
+ */
+export const importOsm = <ThrowOnError extends boolean = false>(options: Options<ImportOsmData, ThrowOnError>): RequestResult<ImportOsmResponses, ImportOsmErrors, ThrowOnError> => (options.client ?? client).post<ImportOsmResponses, ImportOsmErrors, ThrowOnError>({
+    url: '/api/scenes/{sceneId}/imports/osm',
     ...options,
     headers: {
         'Content-Type': 'application/json',
