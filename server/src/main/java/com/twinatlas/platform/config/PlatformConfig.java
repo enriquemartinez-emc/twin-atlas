@@ -9,7 +9,6 @@ import org.n52.jackson.datatype.jts.JtsModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-/** Infrastructure beans the shell passes into the pure core: time, ids and the geometry factory. */
 @Configuration(proxyBeanMethods = false)
 public class PlatformConfig {
 

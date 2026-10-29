@@ -31,7 +31,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Use case: create an annotation in a scene. Fixed shell flow around the pure core. */
 @RestController
 class CreateAnnotationEndpoint {
 
@@ -85,15 +84,10 @@ class CreateAnnotationEndpoint {
     CreateAnnotation command =
         new CreateAnnotation(sceneId, request.title().trim(), request.toShape());
 
-    // 1. load context facts
     CreateContext context = facts.forCreate(sceneId, command.title());
-    // 2. evaluate
     Decision decision = CreateAnnotationRules.evaluate(command, context);
-    // 3. reject
     if (decision instanceof Rejected(var reason)) return Problems.from(reason);
-    // 4. apply the total transform
     Draft draft = Annotation.create(ids.get(), clock.instant(), command);
-    // 5. persist, then respond
     AnnotationEntity saved;
     try {
       saved = repository.saveAndFlush(mapper.toEntity(draft));

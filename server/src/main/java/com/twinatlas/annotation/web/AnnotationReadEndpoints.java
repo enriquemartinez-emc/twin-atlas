@@ -30,7 +30,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-/** Spatial reads. No core, no domain types: validate the request shape, query, return. */
 @RestController
 @RequestMapping("/api/scenes/{sceneId}/annotations")
 class AnnotationReadEndpoints {

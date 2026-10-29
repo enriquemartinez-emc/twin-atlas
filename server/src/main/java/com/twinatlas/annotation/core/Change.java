@@ -1,8 +1,5 @@
 package com.twinatlas.annotation.core;
 
-/**
- * A requested change to one field: leave it alone, or replace it. Clearer than a nullable value.
- */
 public sealed interface Change<T> {
 
   record Keep<T>() implements Change<T> {}

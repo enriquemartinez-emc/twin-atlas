@@ -173,12 +173,9 @@ public class AnnotationQueries {
     return sql.append(" ORDER BY a.geom <-> ").append(point).append(" LIMIT :limit").toString();
   }
 
-  /** {@code &&} (index) first, then the exact test. */
   private static String intersects(String geometry) {
     return "(a.geom && " + geometry + " AND ST_Intersects(a.geom, " + geometry + "))";
   }
-
-  // ---- plumbing ----
 
   private JdbcClient.StatementSpec bindPaging(
       JdbcClient.StatementSpec statement, Cursor cursor, int limit) {

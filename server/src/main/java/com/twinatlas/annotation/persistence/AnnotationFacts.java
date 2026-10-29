@@ -14,7 +14,6 @@ import org.locationtech.jts.io.WKBReader;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
-/** Step 1 of the shell flow: derive the facts the rules need with small SQL queries. */
 @Component
 public class AnnotationFacts {
 

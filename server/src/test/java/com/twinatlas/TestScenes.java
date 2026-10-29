@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-/** Creates scenes through the public API, the same way a client would. */
 public final class TestScenes {
 
   /** Lon 2.17..2.18, lat 41.40..41.41 (around the Sagrada Família). */

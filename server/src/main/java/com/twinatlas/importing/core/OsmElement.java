@@ -3,10 +3,6 @@ package com.twinatlas.importing.core;
 import java.util.List;
 import java.util.Map;
 
-/**
- * One element of an OpenStreetMap extract, reduced to what the import needs. Types, not flags: a
- * node has a position, a way has its points, anything else is {@link Unsupported}.
- */
 public sealed interface OsmElement {
 
   long id();
@@ -14,7 +10,6 @@ public sealed interface OsmElement {
   /** For example {@code node/123}: the stable name of the element in OpenStreetMap. */
   String reference();
 
-  /** What the map says about the element. Empty when it says nothing. */
   Map<String, String> tags();
 
   record Node(long id, Position position, Map<String, String> tags) implements OsmElement {

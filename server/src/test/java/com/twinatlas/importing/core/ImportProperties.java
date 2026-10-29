@@ -16,7 +16,6 @@ import net.jqwik.api.ForAll;
 import net.jqwik.api.Property;
 import net.jqwik.api.Provide;
 
-/** Whatever arrives, every element is accounted for and nothing outside the scene gets in. */
 class ImportProperties {
 
   private static final UUID ID = UUID.fromString("00000000-0000-0000-0000-000000000001");

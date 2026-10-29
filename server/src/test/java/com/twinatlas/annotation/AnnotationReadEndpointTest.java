@@ -34,8 +34,6 @@ class AnnotationReadEndpointTest {
   @Autowired JdbcClient jdbc;
   @Autowired MeterRegistry meters;
 
-  // ---- helpers ----
-
   private MvcTestResult get(String uri, Object... vars) {
     return mvc.get().uri(uri, vars).exchange();
   }
@@ -51,8 +49,6 @@ class AnnotationReadEndpointTest {
   private static List<String> nearestTitles(MvcTestResult result) {
     return JsonPath.read(body(result), "$[*].annotation.title");
   }
-
-  // ---- bbox: "everything visible in the current view" ----
 
   @Test
   void bboxReturnsOnlyAnnotationsThatIntersectTheView() {
@@ -109,8 +105,6 @@ class AnnotationReadEndpointTest {
     assertThat(titles(across)).containsExactlyInAnyOrder("East side", "West side");
     assertThat(titles(eastOnly)).containsExactly("East side");
   }
-
-  // ---- keyset pagination ----
 
   @Test
   void keysetPagesWalkEveryAnnotationOnceInCreationOrder() {
@@ -189,8 +183,6 @@ class AnnotationReadEndpointTest {
     assertThat(body(second)).contains("\"nextCursor\":null");
   }
 
-  // ---- nearest-N ----
-
   @Test
   void nearestReturnsTheClosestFirstWithDistancesInMetres() {
     UUID scene = TestScenes.createScene(mvc);
@@ -232,8 +224,6 @@ class AnnotationReadEndpointTest {
     assertThat(body(within10)).contains("\"distanceMeters\":0.0");
   }
 
-  // ---- search: "everything inside a zone" ----
-
   @Test
   void searchReturnsWhatIntersectsTheZoneAndPaginates() {
     UUID scene = TestScenes.createScene(mvc);
@@ -268,8 +258,6 @@ class AnnotationReadEndpointTest {
         .content(json)
         .exchange();
   }
-
-  // ---- invalid input and unknown scenes ----
 
   @ParameterizedTest
   @ValueSource(strings = {"1,2,3", "a,b,c,d", "200,0,10,10", "0,50,10,40", "0,0,10,95", ""})
@@ -346,8 +334,6 @@ class AnnotationReadEndpointTest {
       assertThat(result).bodyJson().extractingPath("$.code").isEqualTo("SCENE_NOT_FOUND");
     }
   }
-
-  // ---- observability ----
 
   @Test
   void everyQueryTypeIsTimed() {

@@ -37,11 +37,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Use case: import OpenStreetMap elements into a scene as draft annotations. The shell flow is the
- * same as for one annotation, but the batch is judged element by element and every rejection is
- * reported.
- */
 @RestController
 class OsmImportEndpoint {
 
@@ -95,20 +90,15 @@ class OsmImportEndpoint {
       @PathVariable UUID sceneId, @Valid @RequestBody OsmImportRequest request) {
     List<OsmElement> elements = request.toCore();
 
-    // 1. load context facts
     ImportContext context =
         facts.forImport(sceneId, elements.stream().map(OsmTransform::titleFor).toList());
-    // 2. evaluate
     Outcome outcome = ImportRules.evaluate(sceneId, elements, context);
-    // 3. reject
     if (!(outcome instanceof Outcome.Planned(var plan))) {
       return Problems.from(Rejection.SCENE_NOT_FOUND);
     }
-    // 4. apply the total transform
     Instant now = clock.instant();
     List<Draft> drafts =
         plan.accepted().stream().map(a -> Annotation.create(ids.get(), now, a.command())).toList();
-    // 5. persist, then respond
     boolean[] inserted = persist(drafts);
 
     List<ItemRejection> rejected = new ArrayList<>();

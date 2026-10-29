@@ -9,7 +9,6 @@ import java.time.Instant;
 import java.util.UUID;
 import org.locationtech.jts.geom.Polygon;
 
-/** A scene is the area a digital twin covers. Annotations must fall inside its extent. */
 @Entity
 @Table(name = "scene")
 class SceneEntity {

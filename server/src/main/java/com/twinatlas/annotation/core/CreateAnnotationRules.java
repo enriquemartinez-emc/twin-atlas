@@ -12,7 +12,6 @@ import com.twinatlas.geo.Wgs84;
 import com.twinatlas.platform.kernel.Decision;
 import org.locationtech.jts.geom.Geometry;
 
-/** The rules for creating an annotation. The first rule that fails decides the rejection. */
 public final class CreateAnnotationRules {
 
   private CreateAnnotationRules() {}

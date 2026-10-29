@@ -73,7 +73,6 @@ public final class OsmTransform {
         element.reference(), new CreateAnnotation(sceneId, titleFor(element), shape));
   }
 
-  /** A pin, or a note when the place carries a description. */
   private static Shape pin(Node node) {
     var point =
         Wgs84.FACTORY.createPoint(new Coordinate(node.position().lon(), node.position().lat()));

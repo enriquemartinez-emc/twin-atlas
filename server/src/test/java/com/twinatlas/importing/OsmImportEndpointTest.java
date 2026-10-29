@@ -25,9 +25,6 @@ import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 
-/**
- * The import against real PostGIS, with a small Overpass answer that mixes good and bad elements.
- */
 @SpringBootTest
 @AutoConfigureMockMvc
 @Import(TestcontainersConfiguration.class)
@@ -65,7 +62,6 @@ class OsmImportEndpointTest {
     return map;
   }
 
-  /** In the order the elements appear in the fixture. */
   private static final Map<String, String> EXPECTED_REJECTIONS = expectedRejections();
 
   private static Map<String, String> expectedRejections() {

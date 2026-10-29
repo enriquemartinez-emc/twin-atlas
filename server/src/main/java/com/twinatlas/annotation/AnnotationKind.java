@@ -5,9 +5,6 @@ import com.twinatlas.annotation.core.Shape.Marker;
 import com.twinatlas.annotation.core.Shape.Note;
 import com.twinatlas.annotation.core.Shape.Outline;
 
-/**
- * The kind of annotation as the API and the database know it. The core uses {@link Shape} types.
- */
 public enum AnnotationKind {
   MARKER,
   NOTE,
@@ -21,7 +18,6 @@ public enum AnnotationKind {
     };
   }
 
-  /** Only notes carry text. */
   public static String bodyOf(Shape shape) {
     return shape instanceof Note note ? note.text() : null;
   }

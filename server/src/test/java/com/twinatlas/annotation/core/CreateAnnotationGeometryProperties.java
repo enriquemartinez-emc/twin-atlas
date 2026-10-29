@@ -21,7 +21,6 @@ import net.jqwik.api.constraints.DoubleRange;
 import net.jqwik.api.constraints.Scale;
 import org.locationtech.jts.geom.Polygon;
 
-/** Property tests for the geometry rules over arbitrary scene extents. */
 class CreateAnnotationGeometryProperties {
 
   private static final UUID SCENE = UUID.fromString("00000000-0000-0000-0000-000000000001");

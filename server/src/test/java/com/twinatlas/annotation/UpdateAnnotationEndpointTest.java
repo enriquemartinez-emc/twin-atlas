@@ -29,8 +29,6 @@ class UpdateAnnotationEndpointTest {
 
   record Created(UUID scene, UUID id, String etag) {}
 
-  // ---- helpers ----
-
   private static String body(MvcTestResult result) {
     return new String(result.getResponse().getContentAsByteArray(), StandardCharsets.UTF_8);
   }
@@ -66,8 +64,6 @@ class UpdateAnnotationEndpointTest {
 
   private static final String RENAME = "{\"title\":\"New title\"}";
 
-  // ---- GET: one annotation and its ETag ----
-
   @Test
   void getReturnsTheAnnotationWithItsEtag() {
     var scene = TestScenes.createScene(mvc);
@@ -98,8 +94,6 @@ class UpdateAnnotationEndpointTest {
     assertThat(unknownScene).hasStatus(404);
     assertThat(unknownScene).bodyJson().extractingPath("$.code").isEqualTo("SCENE_NOT_FOUND");
   }
-
-  // ---- PATCH: the changes that work ----
 
   @Test
   void renamesAnAnnotationAndHandsOutTheNextEtag() {
@@ -184,8 +178,6 @@ class UpdateAnnotationEndpointTest {
     assertThat(result).hasStatusOk();
   }
 
-  // ---- preconditions: If-Match ----
-
   @Test
   void aMissingIfMatchIs428() {
     var scene = TestScenes.createScene(mvc);
@@ -224,8 +216,6 @@ class UpdateAnnotationEndpointTest {
     assertThat(stale).bodyJson().extractingPath("$.code").isEqualTo("STALE_VERSION");
     assertThat(get(scene, annotation.id())).bodyJson().extractingPath("$.title").isEqualTo("First");
   }
-
-  // ---- one test per rejection ----
 
   @Test
   void rejectsAnUnknownAnnotationAndAnUnknownScene() {
@@ -306,8 +296,6 @@ class UpdateAnnotationEndpointTest {
     assertThat(text).hasStatus(422);
     assertThat(text).bodyJson().extractingPath("$.code").isEqualTo("TEXT_ONLY_FOR_NOTES");
   }
-
-  // ---- request shape ----
 
   @Test
   void anEmptyUpdateAndABlankOrLongTitleAreValidationProblems() {

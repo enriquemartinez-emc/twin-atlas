@@ -5,7 +5,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.assertj.MockMvcTester;
 import org.springframework.test.web.servlet.assertj.MvcTestResult;
 
-/** Creates annotations through the public API, like a client would. */
 final class AnnotationApi {
 
   private AnnotationApi() {}

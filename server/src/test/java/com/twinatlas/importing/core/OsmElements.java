@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
 
-/** Fixtures for importing core tests. Plain Java and JTS: no Spring, no database. */
 final class OsmElements {
 
   /** The scene covers lon 2.17..2.18, lat 41.40..41.41. */
@@ -39,7 +38,6 @@ final class OsmElements {
         .toList();
   }
 
-  /** A closed square ring starting at the south-west corner. */
   static Way square(long id, Map<String, String> tags, double west, double south, double size) {
     return way(
         id,

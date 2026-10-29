@@ -4,27 +4,18 @@ import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-/**
- * What an annotation looks like on the scene. The type fixes the geometry, so a mismatch cannot
- * exist.
- */
 public sealed interface Shape {
 
   Geometry geometry();
 
-  /** Whether a geometry is the right kind for this shape: pins take a point, outlines a polygon. */
   boolean accepts(Geometry geometry);
 
-  /** Only notes carry text. */
   boolean hasText();
 
-  /** The same kind of shape somewhere else. Call it only when {@link #accepts} said yes. */
   Shape movedTo(Geometry geometry);
 
-  /** The same shape with other text. Call it only when {@link #hasText} said yes. */
   Shape withText(String text);
 
-  /** A pin on the scene. */
   record Marker(Point point) implements Shape {
     @Override
     public Geometry geometry() {
@@ -52,7 +43,6 @@ public sealed interface Shape {
     }
   }
 
-  /** A pin with text, for example "this window needs repair". */
   record Note(Point point, String text) implements Shape {
     @Override
     public Geometry geometry() {
@@ -80,7 +70,6 @@ public sealed interface Shape {
     }
   }
 
-  /** An area, for example "inspection area". */
   record Outline(Polygon polygon) implements Shape {
     @Override
     public Geometry geometry() {

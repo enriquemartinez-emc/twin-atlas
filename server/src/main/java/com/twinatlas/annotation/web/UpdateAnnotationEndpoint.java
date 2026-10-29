@@ -37,11 +37,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * Use case: rename, retext or move an annotation. The same five-step shell flow as creating, with
- * one difference: it loads the entity and changes that managed entity inside one transaction,
- * instead of rebuilding one. {@code If-Match} carries the version the caller last saw.
- */
 @RestController
 class UpdateAnnotationEndpoint {
 
@@ -124,7 +119,7 @@ class UpdateAnnotationEndpoint {
 
   private ResponseEntity<?> apply(
       UUID sceneId, UUID id, long expectedVersion, UpdateAnnotationRequest request) {
-    // 1. load context facts (the entity stays managed for the whole transaction)
+    // the entity stays managed for the whole transaction
     Optional<AnnotationEntity> loaded = repository.findByIdAndSceneId(id, sceneId);
     CurrentAnnotation current =
         loaded
@@ -143,14 +138,11 @@ class UpdateAnnotationEndpoint {
         facts.forUpdate(
             sceneId, id, current, command.title().replaces() ? request.title().trim() : null);
 
-    // 2. evaluate
     Decision decision = UpdateAnnotationRules.evaluate(command, context);
-    // 3. reject
     if (decision instanceof Rejected(var reason)) return Problems.from(reason);
-    // 4. apply the total transform
     AnnotationEntity entity = loaded.orElseThrow();
     Annotation updated = Annotation.update(mapper.toDomain(entity), command);
-    // 5. persist (the version column rejects a lost race), then respond
+    // the version column rejects a lost race
     mapper.apply(updated, entity);
     repository.flush();
     return ResponseEntity.ok()

@@ -89,8 +89,6 @@ class CreateAnnotationEndpointTest {
     assertThat(srid).isEqualTo(4326);
   }
 
-  // ---- one test per rejection path ----
-
   @Test
   void rejectsAnUnknownSceneWith404() {
     var result = post(UUID.randomUUID(), "MARKER", "Orphan", null, INSIDE_POINT);
@@ -160,8 +158,6 @@ class CreateAnnotationEndpointTest {
     assertThat(result).hasStatus(201);
   }
 
-  // ---- request shape (bean validation) ----
-
   @Test
   void rejectsAMarkerSentWithAPolygonAs400() {
     UUID scene = TestScenes.createScene(mvc);
@@ -197,8 +193,6 @@ class CreateAnnotationEndpointTest {
     assertThat(result).hasStatus(400);
     assertThat(result).bodyJson().extractingPath("$.errors[0].field").isEqualTo("title");
   }
-
-  // ---- the database is the final enforcer ----
 
   @Test
   void aStaleFactIsStillCaughtByTheUniqueIndexAndMappedToTheSameRejection() {

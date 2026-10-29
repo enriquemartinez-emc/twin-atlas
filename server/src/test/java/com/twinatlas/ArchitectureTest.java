@@ -30,7 +30,6 @@ class ArchitectureTest {
             .importPackages(ROOT);
   }
 
-  /** The cores, the shared kernel and the geometry rules are plain Java. */
   @Test
   void pureCodeIsFreeOfFrameworks() {
     noClasses()
@@ -44,7 +43,6 @@ class ArchitectureTest {
         .check(classes);
   }
 
-  /** What every core shares must not lean on any feature, or on the server code around it. */
   @Test
   void sharedKernelAndGeoDependOnNoSliceAndNoShell() {
     String[] forbidden =
@@ -63,10 +61,6 @@ class ArchitectureTest {
         .check(classes);
   }
 
-  /**
-   * Inside a big feature the dependencies run one way: web, then persistence, then the shapes it
-   * returns.
-   */
   @Test
   void roleFoldersDependOneWay() {
     noClasses()
@@ -100,7 +94,6 @@ class ArchitectureTest {
         .check(classes);
   }
 
-  /** A slice's core is its public face. Everything else (endpoints, entities...) stays private. */
   @ParameterizedTest
   @ValueSource(strings = {"annotation", "scene", "asset", "importing"})
   void slicesDoNotReachIntoEachOthersInternals(String slice) {

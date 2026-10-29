@@ -5,7 +5,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
 
-/** Builds RFC 7807 problems. The {@code code} property is the stable, machine-readable error. */
 public final class Problems {
 
   public static final String CODE = "code";
@@ -19,19 +18,13 @@ public final class Problems {
     return problem;
   }
 
-  /** The response for an error that is not a domain rejection. */
   public static ResponseEntity<ProblemDetail> response(ApiError error, String detail) {
     ProblemDetail problem = of(error, detail);
     return ResponseEntity.status(error.status()).body(problem);
   }
 
-  /** HTTP status, title and detail of one rejection. */
   private record Mapping(HttpStatus status, String title, String detail) {}
 
-  /**
-   * The single exhaustive mapping from a domain rejection to a problem. A new code must be mapped
-   * here, once.
-   */
   public static ResponseEntity<ProblemDetail> from(Rejection rejection) {
     Mapping mapping = mappingOf(rejection);
     ProblemDetail problem = ProblemDetail.forStatusAndDetail(mapping.status(), mapping.detail());

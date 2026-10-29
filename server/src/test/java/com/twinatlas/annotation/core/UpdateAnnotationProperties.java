@@ -25,7 +25,6 @@ import net.jqwik.api.constraints.LongRange;
 import net.jqwik.api.constraints.Scale;
 import org.locationtech.jts.geom.Geometry;
 
-/** Properties of the update rules over arbitrary scenes, versions and positions. */
 class UpdateAnnotationProperties {
 
   private static final UUID SCENE_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");

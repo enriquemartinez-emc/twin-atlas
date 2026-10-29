@@ -16,7 +16,6 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-/** Entity ↔ domain mapping at the shell boundary. The core never sees an entity. */
 @Mapper(componentModel = "spring", imports = AnnotationKind.class)
 public interface AnnotationMapper {
 
@@ -44,7 +43,6 @@ public interface AnnotationMapper {
   @Mapping(target = "geom", expression = "java(annotation.shape().geometry())")
   void apply(Annotation annotation, @MappingTarget AnnotationEntity entity);
 
-  /** The stored annotation as a domain value: its lifecycle state and shape become types. */
   default Annotation toDomain(AnnotationEntity entity) {
     Shape shape = shapeOf(entity);
     return switch (entity.getStatus()) {

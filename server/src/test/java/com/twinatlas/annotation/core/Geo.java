@@ -5,7 +5,6 @@ import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Point;
 import org.locationtech.jts.geom.Polygon;
 
-/** Geometry fixtures for core tests. Plain JTS: no Spring, no database. */
 final class Geo {
 
   private Geo() {}
@@ -25,7 +24,6 @@ final class Geo {
         });
   }
 
-  /** Two edges cross: not a valid polygon. */
   static Polygon bowtie(double west, double south, double east, double north) {
     return Wgs84.FACTORY.createPolygon(
         new Coordinate[] {

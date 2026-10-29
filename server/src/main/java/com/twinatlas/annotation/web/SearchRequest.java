@@ -10,7 +10,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import org.locationtech.jts.geom.Polygon;
 
-/** Everything that intersects a zone drawn on the scene. */
 public record SearchRequest(
     @NotNull @Schema(ref = "#/components/schemas/GeoJsonPolygon") Polygon zone,
     @Min(1) @Max(AnnotationQueries.MAX_PAGE_SIZE) Integer limit,

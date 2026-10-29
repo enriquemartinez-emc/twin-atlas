@@ -15,9 +15,6 @@ import org.springframework.context.annotation.Import;
 import tools.jackson.databind.JsonNode;
 import tools.jackson.databind.json.JsonMapper;
 
-/**
- * Proves GeoJSON round-trips through the app's own Jackson 3 mapper (n52 module, no custom code).
- */
 @SpringBootTest
 @Import(TestcontainersConfiguration.class)
 class JtsJsonTest {

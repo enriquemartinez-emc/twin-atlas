@@ -16,7 +16,6 @@ import org.locationtech.jts.io.WKBReader;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Component;
 
-/** Step 1 of the shell flow for a batch: the scene, and which of the batch's titles are taken. */
 @Component
 class ImportFacts {
 
