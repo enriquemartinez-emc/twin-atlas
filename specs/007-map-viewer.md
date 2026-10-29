@@ -1,6 +1,6 @@
 # 007 — Map viewer
 
-**Status:** In progress | **Branch:** `feat/map-viewer`
+**Status:** Done | **Branch:** `feat/map-viewer`
 
 ## Description
 
@@ -12,7 +12,7 @@ Show a real 3D scene in the browser. CesiumJS lives behind a thin `@Service` wra
 - [x] Cesium static assets are copied through `angular.json` and `CESIUM_BASE_URL` is set. No Cesium import exists outside `app/map`.
 - [x] The wrapper (`@Service`, no constructor injection) exposes typed methods and signals (camera position, visible bbox). It destroys all Cesium objects on teardown. A test verifies the viewer's `destroy` is called.
 - [x] The viewer route loads the wrapper via `injectAsync`. The production build shows Cesium in a separate lazy chunk, and the initial bundle stays within budget.
-- [ ] With a Cesium ion token (pasted once in the UI, kept in `localStorage`, never committed) the scene loads Google Photorealistic 3D Tiles. Without one, an OpenStreetMap imagery globe is shown with a notice. The source, license and attribution terms are in `client/README.md`. **Open: the token path is untested until I try my own token.** The no-token globe and the rejected-token fallback are verified.
+- [x] With a Cesium ion token (pasted once in the UI, kept in `localStorage`, never committed) the scene loads Google Photorealistic 3D Tiles. Without one, an OpenStreetMap imagery globe is shown with a notice. The source, license and attribution terms are in `client/README.md`. **Accepted as done by the project owner without a real-token run: the token path stays untested until they try their own.** The no-token globe and the rejected-token fallback are verified.
 - [x] Camera moves publish the visible bbox, debounced with a plain timer (not `debounced()`).
 - [x] Spartan Brain/Helm components (button, input) are used for the shell. No hardcoded colors.
 - [x] Vitest tests cover bbox math, debounce (fake timers) and wrapper teardown. Lint, format and build are green with zero warnings.

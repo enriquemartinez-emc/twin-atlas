@@ -1,6 +1,6 @@
 # 015 — HTML documentation
 
-**Status:** In progress | **Branch:** `docs/html-docs`
+**Status:** Done | **Branch:** `docs/html-docs`
 
 ## Description
 

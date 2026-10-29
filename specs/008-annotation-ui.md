@@ -1,6 +1,6 @@
 # 008 — Annotation UI and SDK
 
-**Status:** In progress | **Branch:** `feat/annotation-ui`
+**Status:** Done | **Branch:** `feat/annotation-ui`
 
 ## Description
 
