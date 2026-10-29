@@ -20,10 +20,9 @@ const summary = (id: string, title: string) => ({
 
 const view = { west: 2.17, south: 41.4, east: 2.18, north: 41.41 };
 
-/** Runs effects and waits for resources to settle after a flush. */
 const settle = async (): Promise<void> => {
   TestBed.tick();
-  await new Promise((resolve) => setTimeout(resolve, 0)); // let the resource resolve
+  await new Promise((resolve) => setTimeout(resolve, 0));
   TestBed.tick();
 };
 

@@ -20,7 +20,6 @@ export interface LonLat {
   readonly latitude: number;
 }
 
-/** A click on the map: where it hit the ground (if it did) and which feature was under it. */
 export interface MapClick {
   readonly longitude: number | null;
   readonly latitude: number | null;

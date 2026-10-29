@@ -206,7 +206,7 @@ describe('Scene', () => {
     expect(el().textContent).not.toContain('New marker');
     expect(el().textContent).toContain('Loose tile');
     expect(lastCall(map.setDraft)).toEqual([[], false]);
-    expect(lastCall(map.setFeatures)[1]).toBe('a2'); // the new one is selected
+    expect(lastCall(map.setFeatures)[1]).toBe('a2');
   });
 
   it('shows a readable message and keeps the draft when the server rejects the annotation', async () => {
@@ -584,7 +584,6 @@ describe('Scene', () => {
 
     const responseBody = (title: string) => ({ ...annotation('a1', title), body: null });
 
-    /** Picks the annotation from the list and answers the detail request with its ETag. */
     const openEditor = async (etag = '"2"') => {
       await open();
       el().querySelector<HTMLButtonElement>('app-annotation-list li button')?.click();
@@ -657,7 +656,7 @@ describe('Scene', () => {
       });
       patch.flush(responseBody('Cracked window'), { headers: { ETag: '"3"' } });
       await settle();
-      expect(lastCall(map.setDraft)[0]).toEqual([]); // the preview is cleared once saved
+      expect(lastCall(map.setDraft)[0]).toEqual([]);
       http.match(() => true).forEach((r) => r.flush([]));
     });
 

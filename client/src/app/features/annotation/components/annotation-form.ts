@@ -21,7 +21,6 @@ const HINTS: Record<AnnotationKind, string> = {
   OUTLINE: 'Click the map to add corners (at least three), then save.',
 };
 
-/** What to say once the shape is good enough to save, instead of asking for it again. */
 const PLACED_HINTS: Record<AnnotationKind, string> = {
   MARKER: 'Placed. Add a title and save, or click again to move it.',
   NOTE: 'Placed. Add a title and the text, then save, or click again to move it.',
@@ -91,10 +90,8 @@ const PLACED_HINTS: Record<AnnotationKind, string> = {
 })
 export class AnnotationForm {
   readonly kind = input.required<AnnotationKind>();
-  /** The draft on the map has enough points to be saved. */
   readonly ready = input(false);
   readonly busy = input(false);
-  /** A readable message for the last failed save, from the server's problem code. */
   readonly problem = input<string | null>(null);
 
   readonly submitted = output<AnnotationFormValue>();

@@ -1,6 +1,5 @@
 import type { ProblemResponse } from '@api/index';
 
-/** Result of an API call the UI makes: the value, or the problem the server (or the network) gave. */
 export type Outcome<T> =
   | { readonly ok: true; readonly value: T }
   | { readonly ok: false; readonly problem: ProblemResponse | undefined };

@@ -78,14 +78,12 @@ import { HlmTypographyImports } from '@shared/ui/typography';
 export class ScenePicker {
   readonly scenes = input.required<readonly SceneResponse[]>();
   readonly selectedId = input<string | null>(null);
-  /** The map has reported a view to build the scene from. */
   readonly canCreate = input(false);
   readonly busy = input(false);
   readonly problem = input<string | null>(null);
 
   readonly choose = output<string>();
 
-  /** Open while there is nothing to pick yet, closed once there is. The user can still toggle it. */
   protected readonly newSceneOpen = linkedSignal(() => this.scenes().length === 0);
   readonly create = output<string>();
 

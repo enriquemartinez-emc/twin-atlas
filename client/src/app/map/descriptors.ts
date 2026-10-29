@@ -12,7 +12,6 @@ export interface PointDescriptor {
   readonly shape: 'point';
   readonly id: string;
   readonly label: string;
-  /** The label shows only within this many metres of the camera, or always when null. */
   readonly labelRange: number | null;
   readonly longitude: number;
   readonly latitude: number;
@@ -23,14 +22,12 @@ export interface PolygonDescriptor {
   readonly shape: 'polygon';
   readonly id: string;
   readonly label: string;
-  /** Flat longitude, latitude pairs of the outer ring, without the closing duplicate. */
   readonly degrees: readonly number[];
   readonly color: string;
 }
 
 export type FeatureDescriptor = PointDescriptor | PolygonDescriptor;
 
-/** Outer ring as flat `[lon, lat, lon, lat...]`, dropping a closing vertex equal to the first. */
 export function ringToDegrees(ring: readonly (readonly number[])[]): number[] {
   const positions = ring.filter((p) => p.length >= 2);
   const first = positions[0];
@@ -68,7 +65,6 @@ export function describeFeature(
   return { shape: 'polygon', id: feature.id, label: feature.label, degrees, color };
 }
 
-/** The draft being drawn: loose points, a line, or a filled area once it is closed. */
 export function describeDraft(
   points: readonly LonLat[],
   asArea: boolean,

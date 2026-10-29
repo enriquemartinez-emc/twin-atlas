@@ -23,7 +23,6 @@ const KIND_NAMES: Record<Kind, string> = { MARKER: 'Marker', NOTE: 'Note', OUTLI
 /** Titles the OpenStreetMap import gives: `Name (node/123)` or `OSM node/123`. */
 const IMPORTED_TITLE = /\((?:node|way)\/\d+\)$|^OSM (?:node|way)\/\d+$/;
 
-/** What is inside the part of the map being looked at. It says so, because the list is long. */
 @Component({
   selector: 'app-annotation-list',
   imports: [
@@ -150,7 +149,6 @@ export class AnnotationList {
   readonly items = input.required<readonly AnnotationSummary[]>();
   readonly selectedId = input<string | null>(null);
   readonly truncated = input(false);
-  /** True while the first load of a view is running. */
   readonly loading = input(false);
 
   readonly selected = output<AnnotationSummary>();

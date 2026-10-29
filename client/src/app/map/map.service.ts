@@ -53,10 +53,8 @@ export class MapService {
   private readonly epochState = signal(0);
 
   readonly cameraPosition = this.cameraPositionState.asReadonly();
-  /** Debounced: updates {@link BBOX_DEBOUNCE_MS} ms after the camera stops changing. */
   readonly visibleBbox = this.visibleBboxState.asReadonly();
   readonly mode = this.modeState.asReadonly();
-  /** Set when photorealistic tiles failed to load (usually a rejected token) and OSM is shown instead. */
   readonly tilesError = this.tilesErrorState.asReadonly();
   /** The latest click on the map. Each click is a new object, so effects re-run for every one. */
   readonly lastClick = this.lastClickState.asReadonly();
@@ -145,12 +143,10 @@ export class MapService {
     });
   }
 
-  /** Replaces the annotations drawn on the map and highlights the selected one. */
   setFeatures(features: readonly MapFeature[], selectedId: string | null): void {
     this.layer?.setFeatures(features, selectedId);
   }
 
-  /** Previews the points being drawn. An empty list clears it. */
   setDraft(points: readonly LonLat[], asArea: boolean): void {
     this.layer?.setDraft(points, asArea);
   }

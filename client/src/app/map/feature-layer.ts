@@ -9,10 +9,6 @@ type Cesium = typeof CesiumNamespace;
 /** `ground` for the OSM globe, `tiles` when the scene is the photorealistic 3D tileset. */
 export type ClampTarget = 'ground' | 'tiles';
 
-/**
- * Draws annotations and the draft being drawn as Cesium entities. It owns two data sources and
- * releases both in {@link destroy}. Drawing data comes from the pure functions in descriptors.ts.
- */
 export class FeatureLayer {
   private readonly features: CustomDataSource;
   private readonly draft: CustomDataSource;
@@ -28,7 +24,6 @@ export class FeatureLayer {
     void viewer.dataSources.add(this.draft);
   }
 
-  /** Replaces everything drawn with the given features, highlighting the selected one. */
   setFeatures(features: readonly MapFeature[], selectedId: string | null): void {
     const entities = this.features.entities;
     entities.suspendEvents();
@@ -40,7 +35,6 @@ export class FeatureLayer {
     entities.resumeEvents();
   }
 
-  /** Shows the points clicked so far. An empty list clears the preview. */
   setDraft(points: readonly LonLat[], asArea: boolean): void {
     const { Cartesian3, Color, PolygonHierarchy } = this.cesium;
     const entities = this.draft.entities;
@@ -84,7 +78,6 @@ export class FeatureLayer {
     entities.resumeEvents();
   }
 
-  /** Releases both data sources and every entity in them. */
   destroy(): void {
     if (this.viewer.isDestroyed()) return;
     this.viewer.dataSources.remove(this.features, true);

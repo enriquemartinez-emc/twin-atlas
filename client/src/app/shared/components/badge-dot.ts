@@ -18,6 +18,5 @@ import { HlmBadgeImports } from '@shared/ui/badge';
   `,
 })
 export class BadgeDot {
-  /** Any CSS colour. */
   readonly color = input.required<string>();
 }

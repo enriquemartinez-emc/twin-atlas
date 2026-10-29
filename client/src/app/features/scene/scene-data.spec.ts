@@ -23,10 +23,9 @@ const scene = (id: string, name: string) => ({
   createdAt: '2026-01-01T00:00:00Z',
 });
 
-/** Runs effects and waits for resources to settle after a flush. */
 const settle = async (): Promise<void> => {
   TestBed.tick();
-  await new Promise((resolve) => setTimeout(resolve, 0)); // let the resource resolve
+  await new Promise((resolve) => setTimeout(resolve, 0));
   TestBed.tick();
 };
 
@@ -113,7 +112,7 @@ describe('SceneData', () => {
       .expectOne((r) => r.method === 'GET' && r.url.endsWith('/api/scenes'))
       .flush([scene('made', 'Plaza'), scene('old', 'Oldest')]);
     await settle();
-    expect(service.scenes().map((s) => s.id)).toEqual(['made', 'old']); // not duplicated
+    expect(service.scenes().map((s) => s.id)).toEqual(['made', 'old']);
   });
 
   it('returns the problem when creating fails', async () => {

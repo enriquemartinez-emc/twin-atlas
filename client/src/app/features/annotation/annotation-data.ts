@@ -43,7 +43,6 @@ export function annotationData(
     computation: (next, previous) => next ?? previous?.value ?? [],
   });
 
-  /** True when the view holds more annotations than one page: zoom in to see them all. */
   const truncated = computed(() => page.hasValue() && !!page.value().nextCursor);
   const loading = computed(() => page.isLoading());
   const failed = computed(() => page.error() !== undefined);
@@ -55,7 +54,6 @@ export function annotationData(
     return getAnnotationRequest({ path: { sceneId, id } });
   });
 
-  /** The selected annotation as the server has it right now, or null while it loads. */
   const current = computed(() => (detail.hasValue() ? detail.value() : null));
   /** Its version. An update sends it back as If-Match, so it can never overwrite a newer one. */
   const etag = computed(() => detail.headers()?.get('ETag') ?? null);
@@ -70,7 +68,6 @@ export function annotationData(
     detail.reload();
   }
 
-  /** Saves changes to the selected annotation against the version that was read. */
   async function update(request: UpdateAnnotationRequest): Promise<Outcome<AnnotationResponse>> {
     const sceneId = activeSceneId();
     const id = selectedAnnotationId();

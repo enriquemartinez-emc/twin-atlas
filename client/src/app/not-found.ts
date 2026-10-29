@@ -3,7 +3,6 @@ import { RouterLink } from '@angular/router';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmTypographyImports } from '@shared/ui/typography';
 
-/** Shown for any address the app does not know. */
 @Component({
   selector: 'app-not-found',
   imports: [RouterLink, HlmButtonImports, HlmTypographyImports],

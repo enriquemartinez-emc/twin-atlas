@@ -91,14 +91,10 @@ const NAMES: Record<AnnotationResponse['kind'], string> = {
 })
 export class AnnotationEditor {
   readonly annotation = input.required<AnnotationResponse>();
-  /** Waiting for a click on the map to choose a new position. */
   readonly moving = input(false);
-  /** A new position has been chosen and will be saved with the other changes. */
   readonly moved = input(false);
   readonly busy = input(false);
-  /** A readable message for the last failed save. */
   readonly problem = input<string | null>(null);
-  /** The failure means someone else changed it: offer to load the latest version. */
   readonly stale = input(false);
 
   readonly submitted = output<AnnotationFormValue>();

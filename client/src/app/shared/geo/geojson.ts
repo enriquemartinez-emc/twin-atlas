@@ -8,7 +8,6 @@ export function ringGeometry(points: readonly LonLat[]): GeoJsonPolygon {
   return { type: 'Polygon', coordinates: [first ? [...ring, first] : ring] };
 }
 
-/** The visible area as a polygon, for creating a scene that covers the current view. */
 export function bboxPolygon(box: Bbox): GeoJsonPolygon {
   return ringGeometry([
     { longitude: box.west, latitude: box.south },

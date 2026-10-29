@@ -14,12 +14,10 @@ export interface AnnotationFormValue {
   readonly body: string;
 }
 
-/** Points needed before a draft can be saved: one for a pin, three for an area. */
 export function isDraftReady(kind: AnnotationKind, points: readonly LonLat[]): boolean {
   return kind === 'OUTLINE' ? points.length >= 3 : points.length === 1;
 }
 
-/** Builds the request from the form and the clicked points. Call it only when the draft is ready. */
 export function buildCreateRequest(
   kind: AnnotationKind,
   value: AnnotationFormValue,
@@ -37,10 +35,6 @@ export function buildCreateRequest(
     : { kind, title, geometry };
 }
 
-/**
- * What to send to update an annotation: only the fields that actually changed, or null when
- * nothing did. Outlines are renamed, notes can also change text, pins can move.
- */
 export function buildUpdateRequest(
   original: AnnotationResponse,
   value: AnnotationFormValue,
@@ -74,7 +68,6 @@ export function toMapFeature(annotation: AnnotationSummary): MapFeature {
   };
 }
 
-/** Where to look at an annotation: the pin, or the middle of the outline's bounding box. */
 export function focusPoint(geometry: AnnotationSummary['geometry']): LonLat | null {
   if (geometry.type === 'Point') {
     const [longitude, latitude] = geometry.coordinates;
