@@ -10,7 +10,7 @@ import { environment } from '@env/environment';
 describe('path aliases', () => {
   it('resolves every alias from tsconfig paths', () => {
     expect(appConfig.providers.length).toBeGreaterThan(0);
-    expect(environment.apiBaseUrl).toContain('http');
+    expect(environment.apiBaseUrl).toBe(''); // same origin, proxied in development
     for (const entry of [annotation, asset, scene, sdk, map, ui]) {
       expect(entry).toBeDefined();
     }
