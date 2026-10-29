@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>One command to start the app - Twin Atlas docs</title>
+<meta name="description" content="One command to start the whole app.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>One command to start the app</h1>
+<div class="tags"><span class="tag c-white">Task 018</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/one-command-start</code></span></div>
+<p class="lead">One script, <code>scripts/dev.sh</code>, starts the database, the server and the client, waits until they answer, prints the address, and stops everything when you press Ctrl+C.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to use it</h3><p>From the top of the repository run <code>scripts/dev.sh</code>, then open <code>http://localhost:4200</code>. To check your machine first, run <code>scripts/dev.sh --check</code>: it only looks and starts nothing. I have not done a real start of the app with this script yet, and I will not without your approval.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>One command.</strong> It starts the database with Docker (and waits until it is healthy), then the server and the client, and waits until each one answers before it says it is ready.</li>
+<li><strong>One way to stop.</strong> Ctrl+C stops the client and the server together with everything they started, then the database. The data is kept. <code>--keep-db</code> leaves the database running.</li>
+<li><strong>A check that explains itself.</strong> <code>--check</code> lists every problem it finds in plain words, with the fix, instead of failing on the first one.</li>
+<li><strong>Logs in one place.</strong> Output goes to <code>.run/</code>, which git ignores. If a service fails to start, the last lines of its log are shown.</li>
+<li><strong>Nothing new to install.</strong> It is a plain bash script. No package and no Docker image were added.</li>
+</ul>
+<h2>What it starts</h2>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 335" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">What scripts/dev.sh starts</title><desc id="d">The script starts the database, then the API, then the client, and waits for each to answer. The client forwards API calls to the API, and the API queries the database. You open the client in your browser.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-slate" x="10" y="105" width="190" height="120" rx="10"/><text class="t-title" x="24" y="127">scripts/dev.sh</text><text class="t-small" x="24" y="146">starts 1, 2 and 3</text><text class="t-small" x="24" y="163">in order, and waits</text><text class="t-small" x="24" y="180">for each to answer</text><text class="t-small" x="24" y="206">Ctrl+C stops all</text><rect class="c-lilac" x="380" y="15" width="260" height="80" rx="10"/><text class="t-title" x="394" y="37">1  Database</text><text class="t-small" x="394" y="56">PostGIS in Docker</text><text class="t-small" x="394" y="73">port 5432</text><rect class="c-butter" x="380" y="125" width="260" height="80" rx="10"/><text class="t-title" x="394" y="147">2  API</text><text class="t-small" x="394" y="166">Spring Boot</text><text class="t-small" x="394" y="183">port 8080</text><rect class="c-sky" x="380" y="235" width="260" height="80" rx="10"/><text class="t-title" x="394" y="257">3  Client</text><text class="t-small" x="394" y="276">Angular dev server</text><text class="t-small" x="394" y="293">port 4200</text><rect class="c-sky" x="730" y="235" width="160" height="80" rx="10"/><text class="t-title" x="744" y="257">You</text><text class="t-small" x="744" y="276">your browser</text><path class="arrow" d="M200,150 L290,150 L290,55 L380,55" marker-end="url(#ah)"/><path class="arrow" d="M200,165 L380,165" marker-end="url(#ah)"/><path class="arrow" d="M200,180 L290,180 L290,275 L380,275" marker-end="url(#ah)"/><path class="arrow" d="M510,125 L510,95" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="520" y="115">queries</text><path class="arrow" d="M510,235 L510,205" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="520" y="226">forwards /api</text><path class="arrow" d="M730,275 L640,275" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="685" y="266">opens :4200</text></svg></div><figcaption>The script starts three things in order and waits for each to answer. You only open the client.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>What the check looks at</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">What it tells you if it fails</th></tr></thead><tbody><tr><td class="">Docker is running</td><td class="">Start Docker (on Windows, Docker Desktop), then try again.</td></tr><tr><td class="">JDK 25</td><td class="">Looks on the PATH, then in the usual Linux folder, so an unset <code>JAVA_HOME</code> is fine.</td></tr><tr><td class="">Node 22, 24 or 26</td><td class="">Angular 22 needs one of these. The message suggests <code>nvm install 24</code>.</td></tr><tr><td class="">The Maven wrapper</td><td class="">Reports a missing or non-executable <code>server/mvnw</code>.</td></tr><tr><td class="">Ports 8080 and 4200 are free</td><td class="">Names the port and how to see what uses it.</td></tr><tr><td class="">The database port is free or already ours</td><td class="">Another PostgreSQL on 5432 would stop the database from starting.</td></tr></tbody></table></div></div><div class="col">
+<h2>Why a script and not Docker for everything</h2>
+<p>Putting the server and the client in containers would need new Docker images (a JDK, Node, a web server), use more of this laptop's 8 GB, and make client reloads slower. A script keeps the way you already work and adds no dependency. It could still be done later as its own task.</p>
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Syntax</td><td class="">The shell parses the script without errors.</td></tr><tr><td class=""><code>--check</code> on this machine</td><td class="">All seven checks pass, and it exits with 0 without starting anything.</td></tr><tr><td class="">A port taken</td><td class="">With a dummy listener on 4200, it names the port, says nothing was started and exits with 1.</td></tr><tr><td class="">Several problems at once</td><td class="">With a PATH that has no Docker and no Node, both are reported together and JDK 25 is still found in the usual folder.</td></tr><tr><td class="">Other directories</td><td class="">It finds the repository from any folder it is run from.</td></tr><tr><td class="">A bug found by that test</td><td class="">The first version used <code>dirname</code>, and the stripped PATH showed a false "mvnw is missing". The path is now computed in plain bash.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>Everything that actually starts something: bringing the three up in order, waiting for them, the Ctrl+C shutdown leaving nothing on ports 8080 and 4200, <code>--keep-db</code>, installing the client's packages when they are missing, and the failure log. These need one real run, which needs your approval.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>It is a bash script for Linux, WSL and macOS. It does not run in a plain Windows terminal.</li>
+<li>The port check uses <code>ss</code>, which exists on Linux and WSL. Without it the check cannot see a busy port and carries on.</li>
+<li>Logs are replaced on every run.</li>
+<li>The first start is slow: the server compiles and the client builds.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="017-ui-figtree-and-spartan.html">Previous: Figtree font and a Spartan-built UI</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

@@ -201,6 +201,6 @@ Static HTML that opens straight from disk. No build step, no scripts, no CDN, no
 
 ## Done means
 
-Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit; E2E excluded unless I approved a run), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still runs everything (once `docker-compose.yml` exists), spec status updated, docs page written and linked, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.
+Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit; E2E excluded unless I approved a run), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still starts the database and `scripts/dev.sh` still starts the whole app, spec status updated, docs page written and linked, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.
 
 Criteria that don't apply to a task yet (no backend, no client, no compose file) are marked "n/a" in its spec, not silently skipped.

@@ -28,7 +28,14 @@ When someone else changed the same annotation first, the save is refused and not
 
 ## Quick start
 
-You need JDK 25, Node 24 and Docker.
+You need JDK 25, Node 24 and Docker. One command starts the database, the API and the client, waits until they answer, and stops them all when you press Ctrl+C:
+
+```bash
+scripts/dev.sh            # then open http://localhost:4200
+scripts/dev.sh --check    # only check that your machine can run it
+```
+
+Or step by step, in three terminals:
 
 ```bash
 docker compose up -d                  # PostGIS (repo root)

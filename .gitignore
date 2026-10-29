@@ -20,3 +20,6 @@ client/node_modules/
 
 # jqwik local cache
 server/.jqwik-database
+
+# Logs of scripts/dev.sh
+.run/

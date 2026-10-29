@@ -15,6 +15,14 @@ Angular 22 (zoneless, standalone, Vitest) with CesiumJS for the 3D scene and Spa
 
 ## Run the whole app
 
+From the repository root, one command starts the database, the API and this client, and Ctrl+C stops them all:
+
+```bash
+scripts/dev.sh
+```
+
+Or by hand:
+
 ```bash
 docker compose up -d                     # database (repo root)
 cd server && ./mvnw spring-boot:run      # API on :8080
