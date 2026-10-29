@@ -26,8 +26,10 @@ export class FeatureLayer {
 
   setFeatures(features: readonly MapFeature[], selectedId: string | null): void {
     const entities = this.features.entities;
-    entities.suspendEvents();
+    // Removed before the batch starts: inside one batch Cesium treats an entity that is removed and
+    // added again under the same id as changed, and keeps drawing the old colour.
     entities.removeAll();
+    entities.suspendEvents();
     for (const feature of features) {
       const descriptor = describeFeature(feature, selectedId);
       if (descriptor) entities.add(this.entityFor(descriptor));

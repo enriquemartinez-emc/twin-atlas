@@ -11,16 +11,40 @@ const cesium = vi.hoisted(() => {
 
   class FakeEntities {
     readonly added: Record<string, unknown>[] = [];
+    /** What the renderer would show, which follows Cesium's rules for batched changes. */
+    readonly drawn = new Map<string, Record<string, unknown>>();
     removeAllCalls = 0;
-    readonly suspendEvents = vi.fn();
-    readonly resumeEvents = vi.fn();
+    readonly suspendEvents = vi.fn(() => {
+      this.suspended = true;
+    });
+    readonly resumeEvents = vi.fn(() => {
+      for (const id of this.removedInBatch) {
+        if (!this.added.some((entity) => entity['id'] === id)) this.drawn.delete(id);
+      }
+      this.removedInBatch.clear();
+      this.suspended = false;
+    });
+    private suspended = false;
+    private readonly removedInBatch = new Set<string>();
 
     add(options: Record<string, unknown>): Record<string, unknown> {
       this.added.push(options);
+      const id = options['id'];
+      if (typeof id === 'string') {
+        // Cesium turns a remove and an add of one id inside a batch into "changed", and the
+        // renderer then keeps the old drawing.
+        if (!this.removedInBatch.has(id)) this.drawn.set(id, options);
+      }
       return options;
     }
 
     removeAll(): void {
+      for (const entity of this.added) {
+        const id = entity['id'];
+        if (typeof id !== 'string') continue;
+        if (this.suspended) this.removedInBatch.add(id);
+        else this.drawn.delete(id);
+      }
       this.added.length = 0;
       this.removeAllCalls++;
     }
@@ -339,6 +363,17 @@ describe('MapService', () => {
       expect(annotations.removeAllCalls).toBe(2);
       expect(annotations.suspendEvents).toHaveBeenCalledTimes(2);
       expect(annotations.resumeEvents).toHaveBeenCalledTimes(2);
+    });
+
+    it('shows a new selection even when the same feature was already drawn', async () => {
+      await service.init(container, { ionToken: null, initialView: view });
+      const annotations = viewer().source('annotations').entities;
+      service.setFeatures([marker], null);
+
+      service.setFeatures([marker], 'm1');
+
+      const point = annotations.drawn.get('m1')?.['point'] as { color: { css: string } };
+      expect(point.color.css).toBe(PALETTE.SELECTED);
     });
 
     it('colours the selected feature and clamps to the ground on the OSM globe', async () => {

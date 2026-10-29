@@ -228,14 +228,14 @@ const FOCUS_HEIGHT = 250;
 
     .status {
       position: absolute;
-      inset-block-end: 0.75rem;
-      inset-inline-start: 0.75rem;
+      inset-block-start: 0.75rem;
+      inset-inline-start: 4.25rem;
       z-index: 10;
     }
 
     .hint {
       position: absolute;
-      inset-block-end: 3.5rem;
+      inset-block-end: 2.5rem;
       inset-inline-start: 50%;
       transform: translateX(-50%);
       z-index: 10;
@@ -273,7 +273,9 @@ const FOCUS_HEIGHT = 250;
     }
 
     .hide-panel {
-      align-self: flex-end;
+      position: absolute;
+      inset-block-start: 0.5rem;
+      inset-inline-end: 0.5rem;
     }
 
     .stack {
@@ -293,17 +295,13 @@ const FOCUS_HEIGHT = 250;
       }
 
       .status {
-        inset-block: 0.75rem auto;
-        inset-inline: auto 0.75rem;
-      }
-
-      .rail {
-        inset-block-start: 0.75rem;
+        inset-block-start: 4rem;
+        inset-inline-start: 0.75rem;
       }
 
       .hint {
         inset-block-end: auto;
-        inset-block-start: 4rem;
+        inset-block-start: 7rem;
       }
 
       .show-panel {

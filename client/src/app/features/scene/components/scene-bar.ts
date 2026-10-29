@@ -54,7 +54,7 @@ type DialogState = 'open' | 'closed';
             [variant]="scenes().length > 0 ? 'outline' : 'default'"
           >
             <ng-icon name="lucidePlus" />
-            New scene
+            <span class="label">New scene</span>
           </button>
           <hlm-dialog-content *hlmDialogPortal="let ctx">
             <hlm-dialog-header>
@@ -140,6 +140,14 @@ type DialogState = 'open' | 'closed';
     @media (max-width: 40rem) {
       h1 {
         display: none;
+      }
+
+      .label {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
       }
 
       .scene {

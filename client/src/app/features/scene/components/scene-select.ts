@@ -17,10 +17,10 @@ import { HlmSelectImports } from '@shared/ui/select';
     <div hlmField orientation="horizontal">
       <label class="sr-only" for="scene-select">Scene</label>
       <hlm-select [value]="selected()" (valueChange)="onPick($event)">
-        <hlm-select-trigger buttonId="scene-select" class="trigger">
-          <span *hlmSelectValueTemplate="let scene">{{ scene.name }}</span>
+        <hlm-select-trigger buttonId="scene-select" class="[&>button]:w-full">
+          <span class="truncate" *hlmSelectValueTemplate="let scene">{{ scene.name }}</span>
         </hlm-select-trigger>
-        <hlm-select-content *hlmSelectPortal>
+        <hlm-select-content *hlmSelectPortal class="min-w-64">
           <hlm-select-group>
             @for (scene of scenes(); track scene.id) {
               <hlm-select-item [value]="scene">
@@ -38,8 +38,15 @@ import { HlmSelectImports } from '@shared/ui/select';
     </div>
   `,
   styles: `
-    .trigger {
-      min-width: 12rem;
+    hlm-select-trigger {
+      display: block;
+      width: 15rem;
+    }
+
+    @media (max-width: 40rem) {
+      hlm-select-trigger {
+        width: 8.5rem;
+      }
     }
 
     .option {

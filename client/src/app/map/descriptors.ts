@@ -6,7 +6,7 @@ import { PALETTE } from './palette';
  * of a crowded view pile on top of each other. A first guess, to be tuned by eye. The selected
  * annotation is always labelled.
  */
-export const LABEL_RANGE_METRES = 1500;
+export const LABEL_RANGE_METRES = 300;
 
 export interface PointDescriptor {
   readonly shape: 'point';
