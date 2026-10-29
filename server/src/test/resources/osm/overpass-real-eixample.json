@@ -1,0 +1,1653 @@
+{
+ "version": 0.6,
+ "generator": "Overpass API 0.7.62.11 87bfad18",
+ "osm3s": {
+  "timestamp_osm_base": "2026-10-29T02:33:46Z",
+  "copyright": "The data included in this document is from www.openstreetmap.org. The data is made available under ODbL."
+ },
+ "elements": [
+  {
+   "type": "node",
+   "id": 616483257,
+   "lat": 41.406511,
+   "lon": 2.1742446,
+   "tags": {
+    "addr:city": "Barcelona",
+    "addr:floor": "G",
+    "addr:housenumber": "27,29",
+    "addr:postcode": "08025",
+    "addr:street": "Avinguda Gaudí",
+    "amenity": "restaurant",
+    "check_date": "2023-02-12",
+    "cuisine": "italian",
+    "level": "0",
+    "name": "La Piazzenza",
+    "payment:credit_cards": "no",
+    "wheelchair": "yes"
+   }
+  },
+  {
+   "type": "node",
+   "id": 616483277,
+   "lat": 41.4047602,
+   "lon": 2.1746628,
+   "tags": {
+    "addr:housenumber": "2",
+    "addr:postcode": "08025",
+    "addr:street": "Avinguda de Gaudí",
+    "alt_name": "Kentucky Fried Chicken",
+    "amenity": "fast_food",
+    "brand": "KFC",
+    "brand:wikidata": "Q524757",
+    "brand:wikipedia": "en:KFC",
+    "cuisine": "chicken",
+    "delivery": "no",
+    "drive_through": "no",
+    "indoor_seating": "yes",
+    "internet_access": "wlan",
+    "name": "KFC",
+    "opening_hours": "Mo-We 11:00-01:00; Th 11:00-02:00; Fr,Sa 11:00-03:00; Su 10:30-02:00",
+    "outdoor_seating": "no",
+    "takeaway": "yes",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "yes"
+   }
+  },
+  {
+   "type": "node",
+   "id": 616483280,
+   "lat": 41.4050316,
+   "lon": 2.1742781,
+   "tags": {
+    "addr:housenumber": "3",
+    "addr:postcode": "08025",
+    "addr:street": "Avenida Gaudí",
+    "amenity": "restaurant",
+    "name": "Babilonia"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1044859208,
+   "lat": 41.4038166,
+   "lon": 2.1733642,
+   "tags": {
+    "amenity": "fast_food",
+    "branch": "Sagrada Família",
+    "brand": "McDonald's",
+    "brand:wikidata": "Q38076",
+    "brand:wikipedia": "es:McDonald's",
+    "check_date": "2026-09-06",
+    "cuisine": "burger",
+    "diet:gluten_free": "yes",
+    "drive_through": "no",
+    "internet_access": "wlan",
+    "name": "McDonald's",
+    "name:ca": "McDonald's",
+    "opening_hours": "Mo-Su 09:00-01:00",
+    "takeaway": "yes",
+    "toilets": "yes",
+    "toilets:wheelchair": "yes",
+    "wheelchair": "yes"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1098044341,
+   "lat": 41.4050144,
+   "lon": 2.1756028,
+   "tags": {
+    "addr:description": "C Lepant 281",
+    "amenity": "recycling",
+    "designation": "Punt verd de barri",
+    "name": "Punt Verd de Barri - Sagrada Família",
+    "operator": "Ajuntament de Barcelona",
+    "recycling:batteries": "yes",
+    "recycling:books": "yes",
+    "recycling:cans": "yes",
+    "recycling:cardboard": "yes",
+    "recycling:cartons": "yes",
+    "recycling:clothes": "yes",
+    "recycling:cooking_oil": "yes",
+    "recycling:electrical_appliances": "yes",
+    "recycling:glass_bottles": "yes",
+    "recycling:green_waste": "yes",
+    "recycling:magazines": "yes",
+    "recycling:newspaper": "yes",
+    "recycling:paper": "yes",
+    "recycling:paper_packaging": "yes",
+    "recycling:plastic": "yes",
+    "recycling:plastic_bottles": "yes",
+    "recycling:plastic_packaging": "yes",
+    "recycling:scrap_metal": "yes",
+    "recycling:small_appliances": "yes",
+    "recycling:waste": "yes",
+    "recycling:wood": "yes",
+    "recycling_type": "centre",
+    "source": "Plànol de punts verds de l'ajuntament de Barcelona"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1206798748,
+   "lat": 41.405752,
+   "lon": 2.1763365,
+   "tags": {
+    "access": "yes",
+    "addr:housenumber": "480",
+    "addr:street": "Carrer de Provença",
+    "amenity": "library",
+    "name": "Biblioteca Sagrada Família-Josep M. Ainaud de Lasarte",
+    "operator": "Diputació de Barcelona",
+    "wheelchair": "yes",
+    "wikidata": "Q85693414",
+    "wikimedia_commons": "Category:Biblioteca Sagrada Família-Josep M. Ainaud de Lasarte",
+    "wikipedia": "ca:Biblioteca Sagrada Família - Josep M. Ainaud de Lasarte"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1235272970,
+   "lat": 41.4050636,
+   "lon": 2.1773511,
+   "tags": {
+    "access": "yes",
+    "addr:description": "C Mallorca 425",
+    "addr:housenumber": "425-433",
+    "addr:street": "C/ Mallorca",
+    "amenity": "parking",
+    "capacity": "264",
+    "capacity:motorcycle": "17",
+    "car_sharing": "yes",
+    "fee": "yes",
+    "maxheight": "2.4",
+    "name": "Mercat Sagrada Família",
+    "name:ca": "Aparcament Mercat Sagrada Família",
+    "opening_hours": "24/7",
+    "operator": "Parking Mercat Sagrada Familia",
+    "parking": "underground",
+    "toilets": "yes",
+    "wheelchair": "yes"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1343390849,
+   "lat": 41.4046101,
+   "lon": 2.1745788,
+   "tags": {
+    "address": "Av Gaudí 2",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "12",
+    "operator": "http://ajuntament.barcelona.cat/bicicleta/ca"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1343390879,
+   "lat": 41.40527,
+   "lon": 2.1752469,
+   "tags": {
+    "addr:city": "Barcelona",
+    "addr:housenumber": "459",
+    "addr:street": "Carrer de Provença",
+    "amenity": "pharmacy",
+    "healthcare": "pharmacy",
+    "name": "Farmàcia Laguna",
+    "opening_hours": "24/7"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1343391161,
+   "lat": 41.4041654,
+   "lon": 2.177103,
+   "tags": {
+    "amenity": "recycling",
+    "location": "overground",
+    "recycling:cans": "yes",
+    "recycling:glass_bottles": "yes",
+    "recycling:green_waste": "yes",
+    "recycling:paper": "yes",
+    "recycling:plastic": "no",
+    "recycling:plastic_packaging": "yes",
+    "recycling_type": "container"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1350812714,
+   "lat": 41.4054793,
+   "lon": 2.1756837,
+   "tags": {
+    "access": "private",
+    "amenity": "parking",
+    "fee": "yes",
+    "name": "Parking Pirineu",
+    "parking": "underground"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1350812715,
+   "lat": 41.4060925,
+   "lon": 2.1768156,
+   "tags": {
+    "amenity": "post_box",
+    "brand": "Correos",
+    "brand:wikidata": "Q776605",
+    "brand:wikipedia": "es:Correos (España)",
+    "collection_times:signed": "no",
+    "operator": "Correos",
+    "operator:wikidata": "Q776605",
+    "operator:wikipedia": "es:Correos (España)"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1350812720,
+   "lat": 41.4063418,
+   "lon": 2.1764203,
+   "tags": {
+    "amenity": "recycling",
+    "recycling:food_waste": "yes",
+    "recycling:green_waste": "yes",
+    "recycling_type": "container"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1350812721,
+   "lat": 41.4062811,
+   "lon": 2.1770401,
+   "tags": {
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "10"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1359971619,
+   "lat": 41.4033165,
+   "lon": 2.1730516,
+   "tags": {
+    "address": "C Provença 415",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "14",
+    "covered": "no",
+    "operator": "http://ajuntament.barcelona.cat/bicicleta/ca"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1359971689,
+   "lat": 41.4047767,
+   "lon": 2.1745283,
+   "tags": {
+    "amenity": "telephone",
+    "check_date": "2023-03-01",
+    "operator": "Telefónica",
+    "operator:wikidata": "Q160229",
+    "payment:coins": "yes",
+    "payment:telephone_cards": "yes"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1359971738,
+   "lat": 41.4057556,
+   "lon": 2.1763305,
+   "tags": {
+    "address": "C Provença 480",
+    "amenity": "bicycle_parking",
+    "bicycle_parking": "stands",
+    "capacity": "26",
+    "covered": "no",
+    "operator": "http://ajuntament.barcelona.cat/bicicleta/ca"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1361887169,
+   "lat": 41.4050188,
+   "lon": 2.1754149,
+   "tags": {
+    "amenity": "recycling",
+    "recycling:cans": "yes",
+    "recycling:glass_bottles": "yes",
+    "recycling:paper": "yes",
+    "recycling_type": "centre"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1361887225,
+   "lat": 41.4059981,
+   "lon": 2.1768695,
+   "tags": {
+    "amenity": "waste_disposal"
+   }
+  },
+  {
+   "type": "node",
+   "id": 1361887243,
+   "lat": 41.4060037,
+   "lon": 2.1770029,
+   "tags": {
+    "addr:city": "Barcelona",
+    "addr:housenumber": "250",
+    "addr:postcode": "08013",
+    "addr:street": "Carrer de Padilla",
+    "amenity": "cafe"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173091610,
+   "bounds": {
+    "minlat": 41.4057737,
+    "minlon": 2.1758644,
+    "maxlat": 41.4061015,
+    "maxlon": 2.1763003
+   },
+   "nodes": [
+    1839191615,
+    1839191610,
+    1839191614,
+    1844386866,
+    1839191619,
+    1839191615
+   ],
+   "geometry": [
+    {
+     "lat": 41.4059561,
+     "lon": 2.1758644
+    },
+    {
+     "lat": 41.4057737,
+     "lon": 2.1761007
+    },
+    {
+     "lat": 41.4059191,
+     "lon": 2.1763003
+    },
+    {
+     "lat": 41.4060406,
+     "lon": 2.1761429
+    },
+    {
+     "lat": 41.4061015,
+     "lon": 2.1760641
+    },
+    {
+     "lat": 41.4059561,
+     "lon": 2.1758644
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173091611,
+   "bounds": {
+    "minlat": 41.4056369,
+    "minlon": 2.1756767,
+    "maxlat": 41.4059561,
+    "maxlon": 2.1761007
+   },
+   "nodes": [
+    1839191612,
+    1839191606,
+    1839191610,
+    1839191615,
+    1839191612
+   ],
+   "geometry": [
+    {
+     "lat": 41.4058193,
+     "lon": 2.1756767
+    },
+    {
+     "lat": 41.4056369,
+     "lon": 2.1759129
+    },
+    {
+     "lat": 41.4057737,
+     "lon": 2.1761007
+    },
+    {
+     "lat": 41.4059561,
+     "lon": 2.1758644
+    },
+    {
+     "lat": 41.4058193,
+     "lon": 2.1756767
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173091613,
+   "bounds": {
+    "minlat": 41.4054827,
+    "minlon": 2.1754708,
+    "maxlat": 41.4058193,
+    "maxlon": 2.1759129
+   },
+   "nodes": [
+    1839191609,
+    1839191612,
+    1839191606,
+    1839191601,
+    1839191600,
+    1844386853,
+    1844386856,
+    1844386857,
+    1844386862,
+    1844386860,
+    1844386863,
+    1844386864,
+    1839191609
+   ],
+   "geometry": [
+    {
+     "lat": 41.4056693,
+     "lon": 2.1754708
+    },
+    {
+     "lat": 41.4058193,
+     "lon": 2.1756767
+    },
+    {
+     "lat": 41.4056369,
+     "lon": 2.1759129
+    },
+    {
+     "lat": 41.40562,
+     "lon": 2.1759093
+    },
+    {
+     "lat": 41.4054827,
+     "lon": 2.1757266
+    },
+    {
+     "lat": 41.4054827,
+     "lon": 2.1756897
+    },
+    {
+     "lat": 41.4055475,
+     "lon": 2.1756175
+    },
+    {
+     "lat": 41.4055584,
+     "lon": 2.1756325
+    },
+    {
+     "lat": 41.4055884,
+     "lon": 2.175596
+    },
+    {
+     "lat": 41.4055771,
+     "lon": 2.1755792
+    },
+    {
+     "lat": 41.4055933,
+     "lon": 2.1755608
+    },
+    {
+     "lat": 41.4056103,
+     "lon": 2.1755427
+    },
+    {
+     "lat": 41.4056693,
+     "lon": 2.1754708
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173643465,
+   "bounds": {
+    "minlat": 41.4047355,
+    "minlon": 2.1762992,
+    "maxlat": 41.4050296,
+    "maxlon": 2.1766855
+   },
+   "nodes": [
+    6087337180,
+    6087337166,
+    6087337551,
+    6087337557,
+    6087337597,
+    6087337599,
+    6087337602,
+    6087337547,
+    6087337332,
+    6087337324,
+    6087337287,
+    6087337275,
+    6087337272,
+    6087337589,
+    6087337139,
+    6087337200,
+    6087336972,
+    6087336952,
+    6087336937,
+    6087336948,
+    6087337284,
+    6087337128,
+    6087336967,
+    6087337150,
+    6087337321,
+    6087337341,
+    6087336876,
+    6087336966,
+    6087337177,
+    6087337180
+   ],
+   "geometry": [
+    {
+     "lat": 41.4048701,
+     "lon": 2.1763242
+    },
+    {
+     "lat": 41.404895,
+     "lon": 2.1763571
+    },
+    {
+     "lat": 41.404887,
+     "lon": 2.1763679
+    },
+    {
+     "lat": 41.4049135,
+     "lon": 2.1764034
+    },
+    {
+     "lat": 41.4049219,
+     "lon": 2.1763924
+    },
+    {
+     "lat": 41.4049635,
+     "lon": 2.1764468
+    },
+    {
+     "lat": 41.4049556,
+     "lon": 2.1764574
+    },
+    {
+     "lat": 41.4049818,
+     "lon": 2.1764916
+    },
+    {
+     "lat": 41.4049897,
+     "lon": 2.176481
+    },
+    {
+     "lat": 41.4050296,
+     "lon": 2.1765329
+    },
+    {
+     "lat": 41.4050038,
+     "lon": 2.1765665
+    },
+    {
+     "lat": 41.4050122,
+     "lon": 2.1765778
+    },
+    {
+     "lat": 41.4049555,
+     "lon": 2.1766526
+    },
+    {
+     "lat": 41.4049476,
+     "lon": 2.1766425
+    },
+    {
+     "lat": 41.4049157,
+     "lon": 2.1766855
+    },
+    {
+     "lat": 41.4048873,
+     "lon": 2.1766489
+    },
+    {
+     "lat": 41.4048755,
+     "lon": 2.1766336
+    },
+    {
+     "lat": 41.4048483,
+     "lon": 2.1765986
+    },
+    {
+     "lat": 41.4048059,
+     "lon": 2.1765439
+    },
+    {
+     "lat": 41.4048139,
+     "lon": 2.176535
+    },
+    {
+     "lat": 41.4047877,
+     "lon": 2.1765003
+    },
+    {
+     "lat": 41.4047802,
+     "lon": 2.1765105
+    },
+    {
+     "lat": 41.4047788,
+     "lon": 2.1765088
+    },
+    {
+     "lat": 41.4047551,
+     "lon": 2.1764778
+    },
+    {
+     "lat": 41.4047355,
+     "lon": 2.176452
+    },
+    {
+     "lat": 41.4047658,
+     "lon": 2.1764119
+    },
+    {
+     "lat": 41.4048043,
+     "lon": 2.1763612
+    },
+    {
+     "lat": 41.4048222,
+     "lon": 2.1763377
+    },
+    {
+     "lat": 41.4048511,
+     "lon": 2.1762992
+    },
+    {
+     "lat": 41.4048701,
+     "lon": 2.1763242
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "10",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173643467,
+   "bounds": {
+    "minlat": 41.4048511,
+    "minlon": 2.1761447,
+    "maxlat": 41.4051464,
+    "maxlon": 2.1765616
+   },
+   "nodes": [
+    6087337236,
+    6087337567,
+    6087337169,
+    6087337583,
+    6087337584,
+    6087337228,
+    6087337241,
+    1844164124,
+    6087337572,
+    6087337141,
+    6087337234,
+    6087337229,
+    6087337608,
+    6087337550,
+    6087337628,
+    6087337635,
+    6087337554,
+    6087337324,
+    6087337332,
+    6087337553,
+    6087337209,
+    6087337599,
+    6087337597,
+    6087337604,
+    6087337167,
+    6087337166,
+    6087337180,
+    6087337177,
+    6087337174,
+    6087336877,
+    6087337546,
+    6087337538,
+    6087337236
+   ],
+   "geometry": [
+    {
+     "lat": 41.4049865,
+     "lon": 2.1761694
+    },
+    {
+     "lat": 41.4050098,
+     "lon": 2.1762002
+    },
+    {
+     "lat": 41.4050113,
+     "lon": 2.1762023
+    },
+    {
+     "lat": 41.4050031,
+     "lon": 2.1762131
+    },
+    {
+     "lat": 41.40503,
+     "lon": 2.1762487
+    },
+    {
+     "lat": 41.4050383,
+     "lon": 2.1762377
+    },
+    {
+     "lat": 41.4050751,
+     "lon": 2.176286
+    },
+    {
+     "lat": 41.4050798,
+     "lon": 2.1762922
+    },
+    {
+     "lat": 41.4050719,
+     "lon": 2.1763028
+    },
+    {
+     "lat": 41.4050978,
+     "lon": 2.1763373
+    },
+    {
+     "lat": 41.4051059,
+     "lon": 2.1763265
+    },
+    {
+     "lat": 41.4051464,
+     "lon": 2.1763794
+    },
+    {
+     "lat": 41.4051168,
+     "lon": 2.1764159
+    },
+    {
+     "lat": 41.4051242,
+     "lon": 2.1764255
+    },
+    {
+     "lat": 41.4050749,
+     "lon": 2.1764909
+    },
+    {
+     "lat": 41.4050899,
+     "lon": 2.1765104
+    },
+    {
+     "lat": 41.4050516,
+     "lon": 2.1765616
+    },
+    {
+     "lat": 41.4050296,
+     "lon": 2.1765329
+    },
+    {
+     "lat": 41.4049897,
+     "lon": 2.176481
+    },
+    {
+     "lat": 41.4049972,
+     "lon": 2.1764709
+    },
+    {
+     "lat": 41.4049713,
+     "lon": 2.1764364
+    },
+    {
+     "lat": 41.4049635,
+     "lon": 2.1764468
+    },
+    {
+     "lat": 41.4049219,
+     "lon": 2.1763924
+    },
+    {
+     "lat": 41.4049295,
+     "lon": 2.176382
+    },
+    {
+     "lat": 41.4049028,
+     "lon": 2.1763465
+    },
+    {
+     "lat": 41.404895,
+     "lon": 2.1763571
+    },
+    {
+     "lat": 41.4048701,
+     "lon": 2.1763242
+    },
+    {
+     "lat": 41.4048511,
+     "lon": 2.1762992
+    },
+    {
+     "lat": 41.4048801,
+     "lon": 2.1762601
+    },
+    {
+     "lat": 41.404922,
+     "lon": 2.1762036
+    },
+    {
+     "lat": 41.4049395,
+     "lon": 2.1761819
+    },
+    {
+     "lat": 41.4049678,
+     "lon": 2.1761447
+    },
+    {
+     "lat": 41.4049865,
+     "lon": 2.1761694
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "10",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173643475,
+   "bounds": {
+    "minlat": 41.405084,
+    "minlon": 2.175912,
+    "maxlat": 41.4052926,
+    "maxlon": 2.1761671
+   },
+   "nodes": [
+    6087337142,
+    6087336978,
+    6087337155,
+    6087337158,
+    6087336926,
+    6087337517,
+    6087337172,
+    6087337239,
+    6087337225,
+    6087337222,
+    6087337240,
+    6087337237,
+    6087337238,
+    6087337269,
+    6087337292,
+    6087336879,
+    6087336898,
+    6087337142
+   ],
+   "geometry": [
+    {
+     "lat": 41.4051593,
+     "lon": 2.1759338
+    },
+    {
+     "lat": 41.4051761,
+     "lon": 2.1759559
+    },
+    {
+     "lat": 41.4051778,
+     "lon": 2.1759581
+    },
+    {
+     "lat": 41.4052784,
+     "lon": 2.1760883
+    },
+    {
+     "lat": 41.4052926,
+     "lon": 2.1761067
+    },
+    {
+     "lat": 41.4052663,
+     "lon": 2.1761407
+    },
+    {
+     "lat": 41.4052524,
+     "lon": 2.1761229
+    },
+    {
+     "lat": 41.4052194,
+     "lon": 2.1761671
+    },
+    {
+     "lat": 41.405192,
+     "lon": 2.1761316
+    },
+    {
+     "lat": 41.405152,
+     "lon": 2.1760795
+    },
+    {
+     "lat": 41.4051259,
+     "lon": 2.1760453
+    },
+    {
+     "lat": 41.4051175,
+     "lon": 2.1760343
+    },
+    {
+     "lat": 41.4051027,
+     "lon": 2.1760147
+    },
+    {
+     "lat": 41.405084,
+     "lon": 2.1759901
+    },
+    {
+     "lat": 41.405112,
+     "lon": 2.1759536
+    },
+    {
+     "lat": 41.4051162,
+     "lon": 2.1759481
+    },
+    {
+     "lat": 41.4051428,
+     "lon": 2.175912
+    },
+    {
+     "lat": 41.4051593,
+     "lon": 2.1759338
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "11",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173643478,
+   "bounds": {
+    "minlat": 41.404649,
+    "minlon": 2.176452,
+    "maxlat": 41.4049722,
+    "maxlon": 2.1767906
+   },
+   "nodes": [
+    6087337150,
+    6087336967,
+    6087337128,
+    6087336937,
+    6087336952,
+    6087336972,
+    6087337200,
+    6087337139,
+    6087337161,
+    6087337164,
+    6087337351,
+    6087337145,
+    6087337143,
+    6087337134,
+    6087337133,
+    6087337131,
+    6087337130,
+    6087337198,
+    6087337186,
+    6087337196,
+    6087337117,
+    6087337192,
+    6087336909,
+    6087337185,
+    6087337182,
+    6087337171,
+    6087337165,
+    6087337126,
+    6087337107,
+    6087337147,
+    6087336965,
+    6087337109,
+    6087337102,
+    6087337138,
+    6087337132,
+    6087336973,
+    6087336910,
+    6087336873,
+    6087336968,
+    6087337202,
+    6087337368,
+    6087336875,
+    6087337321,
+    6087337150
+   ],
+   "geometry": [
+    {
+     "lat": 41.4047551,
+     "lon": 2.1764778
+    },
+    {
+     "lat": 41.4047788,
+     "lon": 2.1765088
+    },
+    {
+     "lat": 41.4047802,
+     "lon": 2.1765105
+    },
+    {
+     "lat": 41.4048059,
+     "lon": 2.1765439
+    },
+    {
+     "lat": 41.4048483,
+     "lon": 2.1765986
+    },
+    {
+     "lat": 41.4048755,
+     "lon": 2.1766336
+    },
+    {
+     "lat": 41.4048873,
+     "lon": 2.1766489
+    },
+    {
+     "lat": 41.4049157,
+     "lon": 2.1766855
+    },
+    {
+     "lat": 41.4049556,
+     "lon": 2.1766755
+    },
+    {
+     "lat": 41.4049685,
+     "lon": 2.1766723
+    },
+    {
+     "lat": 41.4049722,
+     "lon": 2.176677
+    },
+    {
+     "lat": 41.4049646,
+     "lon": 2.1766873
+    },
+    {
+     "lat": 41.4049396,
+     "lon": 2.1767214
+    },
+    {
+     "lat": 41.4049218,
+     "lon": 2.1766986
+    },
+    {
+     "lat": 41.4049064,
+     "lon": 2.1767196
+    },
+    {
+     "lat": 41.4049089,
+     "lon": 2.1767227
+    },
+    {
+     "lat": 41.4049015,
+     "lon": 2.1767219
+    },
+    {
+     "lat": 41.4048892,
+     "lon": 2.1767206
+    },
+    {
+     "lat": 41.4048889,
+     "lon": 2.1767205
+    },
+    {
+     "lat": 41.4048877,
+     "lon": 2.1767223
+    },
+    {
+     "lat": 41.404876,
+     "lon": 2.1767381
+    },
+    {
+     "lat": 41.4048478,
+     "lon": 2.1767015
+    },
+    {
+     "lat": 41.4048455,
+     "lon": 2.1766986
+    },
+    {
+     "lat": 41.4048448,
+     "lon": 2.1766986
+    },
+    {
+     "lat": 41.4048441,
+     "lon": 2.1766986
+    },
+    {
+     "lat": 41.4048364,
+     "lon": 2.1766984
+    },
+    {
+     "lat": 41.4048284,
+     "lon": 2.1766983
+    },
+    {
+     "lat": 41.4047875,
+     "lon": 2.1766978
+    },
+    {
+     "lat": 41.404775,
+     "lon": 2.1767144
+    },
+    {
+     "lat": 41.4047506,
+     "lon": 2.1767471
+    },
+    {
+     "lat": 41.4047398,
+     "lon": 2.1767615
+    },
+    {
+     "lat": 41.4047245,
+     "lon": 2.1767818
+    },
+    {
+     "lat": 41.4047178,
+     "lon": 2.1767906
+    },
+    {
+     "lat": 41.4046852,
+     "lon": 2.1767904
+    },
+    {
+     "lat": 41.4046826,
+     "lon": 2.1767904
+    },
+    {
+     "lat": 41.4046542,
+     "lon": 2.1767901
+    },
+    {
+     "lat": 41.4046537,
+     "lon": 2.1767705
+    },
+    {
+     "lat": 41.4046537,
+     "lon": 2.1767494
+    },
+    {
+     "lat": 41.4046527,
+     "lon": 2.1767297
+    },
+    {
+     "lat": 41.4046507,
+     "lon": 2.1766404
+    },
+    {
+     "lat": 41.404649,
+     "lon": 2.1765673
+    },
+    {
+     "lat": 41.4047058,
+     "lon": 2.1764919
+    },
+    {
+     "lat": 41.4047355,
+     "lon": 2.176452
+    },
+    {
+     "lat": 41.4047551,
+     "lon": 2.1764778
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "12",
+    "building:levels:underground": "2",
+    "name": "Edifici Califórnia",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173669290,
+   "bounds": {
+    "minlat": 41.4059191,
+    "minlon": 2.1761429,
+    "maxlat": 41.4062077,
+    "maxlon": 2.1764116
+   },
+   "nodes": [
+    1839191614,
+    1844386865,
+    1844386872,
+    1844386873,
+    1844386869,
+    1844386866,
+    1839191614
+   ],
+   "geometry": [
+    {
+     "lat": 41.4059191,
+     "lon": 2.1763003
+    },
+    {
+     "lat": 41.4060103,
+     "lon": 2.1764116
+    },
+    {
+     "lat": 41.4061813,
+     "lon": 2.1763989
+    },
+    {
+     "lat": 41.4062077,
+     "lon": 2.1763716
+    },
+    {
+     "lat": 41.406052,
+     "lon": 2.1761579
+    },
+    {
+     "lat": 41.4060406,
+     "lon": 2.1761429
+    },
+    {
+     "lat": 41.4059191,
+     "lon": 2.1763003
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8",
+    "roof:levels": "2"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173669291,
+   "bounds": {
+    "minlat": 41.4054827,
+    "minlon": 2.1754175,
+    "maxlat": 41.4056103,
+    "maxlon": 2.1756897
+   },
+   "nodes": [
+    1844386853,
+    1844386854,
+    1844386855,
+    1844386864,
+    1844386863,
+    1844386861,
+    1844386858,
+    1844386859,
+    1844386856,
+    1844386853
+   ],
+   "geometry": [
+    {
+     "lat": 41.4054827,
+     "lon": 2.1756897
+    },
+    {
+     "lat": 41.4054832,
+     "lon": 2.175471
+    },
+    {
+     "lat": 41.4055253,
+     "lon": 2.1754175
+    },
+    {
+     "lat": 41.4056103,
+     "lon": 2.1755427
+    },
+    {
+     "lat": 41.4055933,
+     "lon": 2.1755608
+    },
+    {
+     "lat": 41.4055872,
+     "lon": 2.1755529
+    },
+    {
+     "lat": 41.4055626,
+     "lon": 2.1755839
+    },
+    {
+     "lat": 41.4055669,
+     "lon": 2.1755916
+    },
+    {
+     "lat": 41.4055475,
+     "lon": 2.1756175
+    },
+    {
+     "lat": 41.4054827,
+     "lon": 2.1756897
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173763499,
+   "bounds": {
+    "minlat": 41.4056023,
+    "minlon": 2.1752208,
+    "maxlat": 41.4057628,
+    "maxlon": 2.1754345
+   },
+   "nodes": [
+    1845216209,
+    1845216212,
+    1845216221,
+    1845216215,
+    1845216209
+   ],
+   "geometry": [
+    {
+     "lat": 41.4056023,
+     "lon": 2.1753199
+    },
+    {
+     "lat": 41.4056758,
+     "lon": 2.1752208
+    },
+    {
+     "lat": 41.4057628,
+     "lon": 2.1753353
+    },
+    {
+     "lat": 41.4056893,
+     "lon": 2.1754345
+    },
+    {
+     "lat": 41.4056023,
+     "lon": 2.1753199
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173763500,
+   "bounds": {
+    "minlat": 41.4058828,
+    "minlon": 2.1748897,
+    "maxlat": 41.4059995,
+    "maxlon": 2.1750469
+   },
+   "nodes": [
+    1845216235,
+    1845216255,
+    1845631806,
+    1845216264,
+    1845216261,
+    1845216235
+   ],
+   "geometry": [
+    {
+     "lat": 41.4058828,
+     "lon": 2.1749428
+    },
+    {
+     "lat": 41.4059239,
+     "lon": 2.1748897
+    },
+    {
+     "lat": 41.4059893,
+     "lon": 2.1749797
+    },
+    {
+     "lat": 41.4059995,
+     "lon": 2.1749937
+    },
+    {
+     "lat": 41.4059584,
+     "lon": 2.1750469
+    },
+    {
+     "lat": 41.4058828,
+     "lon": 2.1749428
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173763501,
+   "bounds": {
+    "minlat": 41.4056758,
+    "minlon": 2.1751293,
+    "maxlat": 41.4058325,
+    "maxlon": 2.1753353
+   },
+   "nodes": [
+    1845216212,
+    1845216219,
+    1845216225,
+    1845216221,
+    1845216212
+   ],
+   "geometry": [
+    {
+     "lat": 41.4056758,
+     "lon": 2.1752208
+    },
+    {
+     "lat": 41.4057477,
+     "lon": 2.1751293
+    },
+    {
+     "lat": 41.4058325,
+     "lon": 2.1752381
+    },
+    {
+     "lat": 41.4057628,
+     "lon": 2.1753353
+    },
+    {
+     "lat": 41.4056758,
+     "lon": 2.1752208
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173763502,
+   "bounds": {
+    "minlat": 41.4055253,
+    "minlon": 2.1753199,
+    "maxlat": 41.4056893,
+    "maxlon": 2.1755427
+   },
+   "nodes": [
+    1844386855,
+    1845216209,
+    1845216215,
+    1839191609,
+    1844386864,
+    1844386855
+   ],
+   "geometry": [
+    {
+     "lat": 41.4055253,
+     "lon": 2.1754175
+    },
+    {
+     "lat": 41.4056023,
+     "lon": 2.1753199
+    },
+    {
+     "lat": 41.4056893,
+     "lon": 2.1754345
+    },
+    {
+     "lat": 41.4056693,
+     "lon": 2.1754708
+    },
+    {
+     "lat": 41.4056103,
+     "lon": 2.1755427
+    },
+    {
+     "lat": 41.4055253,
+     "lon": 2.1754175
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173763503,
+   "bounds": {
+    "minlat": 41.4058353,
+    "minlon": 2.1749428,
+    "maxlat": 41.4059584,
+    "maxlon": 2.1750921
+   },
+   "nodes": [
+    1845216227,
+    1845216240,
+    1845216252,
+    1845216258,
+    1845216261,
+    1845216235,
+    1845216227
+   ],
+   "geometry": [
+    {
+     "lat": 41.4058353,
+     "lon": 2.175004
+    },
+    {
+     "lat": 41.4058978,
+     "lon": 2.1750921
+    },
+    {
+     "lat": 41.4059232,
+     "lon": 2.17506
+    },
+    {
+     "lat": 41.4059349,
+     "lon": 2.1750764
+    },
+    {
+     "lat": 41.4059584,
+     "lon": 2.1750469
+    },
+    {
+     "lat": 41.4058828,
+     "lon": 2.1749428
+    },
+    {
+     "lat": 41.4058353,
+     "lon": 2.175004
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  },
+  {
+   "type": "way",
+   "id": 173763504,
+   "bounds": {
+    "minlat": 41.4057477,
+    "minlon": 2.1750373,
+    "maxlat": 41.4058948,
+    "maxlon": 2.1752381
+   },
+   "nodes": [
+    1845216219,
+    1845216223,
+    1857262893,
+    1845216239,
+    1845216237,
+    1845216233,
+    1845216229,
+    1845216231,
+    1845216225,
+    1845216219
+   ],
+   "geometry": [
+    {
+     "lat": 41.4057477,
+     "lon": 2.1751293
+    },
+    {
+     "lat": 41.4058141,
+     "lon": 2.1750373
+    },
+    {
+     "lat": 41.405878,
+     "lon": 2.1751192
+    },
+    {
+     "lat": 41.4058948,
+     "lon": 2.1751407
+    },
+    {
+     "lat": 41.4058855,
+     "lon": 2.1751536
+    },
+    {
+     "lat": 41.4058793,
+     "lon": 2.1751455
+    },
+    {
+     "lat": 41.4058426,
+     "lon": 2.1751964
+    },
+    {
+     "lat": 41.405853,
+     "lon": 2.1752097
+    },
+    {
+     "lat": 41.4058325,
+     "lon": 2.1752381
+    },
+    {
+     "lat": 41.4057477,
+     "lon": 2.1751293
+    }
+   ],
+   "tags": {
+    "building": "apartments",
+    "building:levels": "8"
+   }
+  }
+ ]
+}

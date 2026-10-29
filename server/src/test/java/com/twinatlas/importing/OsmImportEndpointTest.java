@@ -124,6 +124,37 @@ class OsmImportEndpointTest {
   }
 
   @Test
+  void importsARealExtractFromOverpassAndAccountsForEveryElement() throws Exception {
+    // Downloaded from the public Overpass API (Eixample, Barcelona): 20 amenity nodes and 15
+    // buildings. Contact tags were removed. Data (c) OpenStreetMap contributors, ODbL.
+    String real =
+        new ClassPathResource("osm/overpass-real-eixample.json")
+            .getContentAsString(StandardCharsets.UTF_8);
+    UUID scene = TestScenes.createScene(mvc);
+
+    String json = importOsm(scene, real, 200);
+
+    assertThat((Integer) JsonPath.read(json, "$.received")).isEqualTo(35);
+    assertThat((Integer) JsonPath.read(json, "$.imported")).isEqualTo(35);
+    assertThat(rejectionsByReference(json)).isEmpty();
+    assertThat(rowCount(scene)).isEqualTo(35);
+    var kinds =
+        jdbc.sql("SELECT kind, count(*) AS n FROM annotation WHERE scene_id = :s GROUP BY kind")
+            .param("s", scene)
+            .query()
+            .listOfRows();
+    assertThat(kinds)
+        .extracting(r -> r.get("kind"), r -> ((Number) r.get("n")).intValue())
+        .containsExactlyInAnyOrder(
+            org.assertj.core.groups.Tuple.tuple("MARKER", 20),
+            org.assertj.core.groups.Tuple.tuple("OUTLINE", 15));
+
+    String again = importOsm(scene, real, 200);
+    assertThat((Integer) JsonPath.read(again, "$.imported")).isZero();
+    assertThat(rejectionsByReference(again)).hasSize(35).containsValue("TITLE_ALREADY_USED");
+  }
+
+  @Test
   void importedAnnotationsBehaveLikeAnyOtherAnnotation() throws Exception {
     UUID scene = TestScenes.createScene(mvc);
     importOsm(scene, fixture(), 200);
