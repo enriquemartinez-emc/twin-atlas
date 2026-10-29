@@ -172,9 +172,9 @@ E2E tests are part of the project, but **they are never run without my explicit 
 
 ## HTML documentation (`docs/`)
 
-Static HTML that opens straight from disk. No build step, no scripts, no web fonts, no CDN, no third-party libraries.
+Static HTML that opens straight from disk. No build step, no scripts, no CDN, no third-party libraries, nothing fetched from the internet. The single exception, approved by the owner, is the Geist Mono font, stored in `docs/assets/fonts/` with its SIL Open Font License.
 
-- **Style:** light theme, sans-serif system font stack, solid soft colour fills with solid borders. No gradients, no shadows, no animation. One stylesheet: `docs/assets/docs.css`.
+- **Style:** light theme, Geist Mono for all text (the owner's choice), solid soft colour fills with thin solid borders. No gradients, no shadows, no animation. One stylesheet: `docs/assets/docs.css`.
 - **Colour means one thing everywhere:** blue is the browser, green is pure rules (the core), yellow is server code, purple is data, grey is tooling or generated code, red is errors and things not verified.
 - **Diagrams** are inline SVG that use the colour classes from `docs.css` (`c-sky`, `c-mint`, `c-butter`, `c-lilac`, `c-slate`, `c-blush`), with a `<title>` for screen readers. Every diagram earns its place: it shows a flow, a boundary or a structure that prose explains badly.
 - **Each task page** has: a plain-words summary, how to see or try it, what was built, a diagram, why the decisions were made (link the ADR), how it was checked (numbers, not adjectives), and known limits, including anything not verified.
