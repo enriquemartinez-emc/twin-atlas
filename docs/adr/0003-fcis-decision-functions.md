@@ -17,7 +17,7 @@ Split every use case with two or more rules into a pure core and an imperative s
 - Lifecycle states are types (`Draft`, `Published`, `Archived`) and shapes are types (`Marker`, `Note`, `Outline`), so illegal states and transitions do not compile.
 - ArchUnit enforces that `..core..` depends on no Spring, Jakarta or Hibernate code.
 
-Scene and asset CRUD, and all spatial reads, do not use the core (reads get their own ADR with the read task).
+Scene and asset CRUD, and all spatial reads, do not use the core (see [ADR 0005](0005-reads-bypass-the-core.md) for reads).
 
 ## Alternatives
 
