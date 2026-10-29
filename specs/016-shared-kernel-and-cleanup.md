@@ -1,6 +1,6 @@
 # 016 — Shared kernel and server cleanup
 
-**Status:** In progress | **Branch:** `chore/shared-kernel` (stacked on `feat/osm-import`, which holds the codes being moved)
+**Status:** Done | **Branch:** `chore/shared-kernel` (stacked on `feat/osm-import`, which holds the codes being moved)
 
 ## Description
 

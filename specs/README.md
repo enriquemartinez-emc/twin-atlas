@@ -21,7 +21,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 013 | [E2E tests (run only on approval)](013-e2e-tests.md)       | `test/e2e`                       | Proposed   |
 | 014 | [Annotation update (rename and move)](014-annotation-update.md) | `feat/annotation-update`        | Done        |
 | 015 | [HTML documentation](015-html-docs.md)                     | `docs/html-docs`                 | Done       |
-| 016 | [Shared kernel and server cleanup](016-shared-kernel-and-cleanup.md) | `chore/shared-kernel` | In progress |
+| 016 | [Shared kernel and server cleanup](016-shared-kernel-and-cleanup.md) | `chore/shared-kernel` | Done        |
 
 ## File template
 
