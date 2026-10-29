@@ -58,10 +58,8 @@ const LINK_LABELS = {
   failed: 'Could not copy',
 } as const;
 
-/** How close to fly when the user picks an annotation from the list, in metres. */
 const FOCUS_HEIGHT = 250;
 
-/** Route-level component: owns the map, the chosen scene and the drawing state. */
 @Component({
   selector: 'app-scene',
   imports: [
@@ -238,8 +236,8 @@ const FOCUS_HEIGHT = 250;
       width: 20rem;
       max-width: calc(100% - 1.5rem);
       overflow-y: auto;
-      background: color-mix(in oklab, var(--card) 95%, transparent);
-      backdrop-filter: blur(8px);
+      background: color-mix(in oklab, var(--card) 68%, transparent);
+      backdrop-filter: blur(14px) saturate(1.2);
     }
 
     .panel[hidden],
@@ -301,9 +299,7 @@ export class Scene {
   private readonly loadMap = injectAsync(() =>
     import('@map/map.service').then((m) => m.MapService),
   );
-  /** From the URL: `/scenes/:sceneId`. Without it the scene used last is shown. */
   readonly sceneId = input<string>();
-  /** From the URL: `?annotation=<id>`. */
   readonly annotation = input<string>();
 
   private readonly router = inject(Router);
@@ -336,7 +332,6 @@ export class Scene {
   private linkTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly tool = signal<Tool>('select');
-  /** Cleared when the tool changes, and when another annotation is chosen in select mode. */
   protected readonly draft = linkedSignal<
     { readonly tool: Tool; readonly id: string | null },
     readonly LonLat[]
@@ -371,7 +366,6 @@ export class Scene {
   protected readonly creatingScene = signal(false);
   protected readonly sceneProblem = signal<string | null>(null);
 
-  /** The kind being drawn, or null in select mode. */
   protected readonly formKind = computed(() => {
     const tool = this.tool();
     return tool === 'select' ? null : tool;
@@ -381,7 +375,6 @@ export class Scene {
     return kind !== null && isDraftReady(kind, this.draft());
   });
 
-  /** The selected annotation, shown for editing in select mode once the server has returned it. */
   protected readonly editing = computed(() =>
     this.tool() === 'select' ? this.data.current() : null,
   );
@@ -414,7 +407,6 @@ export class Scene {
       map.setDraft(this.draft(), this.tool() === 'OUTLINE');
     });
 
-    // Map clicks arrive as a signal from the Cesium wrapper and are turned into actions here.
     effect(() => {
       const click = this.map()?.lastClick();
       if (click) untracked(() => this.onMapClick(click));
@@ -474,7 +466,6 @@ export class Scene {
     this.selectAnnotation(null);
   }
 
-  /** After a conflict: drop the edits and read the annotation again, with its new version. */
   protected loadLatest(): void {
     this.resetEdit();
     this.data.reloadDetail();
@@ -524,7 +515,6 @@ export class Scene {
     void this.router.navigate(['/scenes', id]);
   }
 
-  /** Copies the address, which carries the scene and the annotation, and says whether it worked. */
   protected async copyLink(): Promise<void> {
     try {
       await navigator.clipboard.writeText(this.document.location.href);
