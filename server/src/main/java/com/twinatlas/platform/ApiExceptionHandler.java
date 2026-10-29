@@ -12,6 +12,7 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.context.request.WebRequest;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 /** Maps framework and infrastructure failures to problems with a stable {@code code}. */
@@ -37,6 +38,29 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
     return handleExceptionInternal(ex, problem, headers, status, request);
   }
 
+  /** Constraints on query and path parameters, for example {@code @Min} on a page size. */
+  @Override
+  protected ResponseEntity<Object> handleHandlerMethodValidationException(
+      HandlerMethodValidationException ex,
+      HttpHeaders headers,
+      HttpStatusCode status,
+      WebRequest request) {
+    ProblemDetail problem = Problems.of(ApiError.VALIDATION_FAILED, "Validation failed");
+    List<FieldViolation> violations =
+        ex.getParameterValidationResults().stream()
+            .flatMap(
+                result ->
+                    result.getResolvableErrors().stream()
+                        .map(
+                            error ->
+                                new FieldViolation(
+                                    result.getMethodParameter().getParameterName(),
+                                    error.getDefaultMessage())))
+            .toList();
+    problem.setProperty("errors", violations);
+    return handleExceptionInternal(ex, problem, headers, status, request);
+  }
+
   @Override
   protected ResponseEntity<Object> handleExceptionInternal(
       Exception ex,
@@ -53,6 +77,12 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
               .name());
     }
     return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+  }
+
+  @ExceptionHandler(ApiException.class)
+  ResponseEntity<ProblemDetail> handleApiException(ApiException ex) {
+    ProblemDetail problem = Problems.of(ex.error(), ex.getMessage());
+    return ResponseEntity.status(problem.getStatus()).body(problem);
   }
 
   @ExceptionHandler(OptimisticLockingFailureException.class)
