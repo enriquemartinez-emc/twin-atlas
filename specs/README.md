@@ -33,6 +33,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 025 | [Scene page split: a thin component and feature-scoped state](025-scene-page-split.md) | `chore/scene-state-split` | In progress |
 | 026 | [Client without barrels: one feature, grouped by concept](026-client-no-barrels.md) | `chore/client-no-barrels` | In progress |
 | 027 | [A loading notice while the map loads](027-map-loading-notice.md) | `feat/map-loading-notice` | In progress |
+| 028 | [Map code moves into the scene feature](028-map-into-scene.md) | `chore/map-into-scene` | In progress |
 
 ## File template
 
