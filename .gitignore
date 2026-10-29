@@ -17,3 +17,6 @@ client/node_modules/
 .vscode/
 *.iml
 .DS_Store
+
+# jqwik local cache
+server/.jqwik-database
