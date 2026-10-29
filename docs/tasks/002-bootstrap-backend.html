@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backend housekeeping - Twin Atlas docs</title>
+<meta name="description" content="Moving and cleaning the backend skeleton.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 002</span>
+<h1>Backend housekeeping</h1>
+<p class="lead">The server skeleton that Spring Initializr generated was moved into place and cleaned up to match the rulebook.</p>
+<div class="tags"><span class="tag c-mint">Done</span><span class="tag c-slate">Branch <code>chore/bootstrap-backend</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>From the repository root: <code>cd server &amp;&amp; ./mvnw verify</code>. It compiles, runs the context-load test and builds <code>twin-atlas-server-0.0.1-SNAPSHOT.jar</code>.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>Moved</strong> the project from <code>twinatlas/</code> to <code>server/</code>, next to <code>client/</code>.</li>
+<li><strong>Renamed</strong> the Java package from <code>com.example.twinatlas</code> to <code>com.twinatlas</code>, the application class to <code>TwinAtlasApplication</code> and the artifact to <code>twin-atlas-server</code>.</li>
+<li><strong>Removed Lombok and the Spring dev tools.</strong> Neither was in the approved stack, and Lombok works against the plain-records style the project uses.</li>
+<li>Used the Java 25 that was already installed. No new tools were added.</li>
+</ul>
+<h2>Before and after</h2></div><div class="cols wide">
+<div><h3>Before</h3><div class="tree">twinatlas/
+  pom.xml          com.example, Lombok, devtools
+  src/main/java/
+    com/example/twinatlas/
+      TwinatlasApplication.java</div></div>
+<div><h3>After</h3><div class="tree">server/
+  mvnw, pom.xml    com.twinatlas, no Lombok
+  src/main/java/
+    com/twinatlas/
+      TwinAtlasApplication.java</div></div>
+</div><div class="col">
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class=""><code>./mvnw verify</code> with Java 25</td><td class="">Passes. The context-load test is green and the jar builds.</td></tr><tr><td class="">Leftover <code>com.example</code> references</td><td class="">None (searched the sources and the pom).</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul><li>Java was on the path only in a login shell, so commands set <code>JAVA_HOME</code> explicitly. Export it in your shell profile if <code>./mvnw</code> cannot find Java.</li></ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="001-agents-md-fixes.html">Previous: Project rules and repository setup</a><a href="003-init-client.html" style="text-align:right">Next: Angular client setup</a></nav>
+</main>
+</div>
+</body>
+</html>

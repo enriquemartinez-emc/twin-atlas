@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Project rules and repository setup - Twin Atlas docs</title>
+<meta name="description" content="The rulebook, the specs folder and the workflow every task follows.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 001</span>
+<h1>Project rules and repository setup</h1>
+<p class="lead">Before any code, the project got a git history and a written rulebook, so every later task is small, checked and easy to review.</p>
+<div class="tags"><span class="tag c-mint">Done</span><span class="tag c-slate">Branch <code>chore/agents-md-fixes</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>Open <code>AGENTS.md</code> at the top of the repository: it is the rulebook. Open the <code>specs/</code> folder: one file per task with its acceptance criteria and status. Run <code>git log --oneline</code> to see the small, labelled commits.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>A git history.</strong> One bootstrap commit on <code>main</code> holds the rulebook and a <code>.gitignore</code>. It was a one-time exception: everything after that lives on feature branches.</li>
+<li><strong>A rulebook without contradictions.</strong> The original draft required tools it also called unapproved (formatters, the linter, Docker, the API client generator). Those are now approved and named. The folder layout, the Angular 22 constraints and a measurable scale target were written down.</li>
+<li><strong>A specs folder.</strong> Every task has a short file with a description, acceptance criteria and a status that moves from Proposed to Done only after you confirm.</li>
+<li><strong>Rules added as work went on:</strong> browser tests may be written but only run when you approve; small tasks can be batched; Angular components are single files; every task gets a page on this site.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 940 150" width="940" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The workflow every task follows</title><desc id="d">Seven steps from acceptance criteria to confirmation. Grey boxes are your decisions.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-white" x="8" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="67.0" y="62">Acceptance criteria</text><text class="t-small t-center" x="67.0" y="81">written in specs/</text><path class="arrow" d="M126,75 L142,75" marker-end="url(#ah)"/><rect class="c-slate" x="142" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="201.0" y="62">You approve</text><text class="t-small t-center" x="201.0" y="81">before any code</text><path class="arrow" d="M260,75 L276,75" marker-end="url(#ah)"/><rect class="c-white" x="276" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="335.0" y="62">Feature branch</text><text class="t-small t-center" x="335.0" y="81">never main</text><path class="arrow" d="M394,75 L410,75" marker-end="url(#ah)"/><rect class="c-white" x="410" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="469.0" y="62">Build with tests</text><text class="t-small t-center" x="469.0" y="81">small commits</text><path class="arrow" d="M528,75 L544,75" marker-end="url(#ah)"/><rect class="c-white" x="544" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="603.0" y="62">Check</text><text class="t-small t-center" x="603.0" y="81">tests, lint, build</text><path class="arrow" d="M662,75 L678,75" marker-end="url(#ah)"/><rect class="c-white" x="678" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="737.0" y="62">Docs page</text><text class="t-small t-center" x="737.0" y="81">on this site</text><path class="arrow" d="M796,75 L812,75" marker-end="url(#ah)"/><rect class="c-slate" x="812" y="40" width="118" height="70" rx="10"/><text class="t-title t-center" x="871.0" y="62">You confirm</text><text class="t-small t-center" x="871.0" y="81">then the next task</text><text class="t-small t-center" x="470" y="22">Grey boxes are decisions only you make. The rest the assistant does and shows evidence for.</text></svg></div><figcaption>The loop every task goes through. Writing the criteria first and stopping after each task keeps the work reviewable.</figcaption></figure><div class="col">
+<h2>Why it works this way</h2>
+<ul>
+<li><strong>Criteria before code</strong> means you agree on what "done" is before anything is built, and the result can be checked against it.</li>
+<li><strong>Feature branches and Conventional Commits</strong> keep history readable: each commit says what kind of change it is and why.</li>
+<li><strong>Approval for new libraries</strong> keeps the dependency list short and deliberate.</li>
+</ul>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Does any rule require a tool the rulebook calls unapproved?</td><td class="">No. Re-read line by line after the edits.</td></tr><tr><td class="">Does every planned task have a spec with criteria?</td><td class="">Yes: <a href="../../specs/001-agents-md-fixes.md">specs/001-agents-md-fixes.md</a> and the files next to it.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul><li>There is no remote repository yet, so no pull requests exist. The branches are stacked, each built on the one before.</li></ul>
+</div>
+<nav class="pager" aria-label="Pages"><span></span><a href="002-bootstrap-backend.html" style="text-align:right">Next: Backend housekeeping</a></nav>
+</main>
+</div>
+</body>
+</html>

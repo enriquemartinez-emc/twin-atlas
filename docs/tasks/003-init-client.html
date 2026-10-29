@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angular client setup - Twin Atlas docs</title>
+<meta name="description" content="The Angular client setup and its guard rails.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 003</span>
+<h1>Angular client setup</h1>
+<p class="lead">A strict, modern Angular app, with guard rails that fail the build instead of relying on people to remember the rules.</p>
+<div class="tags"><span class="tag c-mint">Done</span><span class="tag c-slate">Branch <code>chore/init-client</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p><code>cd client &amp;&amp; npm start</code> and open <code>http://localhost:4200</code>. Then <code>npx ng lint</code>: it passes, and it fails if you add an <code>any</code> type or an import that climbs out of a folder.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>Angular 22.2 with TypeScript 6.0</strong> on Node 24: standalone components, no zone.js, Vitest for tests, Tailwind v4 for styling.</li>
+<li><strong>Strict compiler settings:</strong> <code>strict</code>, <code>noImplicitAny</code>, <code>noUncheckedIndexedAccess</code> and strict templates, which the generated project did not enable.</li>
+<li><strong>Path aliases</strong> (<code>@app</code>, <code>@features</code>, <code>@shared</code>, <code>@map</code>, <code>@api</code>, <code>@env</code>) so imports never look like <code>../../..</code>.</li>
+<li><strong>ESLint rules that fail the build:</strong> no <code>any</code>, no <code>!</code> non-null assertions, type-only imports where possible, no parent-relative imports, and a feature may only be imported through its <code>public-api.ts</code>. Later a rule against separate template and style files joined them.</li>
+<li><strong>Prettier</strong> with <code>format</code> and <code>format:check</code> scripts.</li>
+<li>Angular 22 makes OnPush change detection the default, so components do not set it by hand.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 880 330" width="880" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Which parts of the client may import which</title><desc id="d">The app imports features through their public entry point; features use shared code, the map wrapper and the generated API client.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="20" y="90" width="170" height="76" rx="10"/><text class="t-title t-center" x="105.0" y="112">app</text><text class="t-small t-center" x="105.0" y="131">@app: shell, routes</text><rect class="c-sky" x="290" y="90" width="200" height="76" rx="10"/><text class="t-title t-center" x="390.0" y="112">features</text><text class="t-small t-center" x="390.0" y="131">@features: scene, annotation,</text><text class="t-small t-center" x="390.0" y="148">asset</text><rect class="c-sky" x="620" y="10" width="240" height="70" rx="10"/><text class="t-title t-center" x="740.0" y="32">shared</text><text class="t-small t-center" x="740.0" y="51">@shared: Spartan UI, problem</text><text class="t-small t-center" x="740.0" y="68">messages, geo helpers</text><rect class="c-sky" x="620" y="105" width="240" height="70" rx="10"/><text class="t-title t-center" x="740.0" y="127">map</text><text class="t-small t-center" x="740.0" y="146">@map: the only Cesium code</text><rect class="c-slate" x="620" y="200" width="240" height="70" rx="10"/><text class="t-title t-center" x="740.0" y="222">api</text><text class="t-small t-center" x="740.0" y="241">@api: generated SDK,</text><text class="t-small t-center" x="740.0" y="258">never edited</text><rect class="c-blush" x="290" y="240" width="200" height="70" rx="10"/><text class="t-title t-center" x="390.0" y="262">Another feature&#x27;s files</text><text class="t-small t-center" x="390.0" y="281">inner files, not its public-api</text><path class="arrow" d="M190,128 L290,128" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="240" y="118">public-api only</text><path class="arrow" d="M490,112 L620,50" marker-end="url(#ah)"/><path class="arrow" d="M490,128 L620,140" marker-end="url(#ah)"/><path class="arrow" d="M490,144 L620,230" marker-end="url(#ah)"/><path class="arrow-bad" d="M390,166 L390,240" marker-end="url(#ah-bad)"/><text class="t-small lbl" text-anchor="start" x="398" y="208">blocked by lint</text></svg></div><figcaption>Allowed imports between the client's folders. The red dashed arrow is the one the linter refuses: reaching into another feature's inner files.</figcaption></figure><div class="col">
+<h2>Why it works this way</h2>
+<p>Rules a person has to remember get broken. Rules the compiler or linter enforces do not. Each guard rail here was proved by writing a throwaway file that breaks it and watching the check fail, then deleting the file.</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Production build</td><td class="">Zero errors and zero warnings. 195 kB at the time.</td></tr><tr><td class="">Unit tests (Vitest)</td><td class="">Passing, including one that imports through every alias.</td></tr><tr><td class="">Lint with a planted violation</td><td class=""><code>any</code>, <code>../..</code> imports, cross-feature files and <code>!</code> all failed as intended; the public entry point was allowed.</td></tr><tr><td class="">Prettier</td><td class="">Clean.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul><li>The Angular CLI also generated a <code>client/CLAUDE.md</code> and a <code>.mcp.json</code> that runs the Angular CLI helper through <code>npx</code> without a pinned version. They are harmless but unrequested.</li></ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="002-bootstrap-backend.html">Previous: Backend housekeeping</a><a href="004-backend-foundation.html" style="text-align:right">Next: Backend foundation</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Backend foundation - Twin Atlas docs</title>
+<meta name="description" content="Database, error format, GeoJSON and architecture rules.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 004</span>
+<h1>Backend foundation</h1>
+<p class="lead">The database, the error format, GeoJSON support and the rules that keep the server tidy: everything the feature work stands on.</p>
+<div class="tags"><span class="tag c-mint">Done</span><span class="tag c-slate">Branch <code>chore/backend-foundation</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><pre><code>docker compose up -d
+cd server &amp;&amp; ./mvnw spring-boot:run
+curl localhost:8080/actuator/health</code></pre><p>The answer is <code>{"groups":["liveness","readiness"],"status":"UP"}</code>. The API documentation is at <code>http://localhost:8080/swagger-ui/index.html</code>.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>A database for development.</strong> <code>docker-compose.yml</code> starts PostgreSQL with PostGIS (<code>postgis/postgis:17-3.6</code>) with a health check and memory settings sized for a laptop. Tests use the very same image, and a test fails if the two ever differ.</li>
+<li><strong>Schema by numbered files.</strong> Flyway owns the database structure. Hibernate only checks that it matches.</li>
+<li><strong>Errors in one format.</strong> Every error is an RFC 7807 problem with a stable <code>code</code>.</li>
+<li><strong>GeoJSON</strong> in and out through <code>jackson-datatype-jts</code>, an existing library built for the current Jackson. A custom serializer was planned and dropped once the library turned up.</li>
+<li><strong>Clock, ids and the geometry factory</strong> as beans, so the pure rules receive time and ids as parameters.</li>
+<li><strong>Architecture tests</strong> that fail the build when the structure is broken (diagram below).</li>
+<li><strong>Automatic formatting check</strong> with Spotless, bound to <code>verify</code>.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 360" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Dependency rules checked by ArchUnit</title><desc id="d">Slices may use platform and each other&#x27;s core only; core packages cannot use Spring, Jakarta or Hibernate.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-butter" x="30" y="60" width="200" height="120" rx="10"/><text class="t-title" x="44" y="82">scene</text><text class="t-small" x="44" y="101">plain CRUD, no core</text><rect class="c-butter" x="300" y="60" width="200" height="120" rx="10"/><text class="t-title" x="314" y="82">annotation</text><rect class="c-mint" x="318" y="108" width="164" height="56" rx="10"/><text class="t-title t-center" x="400.0" y="130">core</text><text class="t-small t-center" x="400.0" y="149">pure rules</text><rect class="c-butter" x="570" y="60" width="300" height="120" rx="10"/><text class="t-title" x="584" y="82">platform</text><rect class="c-mint" x="588" y="108" width="264" height="56" rx="10"/><text class="t-title t-center" x="720.0" y="130">core</text><text class="t-small t-center" x="720.0" y="149">Decision, Rejection</text><rect class="c-blush" x="260" y="270" width="280" height="66" rx="10"/><text class="t-title t-center" x="400.0" y="292">Spring, Jakarta, Hibernate</text><text class="t-small t-center" x="400.0" y="311">frameworks and persistence</text><path class="arrow" d="M500,100 L570,100" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="535" y="90">may use</text><path class="arrow" d="M130,60 L130,30 L720,30 L720,60" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="430" y="22">every slice may use platform</text><path class="arrow-bad" d="M300,150 L230,150" marker-end="url(#ah-bad)"/><text class="t-small lbl" text-anchor="middle" x="265" y="140">blocked</text><path class="arrow-bad" d="M400,164 L400,270" marker-end="url(#ah-bad)"/><text class="t-small lbl" text-anchor="start" x="410" y="224">core may not use these</text><text class="t-small t-center" x="720" y="205">platform may not use any slice</text></svg></div><figcaption>What ArchUnit enforces. The red dashed arrows are the dependencies the build refuses.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Why it works this way</h2>
+<p>Coordinates are stored as plain longitude and latitude with an index, so the same data works for maps and for the API (<a href="../adr/0001-geometry-vs-geography.md">ADR 0001</a>). Maven is the build tool because the project is a single module and its fixed lifecycle is easy to read (<a href="../adr/0002-maven-build-tool.md">ADR 0002</a>).</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Backend tests</td><td class="">18 passing, including a real PostGIS container, GeoJSON round trips and error shapes.</td></tr><tr><td class="">Architecture rules</td><td class="">Proved by planting three violations (Spring in a core, one slice reaching into another, platform using a slice). All three failed, then were removed.</td></tr><tr><td class="">Real stack</td><td class="">Database up via Compose, server started, Flyway applied, health answered UP, Swagger UI served.</td></tr><tr><td class="">Formatting</td><td class="">Spotless check passes.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul>
+<li>The Compose stack runs only the database. There is no server container yet.</li>
+<li>google-java-format is pinned to 1.36.0 because 1.37.0 fails inside the Spotless plugin.</li>
+<li>One test logs the same error twice. It looks like a test-tool quirk and was not investigated further.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="003-init-client.html">Previous: Angular client setup</a><a href="005-annotation-create.html" style="text-align:right">Next: Creating annotations</a></nav>
+</main>
+</div>
+</body>
+</html>

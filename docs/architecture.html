@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it fits together - Twin Atlas docs</title>
+<meta name="description" content="The structure of Twin Atlas and the rules that protect it.">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="index.html"><span>Overview</span></a></li>
+<li><a href="architecture.html" aria-current="page"><span>How it fits together</span></a></li>
+<li><a href="glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+
+<header class="head col">
+<h1>How it fits together</h1>
+<p class="lead">The server is one program split into feature areas. The decisions a user would care about (is this spot inside the scene? is this title taken?) live in small pure functions, and everything that touches the outside world sits around them.</p>
+</header>
+
+<div class="col">
+<h2>Two halves of every write</h2>
+<p>A <strong>pure function</strong> only looks at what it is given and returns an answer. It cannot read a database, the clock or the network. That makes the business rules easy to test and impossible to break by accident. The <strong>shell</strong> around it does the real work: it fetches the facts, asks the rules, and saves the result. The pattern is called functional core, imperative shell.</p>
+</div>
+<figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 500" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">What happens when an annotation is created</title><desc id="d">Browser, endpoint, pure rules and database exchanging messages in order.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="40" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="110.0" y="35.0">Browser</text><path class="dim" d="M110,50 L110,490"/><rect class="c-butter" x="270" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="340.0" y="35.0">Endpoint</text><path class="dim" d="M340,50 L340,490"/><rect class="c-mint" x="500" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="570.0" y="35.0">Pure rules</text><path class="dim" d="M570,50 L570,490"/><rect class="c-lilac" x="730" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="800.0" y="35.0">Database</text><path class="dim" d="M800,50 L800,490"/><path class="arrow" d="M110,90 L340,90" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="225.0" y="83">POST an annotation</text><path class="arrow" d="M340,135 L800,135" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="570.0" y="128">load facts: scene extent, title taken?</text><path class="arrow" d="M800,168 L340,168" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="570.0" y="161">facts</text><path class="arrow" d="M340,215 L570,215" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="455.0" y="208">evaluate(command, facts)</text><path class="arrow" d="M570,248 L340,248" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="455.0" y="241">Accepted, or Rejected(code)</text><path class="arrow-bad" d="M340,295 L110,295" marker-end="url(#ah-bad)"/><text class="t-small lbl" text-anchor="middle" x="225.0" y="288">if rejected: 404, 409 or 422 and the code</text><path class="arrow" d="M340,345 L570,345" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="455.0" y="338">create the draft (id and time passed in)</text><path class="arrow" d="M570,378 L340,378" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="455.0" y="371">the draft</text><path class="arrow" d="M340,425 L800,425" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="570.0" y="418">save; a unique index is the last guard</text><path class="arrow" d="M340,468 L110,468" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="225.0" y="461">201 Created, with an ETag</text></svg></div><figcaption>Creating an annotation. The endpoint gathers facts, the pure rules decide, and the database has the final word if two requests race.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure>
+
+<div class="col">
+<h2>What the build enforces</h2>
+<p>Rules about the structure are tests, so they cannot quietly rot:</p>
+<ul>
+<li>Code in a <code>core</code> package cannot use Spring, Jakarta or Hibernate.</li>
+<li>One feature area cannot reach into another's inner parts. Only its <code>core</code> is shared.</li>
+<li>The <code>platform</code> package cannot depend on any feature area.</li>
+</ul>
+<p>On the client, ESLint refuses <code>any</code>, imports that climb out of a folder, and reaching into another feature's files.</p>
+
+<h2>Where things live</h2>
+</div>
+<div class="wide">
+<div class="table-wrap"><table><thead><tr><th class="">Folder</th><th class="">What is in it</th></tr></thead><tbody><tr><td class=""><code>server/src/main/java/com/twinatlas/annotation</code></td><td class="">Endpoints, entity, SQL reads. <code>core/</code> holds the pure rules.</td></tr><tr><td class=""><code>server/.../scene</code></td><td class="">Plain create, list and get for scenes. No rules beyond validation.</td></tr><tr><td class=""><code>server/.../platform</code></td><td class="">Error format, ids and clock, GeoJSON, API documentation. <code>core/</code> holds the shared <code>Decision</code> and <code>Rejection</code> types.</td></tr><tr><td class=""><code>server/src/main/resources/db/migration</code></td><td class="">The database schema, one numbered file per change (Flyway).</td></tr><tr><td class=""><code>client/src/app/map</code></td><td class="">The only code that touches Cesium.</td></tr><tr><td class=""><code>client/src/app/features</code></td><td class="">Screens, one folder per feature area, mirroring the server.</td></tr><tr><td class=""><code>client/src/app/api</code></td><td class="">The generated API client. Never edited by hand.</td></tr><tr><td class=""><code>docs/openapi.json</code></td><td class="">The API contract. A server test fails when it is out of date.</td></tr><tr><td class=""><code>docs/adr</code></td><td class="">Short records of the big decisions and why they were made.</td></tr></tbody></table></div>
+</div>
+<div class="col">
+<h2>Decisions on record</h2>
+<ul>
+<li><a href="adr/0001-geometry-vs-geography.md">0001</a> Store geometry in SRID 4326, not geography</li>
+<li><a href="adr/0002-maven-build-tool.md">0002</a> Maven as the backend build tool</li>
+<li><a href="adr/0003-fcis-decision-functions.md">0003</a> Functional core with decision functions</li>
+<li><a href="adr/0004-entity-mapping-at-the-shell-boundary.md">0004</a> Entities stay in the shell</li>
+<li><a href="adr/0005-reads-bypass-the-core.md">0005</a> Spatial reads bypass the core</li>
+<li><a href="adr/0006-native-sql-vs-hibernate-spatial.md">0006</a> Native SQL for reads, Hibernate Spatial for writes</li>
+<li><a href="adr/0007-keyset-pagination.md">0007</a> Keyset pagination with opaque cursors</li>
+<li><a href="adr/0008-contract-first-sdk.md">0008</a> Contract-first SDK from a committed OpenAPI spec</li>
+</ul>
+</div>
+
+
+</main>
+</div>
+</body>
+</html>

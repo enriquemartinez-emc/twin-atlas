@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Creating annotations - Twin Atlas docs</title>
+<meta name="description" content="Creating annotations with pure rules and a database guard.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 005</span>
+<h1>Creating annotations</h1>
+<p class="lead">Creating an annotation is the reference example of the pure-rules design: small decisions in plain functions, the real work around them, and the database as the last line of defence.</p>
+<div class="tags"><span class="tag c-mint">Done</span><span class="tag c-slate">Branch <code>feat/annotation-create</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>With the server running, create a scene and then an annotation in it:</p><pre><code>curl -s -X POST localhost:8080/api/scenes -H 'Content-Type: application/json' \
+  -d '&#123;"name":"Plaza","extent":&#123;"type":"Polygon","coordinates":[[[2.17,41.40],[2.18,41.40],[2.18,41.41],[2.17,41.41],[2.17,41.40]]]&#125;&#125;'
+
+curl -s -X POST localhost:8080/api/scenes/SCENE_ID/annotations -H 'Content-Type: application/json' \
+  -d '&#123;"kind":"MARKER","title":"Cracked window","geometry":&#123;"type":"Point","coordinates":[2.175,41.405]&#125;&#125;'</code></pre><p>The answer is <code>201</code> with the new annotation and an <code>ETag: "0"</code> header (see the <a href="../glossary.html#etag">glossary</a>). Send the same title again and you get <code>409</code> with <code>TITLE_ALREADY_USED</code>.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>Three kinds of annotation as types:</strong> a marker (a pin), a note (a pin with text) and an outline (an area). Because the type fixes the geometry, a marker with a polygon cannot even be expressed.</li>
+<li><strong>Lifecycle as types:</strong> <code>Draft</code>, <code>Published</code>, <code>Archived</code>. Creating produces a draft.</li>
+<li><strong>Four rules</strong> in a fixed order. The first to fail decides the answer.</li>
+<li><strong>One endpoint class</strong> with a fixed flow: load facts, decide, reject or transform, save.</li>
+<li><strong>The schema:</strong> scene and annotation tables with SRID 4326 geometry, a spatial index and check constraints, plus a unique index that backs the title rule.</li>
+<li><strong>A small scene feature</strong> (create and get), because annotations need a scene to be placed inside.</li>
+</ul>
+<h2>The rules and what they answer</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="num">Order</th><th class="">Rule</th><th class="">Code</th><th class="num">HTTP</th></tr></thead><tbody><tr><td class="num">1</td><td class="">The scene exists</td><td class=""><code>SCENE_NOT_FOUND</code></td><td class="num">404</td></tr><tr><td class="num">2</td><td class="">The shape is valid: not empty, does not cross itself, inside the world</td><td class=""><code>INVALID_GEOMETRY</code></td><td class="num">422</td></tr><tr><td class="num">3</td><td class="">The shape is entirely inside the scene</td><td class=""><code>GEOMETRY_OUTSIDE_SCENE_EXTENT</code></td><td class="num">422</td></tr><tr><td class="num">4</td><td class="">The title is unused in this scene (ignoring case)</td><td class=""><code>TITLE_ALREADY_USED</code></td><td class="num">409</td></tr><tr><td class="num">-</td><td class="">The request is malformed (blank title, a marker sent a polygon, a note without text)</td><td class=""><code>VALIDATION_FAILED</code></td><td class="num">400</td></tr></tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 330" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Two requests with the same title at the same time</title><desc id="d">Both pass the pure rule, the unique index lets one in and turns the other away.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="30" y="20" width="170" height="60" rx="10"/><text class="t-title t-center" x="115.0" y="42">Request A</text><text class="t-small t-center" x="115.0" y="61">title &quot;Leak&quot;</text><rect class="c-sky" x="30" y="230" width="170" height="60" rx="10"/><text class="t-title t-center" x="115.0" y="252">Request B</text><text class="t-small t-center" x="115.0" y="271">same title, same moment</text><rect class="c-mint" x="290" y="125" width="210" height="80" rx="10"/><text class="t-title t-center" x="395.0" y="147">Pure rule says</text><text class="t-small t-center" x="395.0" y="166">&quot;title is free&quot; to both,</text><text class="t-small t-center" x="395.0" y="183">it only saw the past</text><rect class="c-lilac" x="590" y="125" width="280" height="80" rx="10"/><text class="t-title t-center" x="730.0" y="147">Unique index</text><text class="t-small t-center" x="730.0" y="166">(scene, lower(title))</text><text class="t-small t-center" x="730.0" y="183">only one row can exist</text><rect class="c-mint" x="640" y="20" width="230" height="60" rx="10"/><text class="t-title t-center" x="755.0" y="42">201 Created</text><text class="t-small t-center" x="755.0" y="61">request A wins</text><rect class="c-blush" x="640" y="230" width="230" height="60" rx="10"/><text class="t-title t-center" x="755.0" y="252">409 TITLE_ALREADY_USED</text><text class="t-small t-center" x="755.0" y="271">request B is turned away</text><path class="arrow" d="M200,50 L290,150" marker-end="url(#ah)"/><path class="arrow" d="M200,260 L290,180" marker-end="url(#ah)"/><path class="arrow" d="M500,165 L590,165" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="545" y="155">both save</text><path class="arrow" d="M730,125 L730,80" marker-end="url(#ah)"/><path class="arrow" d="M730,205 L730,230" marker-end="url(#ah)"/></svg></div><figcaption>Why the database check matters. A pure rule can only judge what it was told, so two requests at the same moment can both pass it. The unique index decides, and the server turns its refusal into the same answer the rule would have given.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Why it works this way</h2>
+<p>The rules are plain functions, so they are tested with ordinary unit tests and with thousands of random inputs, without a database or a web server. Anything that can race is also guarded in the database (<a href="../adr/0003-fcis-decision-functions.md">ADR 0003</a>). Entities never leave the server's shell; they are mapped to plain records at the boundary (<a href="../adr/0004-entity-mapping-at-the-shell-boundary.md">ADR 0004</a>).</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Rule tests</td><td class="">17 table-driven cases, one for every rule and for which rule wins when several fail.</td></tr><tr><td class="">Random-input tests</td><td class="">Six properties, each over 1000 random scenes and shapes: inside is accepted, outside is rejected, off-planet is invalid, the boundary counts as inside.</td></tr><tr><td class="">Endpoint tests on real PostGIS</td><td class="">Happy path, one test per rejection, request validation, a stale-fact case and an 8-client race (exactly one 201, seven 409, one row).</td></tr><tr><td class="">Database as final guard</td><td class="">A test bypasses the endpoint and the database still refuses a marker with a polygon and a duplicate title.</td></tr><tr><td class="">Whole backend at the time</td><td class="">57 tests passing, formatting clean.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul>
+<li>Only creating exists. Update, delete and publish are not built (editing is task 014).</li>
+<li>The conversion from database record back to a domain object is not written yet, because nothing needs it until editing.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="004-backend-foundation.html">Previous: Backend foundation</a><a href="006-annotation-reads.html" style="text-align:right">Next: Finding annotations by area</a></nav>
+</main>
+</div>
+</body>
+</html>

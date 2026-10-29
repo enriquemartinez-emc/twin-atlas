@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finding annotations by area - Twin Atlas docs</title>
+<meta name="description" content="Spatial reads: in view, nearest, inside a zone, with paging.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 006</span>
+<h1>Finding annotations by area</h1>
+<p class="lead">Everything the map needs to ask: what is in view, what is nearest to a point, and what is inside a zone, a page at a time.</p>
+<div class="tags"><span class="tag c-mint">Done</span><span class="tag c-slate">Branch <code>feat/annotation-reads</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><pre><code># what is inside this view (west,south,east,north)
+curl 'localhost:8080/api/scenes/SCENE_ID/annotations?bbox=2.17,41.40,2.18,41.41&amp;limit=50'
+
+# the 5 nearest to a point, with distances in metres
+curl 'localhost:8080/api/scenes/SCENE_ID/annotations/nearest?longitude=2.175&amp;latitude=41.405&amp;limit=5'</code></pre>
+<p>Each page carries a <code>nextCursor</code>. Pass it back as <code>cursor</code> for the next page. The three endpoints are listed in the Swagger UI.</p></aside>
+<h2>What was built</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Endpoint</th><th class="">Answers</th><th class="">Notes</th></tr></thead><tbody><tr><td class=""><code>GET /api/scenes/{id}/annotations</code></td><td class="">The list, or only what is visible when <code>bbox</code> is given</td><td class="">Paged with a cursor. A west value larger than east means the view crosses the date line.</td></tr><tr><td class=""><code>GET .../annotations/nearest</code></td><td class="">The N closest to a point</td><td class="">Ordered by distance, with the distance in metres. Optional radius.</td></tr><tr><td class=""><code>POST .../annotations/search</code></td><td class="">Everything that touches a zone</td><td class="">POST because the zone is a GeoJSON polygon. Paged like the list.</td></tr></tbody></table></div>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 420" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">How a map query narrows down the rows</title><desc id="d">All rows, then a cheap box test using the index, then an exact shape test, then one page.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-lilac" x="70" y="10" width="760" height="66" rx="10"/><text class="t-title t-center" x="450.0" y="32">All annotations in the scene</text><text class="t-small t-center" x="450.0" y="51">up to millions of rows</text><rect class="c-butter" x="150" y="106" width="600" height="66" rx="10"/><text class="t-title t-center" x="450.0" y="128">Cheap box test using the spatial index</text><text class="t-small t-center" x="450.0" y="147">keeps shapes whose box touches the view, so a few are false hits</text><rect class="c-butter" x="230" y="202" width="440" height="66" rx="10"/><text class="t-title t-center" x="450.0" y="224">Exact shape test</text><text class="t-small t-center" x="450.0" y="243">drops the false hits</text><rect class="c-butter" x="300" y="298" width="300" height="66" rx="10"/><text class="t-title t-center" x="450.0" y="320">Sort by time and id, take n + 1</text><text class="t-small t-center" x="450.0" y="339">one extra row shows if there is a next page</text><rect class="c-white" x="350" y="392" width="200" height="0.01" rx="10"/><text class="t-title" x="364" y="397.005"></text><path class="arrow" d="M450,76 L450,106" marker-end="url(#ah)"/><path class="arrow" d="M450,172 L450,202" marker-end="url(#ah)"/><path class="arrow" d="M450,268 L450,298" marker-end="url(#ah)"/><path class="arrow" d="M450,364 L450,384" marker-end="url(#ah)"/><text class="t-title t-center" x="450" y="404">One page of results and a cursor</text></svg></div><figcaption>Each query first uses the spatial index for a cheap test, then an exact test, so the database never checks every shape precisely.</figcaption></figure><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 150" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Keyset pagination</title><desc id="d">Each page ends with a cursor that the next request continues from.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-white" x="20" y="30" width="230" height="80" rx="10"/><text class="t-title t-center" x="135.0" y="52">Page 1</text><text class="t-small t-center" x="135.0" y="71">rows 1 to 3</text><text class="t-small t-center" x="135.0" y="88">ends at (time, id) of row 3</text><rect class="c-white" x="335" y="30" width="230" height="80" rx="10"/><text class="t-title t-center" x="450.0" y="52">Page 2</text><text class="t-small t-center" x="450.0" y="71">rows 4 to 6</text><text class="t-small t-center" x="450.0" y="88">starts after that cursor</text><rect class="c-white" x="650" y="30" width="230" height="80" rx="10"/><text class="t-title t-center" x="765.0" y="52">Page 3</text><text class="t-small t-center" x="765.0" y="71">the last rows</text><text class="t-small t-center" x="765.0" y="88">no further cursor</text><path class="arrow" d="M250,70 L335,70" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="292" y="60">cursor</text><path class="arrow" d="M565,70 L650,70" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="607" y="60">cursor</text><text class="t-small t-center" x="450" y="140">A new row never shifts earlier pages, and a deep page is as fast as the first.</text></svg></div><figcaption>Paging by position instead of by count.</figcaption></figure><div class="col">
+<h2>Why it works this way</h2>
+<p>Reads have no business rules, so they skip the pure rules and go straight from SQL to the response (<a href="../adr/0005-reads-bypass-the-core.md">ADR 0005</a>). Native SQL is used because the spatial operators are not available in the object query language (<a href="../adr/0006-native-sql-vs-hibernate-spatial.md">ADR 0006</a>). Paging by position stays fast and stable (<a href="../adr/0007-keyset-pagination.md">ADR 0007</a>).</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Exact shape, not just its box</td><td class="">An L-shaped outline is excluded from a view that sits in its empty corner, and included on its arm.</td></tr><tr><td class="">Date line</td><td class="">A view from 179 to -179 finds markers on both sides; 179 to 180 finds only one.</td></tr><tr><td class="">Paging</td><td class="">Walking every page returns each row exactly once, in order, including when rows share the same timestamp.</td></tr><tr><td class="">Proof the tests can fail</td><td class="">Removing the exact test, and then removing the id tie-break, each made the right test fail. Both were restored.</td></tr><tr><td class="">Index use</td><td class="">On 20 000 seeded rows the plans use the spatial index for the box query and the nearest query, and a time index for the list.</td></tr><tr><td class="">Timing</td><td class="">Each query type records a timer visible through the metrics endpoint.</td></tr><tr><td class="">Whole backend at the time</td><td class="">89 tests passing.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul>
+<li>The nearest query's radius pre-filter is a box in degrees that does not wrap the date line, so a radius search very close to it can miss matches. Acceptable for city-scale scenes and recorded in ADR 0006.</li>
+<li>Speed at one million rows is not measured yet. That is task 009.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="005-annotation-create.html">Previous: Creating annotations</a><a href="007-map-viewer.html" style="text-align:right">Next: The 3D map viewer</a></nav>
+</main>
+</div>
+</body>
+</html>

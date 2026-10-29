@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Annotations on screen - Twin Atlas docs</title>
+<meta name="description" content="Annotations on screen, built on the generated API client.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 008</span>
+<h1>Annotations on screen</h1>
+<p class="lead">The first screen you can use end to end: pick or create a scene, click the map, save, and see the result, all through a client generated from the server's contract.</p>
+<div class="tags"><span class="tag c-butter">In progress</span><span class="tag c-slate">Branch <code>feat/annotation-ui</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><pre><code>docker compose up -d
+cd server &amp;&amp; ./mvnw spring-boot:run
+cd client &amp;&amp; npm start</code></pre>
+<ol>
+<li>Open <code>http://localhost:4200</code>. The map starts on the Sagrada Fam&iacute;lia.</li>
+<li>In the panel, name a scene and press <strong>Create scene from this view</strong>.</li>
+<li>Press <strong>Marker</strong>, click the map, type a title and press <strong>Save</strong>.</li>
+<li>Save another marker with the same title: you get a plain sentence saying the title is already used.</li>
+<li>Press <strong>Outline</strong>, click three or more corners, give it a title and save.</li>
+</ol></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>A generated API client.</strong> The server publishes its contract as <code>docs/openapi.json</code>. A tool generates typed Angular code from it, so the app never hand-writes API types.</li>
+<li><strong>Typed shapes.</strong> The contract describes points and polygons as real GeoJSON types, so the client knows a <code>Point</code> from a <code>Polygon</code>.</li>
+<li><strong>Scenes.</strong> A list endpoint, a picker and "create from the current view". Your choice is remembered in this browser.</li>
+<li><strong>Annotations in view.</strong> The list and the map show what is inside the visible area. The previous result stays on screen while a new view loads, so the map does not flicker.</li>
+<li><strong>Placing things.</strong> Click for a marker or note, click corners for an outline, with a purple preview while you draw.</li>
+<li><strong>Readable errors.</strong> Each server code has a sentence. The message list is typed over the code list, so a new server code stops the client compiling until it has one.</li>
+<li><strong>Forms with Signal Forms</strong> and components that are single files.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 470" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The scene screen</title><desc id="d">A side panel with the scene picker, tools, form, list and map details, next to the 3D map.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-white" x="10" y="10" width="300" height="450" rx="14"/><rect class="c-sky" x="330" y="10" width="560" height="450" rx="14"/><rect class="c-white" x="26" y="26" width="268" height="62" rx="10"/><text class="t-title" x="40" y="48">Scene</text><text class="t-small" x="40" y="67">pick one, or create from this view</text><rect class="c-white" x="26" y="98" width="268" height="52" rx="10"/><text class="t-title" x="40" y="120">Tools</text><text class="t-small" x="40" y="139">Select, Marker, Note, Outline</text><rect class="c-white" x="26" y="160" width="268" height="92" rx="10"/><text class="t-title" x="40" y="182">New marker</text><text class="t-small" x="40" y="201">title, Save, Cancel</text><text class="t-small" x="40" y="218">readable messages from the server</text><rect class="c-white" x="26" y="262" width="268" height="74" rx="10"/><text class="t-title" x="40" y="284">Annotations in view</text><text class="t-small" x="40" y="303">click one to fly to it</text><rect class="c-white" x="26" y="346" width="268" height="100" rx="10"/><text class="t-title" x="40" y="368">Map</text><text class="t-small" x="40" y="387">source, camera, Reset view</text><text class="t-small" x="40" y="404">Cesium ion token</text><circle cx="520" cy="170" r="9" style="fill:var(--sky-line);stroke:#fff;stroke-width:3"/><text class="t-small t-center" x="520" y="150">Cracked window</text><path d="M620,230 L780,230 L780,390 L620,390 Z" style="fill:var(--mint-line);fill-opacity:.35;stroke:var(--mint-line);stroke-width:3"/><text class="t-small t-center" x="700" y="315">Inspection area</text><circle cx="470" cy="330" r="8" style="fill:var(--lilac-line);stroke:#fff;stroke-width:3"/><text class="t-small t-center" x="470" y="355">draft point while placing</text><text class="t-small t-center" x="610" y="44">Click the map to place. Click a shape to select it.</text></svg></div><figcaption>What the scene screen holds. The panel on the left is the same one the steps above use.</figcaption></figure><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 300" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">From server code to screens</title><desc id="d">Server records produce the committed contract, the contract produces the generated client, and tests guard both steps.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-butter" x="10" y="50" width="180" height="84" rx="10"/><text class="t-title t-center" x="100.0" y="72">Java records</text><text class="t-small t-center" x="100.0" y="91">and API annotations</text><rect class="c-slate" x="270" y="50" width="170" height="84" rx="10"/><text class="t-title t-center" x="355.0" y="72">openapi.json</text><text class="t-small t-center" x="355.0" y="91">committed contract</text><rect class="c-slate" x="520" y="50" width="170" height="84" rx="10"/><text class="t-title t-center" x="605.0" y="72">src/app/api</text><text class="t-small t-center" x="605.0" y="91">generated client</text><rect class="c-sky" x="770" y="50" width="120" height="84" rx="10"/><text class="t-title t-center" x="830.0" y="72">Screens</text><text class="t-small t-center" x="830.0" y="91">and services</text><path class="arrow" d="M190,92 L270,92" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="230" y="82">springdoc</text><path class="arrow" d="M440,92 L520,92" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="480" y="82">hey-api</text><path class="arrow" d="M690,92 L770,92" marker-end="url(#ah)"/><rect class="c-blush" x="240" y="200" width="230" height="76" rx="10"/><text class="t-title t-center" x="355.0" y="222">OpenApiSpecTest</text><text class="t-small t-center" x="355.0" y="241">fails if the contract is stale</text><rect class="c-blush" x="500" y="200" width="250" height="76" rx="10"/><text class="t-title t-center" x="625.0" y="222">problem-message.ts</text><text class="t-small t-center" x="625.0" y="241">stops compiling on a new code</text><path class="arrow" d="M355,200 L355,134" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="363" y="170">guards</text><path class="arrow" d="M625,200 L625,134" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="633" y="170">guards</text></svg></div><figcaption>How a change on the server reaches the screen. Both red boxes are checks that fail loudly instead of letting the two sides drift apart.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>How the screen is organised</h2>
+<div class="tree">SceneViewerPage          the one smart component: owns the state, calls the services
+  ScenePicker            takes scenes, emits choose and create
+  AnnotationForm         takes kind and ready, emits submitted and cancelled
+  AnnotationList         takes items, emits selected
+  IonTokenPanel          takes the map mode, emits saved and forgotten
+
+services it calls
+  ScenesService          generated client, then /api/scenes
+  AnnotationData         generated client, then /api/scenes/{id}/annotations
+  MapService             loaded on demand, then Cesium</div>
+<p>Only the page fetches and decides. The four small components just show what they are given and report what the user did, which makes them easy to test and reuse.</p>
+<h2>Why it works this way</h2>
+<p>Generating the client from a committed contract removes a whole class of "the server changed and the app broke" bugs (<a href="../adr/0008-contract-first-sdk.md">ADR 0008</a>). During development the dev server forwards <code>/api</code> to the backend, so the browser sees one origin and no cross-origin setup is needed.</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Client tests</td><td class="">132 passing: data services against a fake HTTP layer, the form, list, picker, token panel, and the page driving the whole create flow with a fake map.</td></tr><tr><td class="">Backend tests</td><td class="">91 passing, including the one that fails when the committed contract is stale.</td></tr><tr><td class="">Regenerating the client</td><td class="">Leaves no diff, so generation is deterministic.</td></tr><tr><td class="">Real run in a headless browser</td><td class="">Created a scene from the view, placed a marker, saw the duplicate-title message, drew an outline. The browser console stayed clean.</td></tr><tr><td class="">A bug found that way</td><td class="">After creating a scene, "Name the scene." stayed under the empty field. A failing test was written first, then the fix.</td></tr><tr><td class="">Build and lint</td><td class="">Zero build warnings, zero lint errors, no <code>any</code> in our code, no separate template or style files.</td></tr></tbody></table></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The photorealistic tiles with a real token (see <a href="007-map-viewer.html">the map viewer</a>). Also, the annotation rendering was only seen on the OpenStreetMap globe.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li><strong>No editing yet.</strong> Annotations can be created and viewed. Editing needs an update endpoint and the ETag check (task 014). The server already sends an ETag on creation, and the <a href="../glossary.html#etag">glossary</a> explains what it will be used for.</li>
+<li>One page of up to 200 annotations is shown per view. If more are in view, the list says to zoom in.</li>
+<li>The generated client contains two <code>any</code> types in its runtime. They are generated, so they are not edited, and the folder is excluded from the lint rule.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="007-map-viewer.html">Previous: The 3D map viewer</a><a href="015-html-docs.html" style="text-align:right">Next: This documentation</a></nav>
+</main>
+</div>
+</body>
+</html>

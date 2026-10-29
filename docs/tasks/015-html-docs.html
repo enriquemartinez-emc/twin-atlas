@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>This documentation - Twin Atlas docs</title>
+<meta name="description" content="The documentation site itself.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html">Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span style="display:flex;gap:.55rem;padding:.28rem 0;color:var(--muted);font-size:.9375rem;line-height:1.35"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<span class="num">Task 015</span>
+<h1>This documentation</h1>
+<p class="lead">This site: plain HTML pages that explain what was built, task by task, for someone who has not read the code.</p>
+<div class="tags"><span class="tag c-butter">In progress</span><span class="tag c-slate">Branch <code>docs/html-docs</code></span></div>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>Open <code>docs/index.html</code> in a browser (double-click it, or run <code>xdg-open docs/index.html</code> on Linux). It needs no server and no internet connection.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>A front page</strong> with a status board of every task and a system map whose boxes link to the task that built them.</li>
+<li><strong>An architecture page</strong> and a <a href="../glossary.html">glossary</a> that explains the terms in plain words.</li>
+<li><strong>One page per finished task.</strong> Each has a plain-words summary, how to try it, what was built, a diagram, why, how it was checked and known limits, including what is not verified.</li>
+<li><strong>One stylesheet</strong> and no scripts, web fonts or libraries.</li>
+<li><strong>A workflow rule:</strong> from now on every task adds its own page before it is confirmed.</li>
+</ul>
+<h2>Layout</h2>
+<div class="tree">docs/
+  index.html            status board and the clickable system map
+  architecture.html     how the pieces fit together
+  glossary.html         plain-language terms
+  tasks/
+    NNN-name.html       one page per task
+    _template.html      copy this to start the next one
+  assets/docs.css       the only stylesheet
+  adr/                  decision records (Markdown)
+  openapi.json          the API contract</div>
+<h2>The look</h2>
+<p>Light theme, a sans-serif system font stack, solid soft fills with solid borders. No gradients, no shadows, no animation. Colour is used for meaning, and the same meaning on every page:</p>
+<div class="table-wrap"><table><thead><tr><th class="">Colour</th><th class="">Means</th><th class="">Example</th></tr></thead><tbody><tr><td class=""><span class="tag c-sky">Blue</span></td><td class="">The browser</td><td class="">Map viewer, screens</td></tr><tr><td class=""><span class="tag c-mint">Green</span></td><td class="">Pure rules</td><td class="">The decision functions</td></tr><tr><td class=""><span class="tag c-butter">Yellow</span></td><td class="">Server code</td><td class="">Endpoints, platform</td></tr><tr><td class=""><span class="tag c-lilac">Purple</span></td><td class="">Data</td><td class="">PostGIS tables</td></tr><tr><td class=""><span class="tag c-slate">Grey</span></td><td class="">Tooling or generated code</td><td class="">API client, contract, your decisions in the workflow</td></tr><tr><td class=""><span class="tag c-blush">Red</span></td><td class="">Errors and things not verified</td><td class="">Rejections, "Not verified" notes</td></tr></tbody></table></div>
+<h2>Adding a page for the next task</h2>
+<ol class="steps">
+<li>Copy <code>docs/tasks/_template.html</code> to <code>docs/tasks/NNN-name.html</code> and fill it in. Keep to the same sections.</li>
+<li>Add the task to the sidebar of the other pages and to the status board on <code>index.html</code>.</li>
+<li>Explain any new term once in the glossary and link to it.</li>
+<li>Open the page in a browser, check it on a narrow window, and check every link.</li>
+</ol>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Links</td><td class="">A script followed every internal link and anchor in every page. All resolve.</td></tr><tr><td class="">External resources</td><td class="">None. The only external addresses are plain links to ion.cesium.com.</td></tr><tr><td class="">Real browser</td><td class="">Pages were rendered in headless Chromium at desktop and phone width and inspected.</td></tr><tr><td class="">Page structure</td><td class="">A parser confirmed every page has balanced tags, one main landmark and titled diagrams.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul>
+<li>The pages are written by hand, so the status board and sidebars must be updated when a task finishes. A generator would remove that chore but adds tooling the rulebook does not approve.</li>
+<li>Decision records stay in Markdown and are linked, not converted.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="008-annotation-ui.html">Previous: Annotations on screen</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>
