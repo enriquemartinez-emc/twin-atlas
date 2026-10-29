@@ -3,9 +3,11 @@ import { FormField, form, maxLength, required, submit, validate } from '@angular
 import { notBlank } from '@shared/forms/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
-import { HlmLabelImports } from '@shared/ui/label';
 import { HlmTextareaImports } from '@shared/ui/textarea';
 import type { AnnotationFormValue, AnnotationKind } from './draft';
+import { ProblemAlert } from '@shared/problems/problem-alert';
+import { HlmFieldImports } from '@shared/ui/field';
+import { HlmTypographyImports } from '@shared/ui/typography';
 
 const NAMES: Record<AnnotationKind, string> = {
   MARKER: 'marker',
@@ -21,40 +23,55 @@ const HINTS: Record<AnnotationKind, string> = {
 
 @Component({
   selector: 'app-annotation-form',
-  imports: [FormField, HlmButtonImports, HlmInputImports, HlmLabelImports, HlmTextareaImports],
+  imports: [
+    FormField,
+    ProblemAlert,
+    HlmButtonImports,
+    HlmFieldImports,
+    HlmInputImports,
+    HlmTextareaImports,
+    HlmTypographyImports,
+  ],
   template: `
-    <form class="flex flex-col gap-2" novalidate (submit)="onSubmit($event)">
-      <p class="font-medium">New {{ name() }}</p>
-      <p class="text-muted-foreground">{{ hint() }}</p>
+    <form hlmFieldGroup novalidate (submit)="onSubmit($event)">
+      <div>
+        <p hlmSmall>New {{ name() }}</p>
+        <p hlmMuted>{{ hint() }}</p>
+      </div>
 
-      <label hlmLabel for="annotation-title">Title</label>
-      <input hlmInput id="annotation-title" autocomplete="off" [formField]="annotationForm.title" />
-      @if (annotationForm.title().touched() && annotationForm.title().invalid()) {
-        <p class="text-destructive" role="alert">
-          {{ firstMessage(annotationForm.title().errors()) }}
-        </p>
-      }
+      <div hlmField>
+        <label hlmFieldLabel for="annotation-title">Title</label>
+        <input
+          hlmInput
+          id="annotation-title"
+          autocomplete="off"
+          [formField]="annotationForm.title"
+        />
+        @if (annotationForm.title().touched() && annotationForm.title().invalid()) {
+          <hlm-field-error>{{ firstMessage(annotationForm.title().errors()) }}</hlm-field-error>
+        }
+      </div>
 
       @if (kind() === 'NOTE') {
-        <label hlmLabel for="annotation-body">Text</label>
-        <textarea
-          hlmTextarea
-          id="annotation-body"
-          rows="3"
-          [formField]="annotationForm.body"
-        ></textarea>
-        @if (annotationForm.body().touched() && annotationForm.body().invalid()) {
-          <p class="text-destructive" role="alert">
-            {{ firstMessage(annotationForm.body().errors()) }}
-          </p>
-        }
+        <div hlmField>
+          <label hlmFieldLabel for="annotation-body">Text</label>
+          <textarea
+            hlmTextarea
+            id="annotation-body"
+            rows="3"
+            [formField]="annotationForm.body"
+          ></textarea>
+          @if (annotationForm.body().touched() && annotationForm.body().invalid()) {
+            <hlm-field-error>{{ firstMessage(annotationForm.body().errors()) }}</hlm-field-error>
+          }
+        </div>
       }
 
       @if (problem(); as message) {
-        <p class="text-destructive" role="alert">{{ message }}</p>
+        <app-problem-alert>{{ message }}</app-problem-alert>
       }
 
-      <div class="flex gap-2">
+      <div hlmField orientation="horizontal">
         <button hlmBtn size="sm" type="submit" [disabled]="busy() || !ready()">
           {{ busy() ? 'Saving…' : 'Save' }}
         </button>

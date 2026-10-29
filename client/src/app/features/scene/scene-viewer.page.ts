@@ -35,6 +35,10 @@ import { IonTokenPanel } from './ion-token-panel';
 import { IonTokenStore } from './ion-token.store';
 import { ScenePicker } from './scene-picker';
 import { ScenesService } from './scenes.service';
+import { ProblemAlert } from '@shared/problems/problem-alert';
+import { HlmCardImports } from '@shared/ui/card';
+import { HlmSeparatorImports } from '@shared/ui/separator';
+import { HlmToggleGroupImports } from '@shared/ui/toggle-group';
 
 type Tool = 'select' | AnnotationKind;
 
@@ -54,6 +58,10 @@ const FOCUS_HEIGHT = 250;
   imports: [
     DecimalPipe,
     HlmButtonImports,
+    HlmCardImports,
+    HlmSeparatorImports,
+    HlmToggleGroupImports,
+    ProblemAlert,
     ScenePicker,
     AnnotationForm,
     AnnotationEditor,
@@ -61,94 +69,94 @@ const FOCUS_HEIGHT = 250;
     IonTokenPanel,
   ],
   template: `
-    <div #viewport class="absolute inset-0"></div>
+    <div #viewport class="viewport"></div>
 
-    <aside
-      class="border-border bg-card/95 text-card-foreground absolute top-3 bottom-3 left-3 z-10 flex w-80 max-w-[calc(100%-1.5rem)] flex-col gap-4 overflow-y-auto rounded-lg border p-3 text-sm shadow-md backdrop-blur"
-      aria-label="Scene tools"
-    >
-      @if (loadError(); as error) {
-        <p role="alert" class="text-destructive">{{ error }}</p>
-      }
+    <aside hlmCard class="panel" aria-label="Scene tools">
+      <div hlmCardContent class="stack">
+        @if (loadError(); as error) {
+          <app-problem-alert>{{ error }}</app-problem-alert>
+        }
 
-      <app-scene-picker
-        [scenes]="scenes.scenes()"
-        [selectedId]="scenes.selectedId()"
-        [canCreate]="canCreateScene()"
-        [busy]="creatingScene()"
-        [problem]="sceneProblem()"
-        (choose)="scenes.select($event)"
-        (create)="createScene($event)"
-      />
+        <app-scene-picker
+          [scenes]="scenes.scenes()"
+          [selectedId]="scenes.selectedId()"
+          [canCreate]="canCreateScene()"
+          [busy]="creatingScene()"
+          [problem]="sceneProblem()"
+          (choose)="scenes.select($event)"
+          (create)="createScene($event)"
+        />
 
-      @if (scenes.selectedId()) {
-        <section class="flex flex-col gap-2" aria-label="Annotations">
-          <div class="flex gap-1" role="group" aria-label="Tool">
-            @for (option of tools; track option.tool) {
-              <button
-                hlmBtn
-                size="sm"
-                type="button"
-                [variant]="tool() === option.tool ? 'default' : 'outline'"
-                [attr.aria-pressed]="tool() === option.tool"
-                (click)="selectTool(option.tool)"
-              >
-                {{ option.label }}
-              </button>
+        @if (scenes.selectedId()) {
+          <div hlmSeparator></div>
+          <section class="stack" aria-label="Annotations">
+            <div
+              hlmToggleGroup
+              type="single"
+              variant="outline"
+              size="sm"
+              aria-label="Tool"
+              [value]="tool()"
+              (valueChange)="chooseTool($event)"
+            >
+              @for (option of tools; track option.tool) {
+                <button hlmToggleGroupItem [value]="option.tool">{{ option.label }}</button>
+              }
+            </div>
+
+            @if (formKind(); as kind) {
+              <app-annotation-form
+                [kind]="kind"
+                [ready]="draftReady()"
+                [busy]="saving()"
+                [problem]="formProblem()"
+                (submitted)="save($event)"
+                (cancelled)="selectTool('select')"
+              />
             }
-          </div>
 
-          @if (formKind(); as kind) {
-            <app-annotation-form
-              [kind]="kind"
-              [ready]="draftReady()"
-              [busy]="saving()"
-              [problem]="formProblem()"
-              (submitted)="save($event)"
-              (cancelled)="selectTool('select')"
+            @if (editing(); as annotation) {
+              <app-annotation-editor
+                [annotation]="annotation"
+                [moving]="moving()"
+                [moved]="movedTo() !== null"
+                [busy]="updating()"
+                [problem]="editProblem()"
+                [stale]="editStale()"
+                (submitted)="saveEdit($event)"
+                (moveRequested)="startMove()"
+                (moveCancelled)="cancelMove()"
+                (reloadRequested)="loadLatest()"
+                (closed)="closeEditor()"
+              />
+            } @else if (tool() === 'select' && data.detailFailed()) {
+              <app-problem-alert>Could not load this annotation.</app-problem-alert>
+            }
+
+            <app-annotation-list
+              [items]="data.items()"
+              [selectedId]="selectedAnnotationId()"
+              [truncated]="data.truncated()"
+              (selected)="focus($event)"
             />
-          }
 
-          @if (editing(); as annotation) {
-            <app-annotation-editor
-              [annotation]="annotation"
-              [moving]="moving()"
-              [moved]="movedTo() !== null"
-              [busy]="updating()"
-              [problem]="editProblem()"
-              [stale]="editStale()"
-              (submitted)="saveEdit($event)"
-              (moveRequested)="startMove()"
-              (moveCancelled)="cancelMove()"
-              (reloadRequested)="loadLatest()"
-              (closed)="closeEditor()"
-            />
-          } @else if (tool() === 'select' && data.detailFailed()) {
-            <p role="alert" class="text-destructive">Could not load this annotation.</p>
-          }
+            @if (data.failed()) {
+              <app-problem-alert>
+                Could not load the annotations.
+                <button hlmBtn variant="link" size="sm" type="button" (click)="data.reload()">
+                  Try again
+                </button>
+              </app-problem-alert>
+            }
+          </section>
+        }
 
-          <app-annotation-list
-            [items]="data.items()"
-            [selectedId]="selectedAnnotationId()"
-            [truncated]="data.truncated()"
-            (selected)="focus($event)"
-          />
-
-          @if (data.failed()) {
-            <p role="alert" class="text-destructive">
-              Could not load the annotations.
-              <button class="underline" type="button" (click)="data.reload()">Try again</button>
-            </p>
-          }
-        </section>
-      }
-
-      <details open class="flex flex-col gap-2">
-        <summary class="cursor-pointer font-medium">Map</summary>
-        <div class="mt-2 flex flex-col gap-3">
+        <div hlmSeparator></div>
+        <details open class="stack">
+          <summary>Map</summary>
           @if (map(); as map) {
-            <dl class="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
-              <dt class="text-muted-foreground">Source</dt>
+            <dl>
+              <dt>Source</dt>
               <dd>
                 {{
                   map.mode() === 'photorealistic'
@@ -157,7 +165,7 @@ const FOCUS_HEIGHT = 250;
                 }}
               </dd>
               @if (map.cameraPosition(); as position) {
-                <dt class="text-muted-foreground">Camera</dt>
+                <dt>Camera</dt>
                 <dd>
                   {{ position.latitude | number: '1.4-4' }},
                   {{ position.longitude | number: '1.4-4' }} ·
@@ -175,9 +183,49 @@ const FOCUS_HEIGHT = 250;
             (saved)="saveToken($event)"
             (forgotten)="forgetToken()"
           />
-        </div>
-      </details>
+        </details>
+      </div>
     </aside>
+  `,
+  styles: `
+    .viewport {
+      position: absolute;
+      inset: 0;
+    }
+
+    /* The floating tool panel: pinned to the left edge, scrolls when it is taller than the screen. */
+    .panel {
+      position: absolute;
+      inset-block: 0.75rem;
+      inset-inline-start: 0.75rem;
+      z-index: 10;
+      width: 20rem;
+      max-width: calc(100% - 1.5rem);
+      overflow-y: auto;
+      background: color-mix(in oklab, var(--card) 95%, transparent);
+      backdrop-filter: blur(8px);
+    }
+
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: 500;
+    }
+
+    dl {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.25rem 0.75rem;
+    }
+
+    dt {
+      color: var(--muted-foreground);
+    }
   `,
 })
 export class SceneViewerPage {
@@ -263,6 +311,12 @@ export class SceneViewerPage {
       const click = this.map()?.lastClick();
       if (click) untracked(() => this.onMapClick(click));
     });
+  }
+
+  /** The toggle group reports the chosen value as unknown: only a known tool is acted on. */
+  protected chooseTool(value: unknown): void {
+    const chosen = TOOLS.find((option) => option.tool === value)?.tool;
+    if (chosen && chosen !== this.tool()) this.selectTool(chosen);
   }
 
   protected selectTool(tool: Tool): void {

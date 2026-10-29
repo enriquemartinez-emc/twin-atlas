@@ -40,9 +40,14 @@ describe('AnnotationList', () => {
 
     const buttons = el().querySelectorAll('button');
     expect(buttons).toHaveLength(2);
-    expect(buttons[0]?.textContent).toContain('Cracked window');
-    expect(buttons[0]?.textContent).toContain('Marker');
-    expect(buttons[1]?.textContent?.replace(/\s+/g, ' ')).toContain('Note · Water stain');
+    const text = (button: Element | undefined, selector: string) =>
+      button?.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim();
+    expect(text(buttons[0], '[hlmItemTitle]')).toBe('Cracked window');
+    expect(text(buttons[0], '[hlmBadge]')).toBe('Marker');
+    expect(text(buttons[0], '[hlmItemDescription]')).toBe('Marker');
+    expect(text(buttons[1], '[hlmItemTitle]')).toBe('Leak');
+    expect(text(buttons[1], '[hlmBadge]')).toBe('Note');
+    expect(text(buttons[1], '[hlmItemDescription]')).toBe('Note Water stain');
     expect(buttons[0]?.getAttribute('aria-current')).toBeNull();
     expect(buttons[1]?.getAttribute('aria-current')).toBe('true');
   });

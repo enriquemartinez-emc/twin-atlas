@@ -2,11 +2,11 @@ import { Component, input, output, signal } from '@angular/core';
 import type { MapMode } from '@map/public-api';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
-import { HlmLabelImports } from '@shared/ui/label';
+import { HlmFieldImports } from '@shared/ui/field';
 
 @Component({
   selector: 'app-ion-token-panel',
-  imports: [HlmButtonImports, HlmInputImports, HlmLabelImports],
+  imports: [HlmButtonImports, HlmFieldImports, HlmInputImports],
   template: `
     @if (mode() === 'osm') {
       @if (tilesError()) {
@@ -14,19 +14,21 @@ import { HlmLabelImports } from '@shared/ui/label';
           3D tiles could not be loaded with the saved token. Check it and try again.
         </p>
       }
-      <form class="flex flex-col gap-2" (submit)="onSubmit($event)">
-        <label hlmLabel for="ion-token">Cesium ion token</label>
-        <p class="text-muted-foreground">
-          Paste a free token to load photorealistic 3D tiles. It stays in this browser only.
-        </p>
-        <input
-          hlmInput
-          id="ion-token"
-          type="password"
-          autocomplete="off"
-          [value]="draft()"
-          (input)="draft.set(readValue($event))"
-        />
+      <form hlmFieldGroup (submit)="onSubmit($event)">
+        <div hlmField>
+          <label hlmFieldLabel for="ion-token">Cesium ion token</label>
+          <p hlmFieldDescription>
+            Paste a free token to load photorealistic 3D tiles. It stays in this browser only.
+          </p>
+          <input
+            hlmInput
+            id="ion-token"
+            type="password"
+            autocomplete="off"
+            [value]="draft()"
+            (input)="draft.set(readValue($event))"
+          />
+        </div>
         <button hlmBtn size="sm" type="submit" [disabled]="!draft().trim()">Load 3D tiles</button>
       </form>
     } @else if (mode() === 'photorealistic') {

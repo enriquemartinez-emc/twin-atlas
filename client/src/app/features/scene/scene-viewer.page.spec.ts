@@ -136,6 +136,41 @@ describe('SceneViewerPage', () => {
     request.flush({ items: [], nextCursor: null });
   });
 
+  it('shows which tool is chosen, to assistive technology too', async () => {
+    await open();
+    const pressed = (label: string) => button(label).getAttribute('aria-pressed');
+
+    expect([pressed('Select'), pressed('Marker')]).toEqual(['true', 'false']);
+
+    button('Marker').click();
+    await settle();
+
+    expect([pressed('Select'), pressed('Marker'), pressed('Outline')]).toEqual([
+      'false',
+      'true',
+      'false',
+    ]);
+
+    button('Select').click();
+    await settle();
+
+    expect([pressed('Select'), pressed('Marker')]).toEqual(['true', 'false']);
+  });
+
+  it('moves the highlight back to Select when the app leaves drawing mode', async () => {
+    await open();
+
+    button('Marker').click();
+    await settle();
+    expect(button('Marker').getAttribute('aria-pressed')).toBe('true');
+
+    button('Cancel').click();
+    await settle();
+
+    expect(button('Select').getAttribute('aria-pressed')).toBe('true');
+    expect(button('Marker').getAttribute('aria-pressed')).toBe('false');
+  });
+
   it('places a marker with a click, saves it and returns to select mode', async () => {
     await open();
 

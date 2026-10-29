@@ -4,9 +4,11 @@ import type { AnnotationResponse } from '@api/index';
 import { notBlank } from '@shared/forms/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
-import { HlmLabelImports } from '@shared/ui/label';
 import { HlmTextareaImports } from '@shared/ui/textarea';
 import type { AnnotationFormValue } from './draft';
+import { ProblemAlert } from '@shared/problems/problem-alert';
+import { HlmFieldImports } from '@shared/ui/field';
+import { HlmTypographyImports } from '@shared/ui/typography';
 
 const NAMES: Record<AnnotationResponse['kind'], string> = {
   MARKER: 'marker',
@@ -16,86 +18,75 @@ const NAMES: Record<AnnotationResponse['kind'], string> = {
 
 @Component({
   selector: 'app-annotation-editor',
-  imports: [FormField, HlmButtonImports, HlmInputImports, HlmLabelImports, HlmTextareaImports],
+  imports: [
+    FormField,
+    ProblemAlert,
+    HlmButtonImports,
+    HlmFieldImports,
+    HlmInputImports,
+    HlmTextareaImports,
+    HlmTypographyImports,
+  ],
   template: `
-    <section class="flex flex-col gap-2" aria-label="Edit annotation">
-      <p class="font-medium">Edit {{ name() }}</p>
-      <form class="flex flex-col gap-2" novalidate (submit)="onSubmit($event)">
-        <label hlmLabel for="edit-title">Title</label>
+    <form hlmFieldGroup novalidate aria-label="Edit annotation" (submit)="onSubmit($event)">
+      <p hlmSmall>Edit {{ name() }}</p>
+
+      <div hlmField>
+        <label hlmFieldLabel for="edit-title">Title</label>
         <input hlmInput id="edit-title" autocomplete="off" [formField]="editForm.title" />
         @if (editForm.title().touched() && editForm.title().invalid()) {
-          <p class="text-destructive" role="alert">{{ firstMessage(editForm.title().errors()) }}</p>
+          <hlm-field-error>{{ firstMessage(editForm.title().errors()) }}</hlm-field-error>
         }
+      </div>
 
-        @if (annotation().kind === 'NOTE') {
-          <label hlmLabel for="edit-body">Text</label>
+      @if (annotation().kind === 'NOTE') {
+        <div hlmField>
+          <label hlmFieldLabel for="edit-body">Text</label>
           <textarea hlmTextarea id="edit-body" rows="3" [formField]="editForm.body"></textarea>
           @if (editForm.body().touched() && editForm.body().invalid()) {
-            <p class="text-destructive" role="alert">
-              {{ firstMessage(editForm.body().errors()) }}
-            </p>
+            <hlm-field-error>{{ firstMessage(editForm.body().errors()) }}</hlm-field-error>
           }
-        }
-
-        @if (canMove()) {
-          <div class="flex flex-col gap-1">
-            @if (moving()) {
-              <p class="text-muted-foreground" role="status">
-                Click the map to choose the new position.
-              </p>
-            } @else if (moved()) {
-              <p class="text-muted-foreground" role="status">A new position is chosen (purple).</p>
-            }
-            <div class="flex gap-2">
-              <button
-                hlmBtn
-                variant="outline"
-                size="sm"
-                type="button"
-                (click)="moveRequested.emit()"
-              >
-                {{ moved() || moving() ? 'Choose again' : 'Move on map' }}
-              </button>
-              @if (moving() || moved()) {
-                <button
-                  hlmBtn
-                  variant="ghost"
-                  size="sm"
-                  type="button"
-                  (click)="moveCancelled.emit()"
-                >
-                  Keep position
-                </button>
-              }
-            </div>
-          </div>
-        }
-
-        @if (problem(); as message) {
-          <p class="text-destructive" role="alert">{{ message }}</p>
-          @if (stale()) {
-            <button
-              hlmBtn
-              variant="outline"
-              size="sm"
-              type="button"
-              (click)="reloadRequested.emit()"
-            >
-              Load latest version
-            </button>
-          }
-        }
-
-        <div class="flex gap-2">
-          <button hlmBtn size="sm" type="submit" [disabled]="busy() || !changed()">
-            {{ busy() ? 'Saving…' : 'Save changes' }}
-          </button>
-          <button hlmBtn variant="ghost" size="sm" type="button" (click)="closed.emit()">
-            Close
-          </button>
         </div>
-      </form>
-    </section>
+      }
+
+      @if (canMove()) {
+        <div hlmField>
+          @if (moving()) {
+            <p hlmMuted role="status">Click the map to choose the new position.</p>
+          } @else if (moved()) {
+            <p hlmMuted role="status">A new position is chosen (purple).</p>
+          }
+          <div hlmField orientation="horizontal">
+            <button hlmBtn variant="outline" size="sm" type="button" (click)="moveRequested.emit()">
+              {{ moved() || moving() ? 'Choose again' : 'Move on map' }}
+            </button>
+            @if (moving() || moved()) {
+              <button hlmBtn variant="ghost" size="sm" type="button" (click)="moveCancelled.emit()">
+                Keep position
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      @if (problem(); as message) {
+        <app-problem-alert>{{ message }}</app-problem-alert>
+        @if (stale()) {
+          <button hlmBtn variant="outline" size="sm" type="button" (click)="reloadRequested.emit()">
+            Load latest version
+          </button>
+        }
+      }
+
+      <div hlmField orientation="horizontal">
+        <button hlmBtn size="sm" type="submit" [disabled]="busy() || !changed()">
+          {{ busy() ? 'Saving…' : 'Save changes' }}
+        </button>
+        <button hlmBtn variant="ghost" size="sm" type="button" (click)="closed.emit()">
+          Close
+        </button>
+      </div>
+    </form>
   `,
 })
 export class AnnotationEditor {

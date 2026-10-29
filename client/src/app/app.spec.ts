@@ -22,10 +22,10 @@ describe('App', () => {
     expect(compiled.querySelector('h1')?.textContent).toContain('Twin Atlas');
   });
 
-  it('should apply tailwind utility classes', async () => {
+  it('styles the title through Spartan typography, so utility classes reach the page', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('main')?.classList.contains('flex-1')).toBe(true);
+    expect(compiled.querySelector('h1')?.classList.contains('font-semibold')).toBe(true);
   });
 });
