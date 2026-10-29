@@ -92,7 +92,7 @@ export type ProblemResponse = {
     /**
      * Stable machine-readable error code
      */
-    code: 'CONCURRENT_MODIFICATION' | 'GEOMETRY_OUTSIDE_SCENE_EXTENT' | 'INTERNAL_ERROR' | 'INVALID_CURSOR' | 'INVALID_GEOMETRY' | 'NOT_FOUND' | 'REQUEST_INVALID' | 'SCENE_NOT_FOUND' | 'TITLE_ALREADY_USED' | 'VALIDATION_FAILED';
+    code: 'ANNOTATION_NOT_FOUND' | 'CONCURRENT_MODIFICATION' | 'GEOMETRY_KIND_MISMATCH' | 'GEOMETRY_OUTSIDE_SCENE_EXTENT' | 'INTERNAL_ERROR' | 'INVALID_CURSOR' | 'INVALID_GEOMETRY' | 'NOT_FOUND' | 'PRECONDITION_REQUIRED' | 'REQUEST_INVALID' | 'SCENE_NOT_FOUND' | 'STALE_VERSION' | 'TEXT_ONLY_FOR_NOTES' | 'TITLE_ALREADY_USED' | 'VALIDATION_FAILED';
     detail: string;
     instance?: string;
     status?: number;
@@ -111,6 +111,18 @@ export type SearchRequest = {
     cursor?: string;
     limit?: number;
     zone: GeoJsonPolygon;
+};
+
+export type UpdateAnnotationRequest = {
+    /**
+     * New text. Only notes have text
+     */
+    body?: string | null;
+    geometry?: GeoJsonGeometry;
+    /**
+     * New title
+     */
+    title?: string | null;
 };
 
 export type ListScenesData = {
@@ -330,3 +342,85 @@ export type SearchAnnotationsResponses = {
 };
 
 export type SearchAnnotationsResponse = SearchAnnotationsResponses[keyof SearchAnnotationsResponses];
+
+export type GetAnnotationData = {
+    body?: never;
+    path: {
+        sceneId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/api/scenes/{sceneId}/annotations/{id}';
+};
+
+export type GetAnnotationErrors = {
+    /**
+     * SCENE_NOT_FOUND or ANNOTATION_NOT_FOUND
+     */
+    404: ProblemResponse;
+};
+
+export type GetAnnotationError = GetAnnotationErrors[keyof GetAnnotationErrors];
+
+export type GetAnnotationResponses = {
+    /**
+     * OK
+     */
+    200: AnnotationResponse;
+};
+
+export type GetAnnotationResponse = GetAnnotationResponses[keyof GetAnnotationResponses];
+
+export type UpdateAnnotationData = {
+    body: UpdateAnnotationRequest;
+    headers: {
+        /**
+         * The ETag from the response you read, for example "3"
+         */
+        'If-Match': string;
+    };
+    path: {
+        sceneId: string;
+        id: string;
+    };
+    query?: never;
+    url: '/api/scenes/{sceneId}/annotations/{id}';
+};
+
+export type UpdateAnnotationErrors = {
+    /**
+     * VALIDATION_FAILED or REQUEST_INVALID
+     */
+    400: ProblemResponse;
+    /**
+     * SCENE_NOT_FOUND or ANNOTATION_NOT_FOUND
+     */
+    404: ProblemResponse;
+    /**
+     * TITLE_ALREADY_USED or CONCURRENT_MODIFICATION
+     */
+    409: ProblemResponse;
+    /**
+     * STALE_VERSION
+     */
+    412: ProblemResponse;
+    /**
+     * INVALID_GEOMETRY, GEOMETRY_OUTSIDE_SCENE_EXTENT, GEOMETRY_KIND_MISMATCH or TEXT_ONLY_FOR_NOTES
+     */
+    422: ProblemResponse;
+    /**
+     * PRECONDITION_REQUIRED: If-Match is missing
+     */
+    428: ProblemResponse;
+};
+
+export type UpdateAnnotationError = UpdateAnnotationErrors[keyof UpdateAnnotationErrors];
+
+export type UpdateAnnotationResponses = {
+    /**
+     * Updated
+     */
+    200: AnnotationResponse;
+};
+
+export type UpdateAnnotationResponse = UpdateAnnotationResponses[keyof UpdateAnnotationResponses];

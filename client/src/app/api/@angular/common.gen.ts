@@ -4,7 +4,7 @@ import { type HttpRequest, httpResource } from '@angular/common/http';
 
 import { client } from '../client.gen';
 import type { Options } from '../sdk.gen';
-import type { CreateAnnotationData, CreateAnnotationResponse, CreateSceneData, CreateSceneResponse, GetSceneData, GetSceneResponse, ListAnnotationsData, ListAnnotationsResponse, ListScenesData, ListScenesResponse, NearestAnnotationsData, NearestAnnotationsResponse, SearchAnnotationsData, SearchAnnotationsResponse } from '../types.gen';
+import type { CreateAnnotationData, CreateAnnotationResponse, CreateSceneData, CreateSceneResponse, GetAnnotationData, GetAnnotationResponse, GetSceneData, GetSceneResponse, ListAnnotationsData, ListAnnotationsResponse, ListScenesData, ListScenesResponse, NearestAnnotationsData, NearestAnnotationsResponse, SearchAnnotationsData, SearchAnnotationsResponse, UpdateAnnotationData, UpdateAnnotationResponse } from '../types.gen';
 
 /**
  * List scenes
@@ -87,6 +87,30 @@ export const searchAnnotationsRequest = <ThrowOnError extends boolean = false>(o
 });
 
 /**
+ * Get one annotation
+ *
+ * The ETag header is the version to send back as If-Match when updating.
+ */
+export const getAnnotationRequest = <ThrowOnError extends boolean = false>(options: Options<GetAnnotationData, ThrowOnError>): HttpRequest<GetAnnotationResponse> => (options?.client ?? client).requestOptions<GetAnnotationResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'GET',
+    url: '/api/scenes/{sceneId}/annotations/{id}',
+    ...options
+});
+
+/**
+ * Rename, retext or move an annotation
+ *
+ * Send only what changes. Send the ETag you read as If-Match: if the annotation changed since, the answer is 412 and nothing is written. The answer carries the new ETag.
+ */
+export const updateAnnotationRequest = <ThrowOnError extends boolean = false>(options: Options<UpdateAnnotationData, ThrowOnError>): HttpRequest<UpdateAnnotationResponse> => (options?.client ?? client).requestOptions<UpdateAnnotationResponse, ThrowOnError>({
+    responseStyle: 'data',
+    method: 'PATCH',
+    url: '/api/scenes/{sceneId}/annotations/{id}',
+    ...options
+});
+
+/**
  * List scenes
  *
  * The 100 newest scenes, newest first.
@@ -150,4 +174,24 @@ export const nearestAnnotationsResource = <ThrowOnError extends boolean = false>
 export const searchAnnotationsResource = <ThrowOnError extends boolean = false>(options: () => Options<SearchAnnotationsData, ThrowOnError> | undefined) => httpResource<SearchAnnotationsResponse>(() => {
     const opts = options ? options() : undefined;
     return opts ? searchAnnotationsRequest(opts) : undefined;
+});
+
+/**
+ * Get one annotation
+ *
+ * The ETag header is the version to send back as If-Match when updating.
+ */
+export const getAnnotationResource = <ThrowOnError extends boolean = false>(options: () => Options<GetAnnotationData, ThrowOnError> | undefined) => httpResource<GetAnnotationResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? getAnnotationRequest(opts) : undefined;
+});
+
+/**
+ * Rename, retext or move an annotation
+ *
+ * Send only what changes. Send the ETag you read as If-Match: if the annotation changed since, the answer is 412 and nothing is written. The answer carries the new ETag.
+ */
+export const updateAnnotationResource = <ThrowOnError extends boolean = false>(options: () => Options<UpdateAnnotationData, ThrowOnError> | undefined) => httpResource<UpdateAnnotationResponse>(() => {
+    const opts = options ? options() : undefined;
+    return opts ? updateAnnotationRequest(opts) : undefined;
 });

@@ -2,7 +2,7 @@
 
 import type { Client, ClientMeta, Options as Options2, RequestResult, TDataShape } from './client';
 import { client } from './client.gen';
-import type { CreateAnnotationData, CreateAnnotationErrors, CreateAnnotationResponses, CreateSceneData, CreateSceneErrors, CreateSceneResponses, GetSceneData, GetSceneErrors, GetSceneResponses, ListAnnotationsData, ListAnnotationsErrors, ListAnnotationsResponses, ListScenesData, ListScenesResponses, NearestAnnotationsData, NearestAnnotationsErrors, NearestAnnotationsResponses, SearchAnnotationsData, SearchAnnotationsErrors, SearchAnnotationsResponses } from './types.gen';
+import type { CreateAnnotationData, CreateAnnotationErrors, CreateAnnotationResponses, CreateSceneData, CreateSceneErrors, CreateSceneResponses, GetAnnotationData, GetAnnotationErrors, GetAnnotationResponses, GetSceneData, GetSceneErrors, GetSceneResponses, ListAnnotationsData, ListAnnotationsErrors, ListAnnotationsResponses, ListScenesData, ListScenesResponses, NearestAnnotationsData, NearestAnnotationsErrors, NearestAnnotationsResponses, SearchAnnotationsData, SearchAnnotationsErrors, SearchAnnotationsResponses, UpdateAnnotationData, UpdateAnnotationErrors, UpdateAnnotationResponses } from './types.gen';
 
 export type Options<TData extends TDataShape = TDataShape, ThrowOnError extends boolean = boolean, TResponse = unknown> = Options2<TData, ThrowOnError, TResponse> & {
     /**
@@ -77,6 +77,27 @@ export const nearestAnnotations = <ThrowOnError extends boolean = false>(options
  */
 export const searchAnnotations = <ThrowOnError extends boolean = false>(options: Options<SearchAnnotationsData, ThrowOnError>): RequestResult<SearchAnnotationsResponses, SearchAnnotationsErrors, ThrowOnError> => (options.client ?? client).post<SearchAnnotationsResponses, SearchAnnotationsErrors, ThrowOnError>({
     url: '/api/scenes/{sceneId}/annotations/search',
+    ...options,
+    headers: {
+        'Content-Type': 'application/json',
+        ...options.headers
+    }
+});
+
+/**
+ * Get one annotation
+ *
+ * The ETag header is the version to send back as If-Match when updating.
+ */
+export const getAnnotation = <ThrowOnError extends boolean = false>(options: Options<GetAnnotationData, ThrowOnError>): RequestResult<GetAnnotationResponses, GetAnnotationErrors, ThrowOnError> => (options.client ?? client).get<GetAnnotationResponses, GetAnnotationErrors, ThrowOnError>({ url: '/api/scenes/{sceneId}/annotations/{id}', ...options });
+
+/**
+ * Rename, retext or move an annotation
+ *
+ * Send only what changes. Send the ETag you read as If-Match: if the annotation changed since, the answer is 412 and nothing is written. The answer carries the new ETag.
+ */
+export const updateAnnotation = <ThrowOnError extends boolean = false>(options: Options<UpdateAnnotationData, ThrowOnError>): RequestResult<UpdateAnnotationResponses, UpdateAnnotationErrors, ThrowOnError> => (options.client ?? client).patch<UpdateAnnotationResponses, UpdateAnnotationErrors, ThrowOnError>({
+    url: '/api/scenes/{sceneId}/annotations/{id}',
     ...options,
     headers: {
         'Content-Type': 'application/json',
