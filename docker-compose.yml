@@ -1,0 +1,30 @@
+# Local development stack. The image tag is the single source of truth for PostGIS:
+# Testcontainers uses the same one (see server/src/test/java/com/twinatlas/PostgisImage.java).
+services:
+  db:
+    image: postgis/postgis:17-3.6
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-twinatlas}
+      POSTGRES_USER: ${POSTGRES_USER:-twinatlas}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-twinatlas}
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    # Sized for a 16 GB laptop where Docker gets about 8 GB (benchmark notes land with the benchmark task, spec 009).
+    mem_limit: 1536m
+    command: >
+      postgres
+      -c shared_buffers=512MB
+      -c effective_cache_size=1GB
+      -c work_mem=16MB
+      -c maintenance_work_mem=128MB
+      -c max_connections=50
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}']
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+volumes:
+  pgdata:
