@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Portfolio polish - Twin Atlas docs</title>
+<meta name="description" content="README, roadmap and decision records.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Portfolio polish</h1>
+<div class="tags"><span class="tag c-white">Task 012</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>docs/portfolio-polish</code></span></div>
+<p class="lead">The repository now explains itself to a newcomer in five minutes: a README, a roadmap, and the two decision records that were missing.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Nothing needs to run. Open <code>README.md</code> at the top of the repository, then follow its links. The README has a quick start for when you do want to run the app, and I have not run it.</p></aside>
+<h2>What was built</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">File</th><th class="">What it is for</th></tr></thead><tbody><tr><td class=""><code>README.md</code></td><td class="">What Twin Atlas is, what works today, how to start it, how to test it, how it is built, with the benchmark numbers.</td></tr><tr><td class=""><code>ROADMAP.md</code></td><td class="">What is done, what is next, what is paused, and what was left out on purpose.</td></tr><tr><td class=""><code>docs/adr/0013</code></td><td class="">Why the server is one deployable packaged by feature, with the boundaries enforced by tests.</td></tr><tr><td class=""><code>docs/adr/0014</code></td><td class="">Why the client uses Spartan components, and what that costs.</td></tr></tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 200" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The reading path through the repository</title><desc id="d">A newcomer starts at the README, then follows links to the architecture notes and decision records, the documentation site, or the task specs.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="10" y="60" width="170" height="80" rx="10"/><text class="t-title" x="24" y="82">README</text><text class="t-small" x="24" y="101">what it is,</text><text class="t-small" x="24" y="118">how to start it</text><rect class="c-white" x="260" y="10" width="250" height="70" rx="10"/><text class="t-title" x="274" y="32">ARCHITECTURE.md</text><text class="t-small" x="274" y="51">how it fits together</text><rect class="c-white" x="260" y="120" width="250" height="70" rx="10"/><text class="t-title" x="274" y="142">docs/adr</text><text class="t-small" x="274" y="161">14 decision records</text><rect class="c-white" x="590" y="10" width="300" height="70" rx="10"/><text class="t-title" x="604" y="32">docs/index.html</text><text class="t-small" x="604" y="51">a page per task, with diagrams</text><rect class="c-white" x="590" y="120" width="300" height="70" rx="10"/><text class="t-title" x="604" y="142">ROADMAP.md and specs/</text><text class="t-small" x="604" y="161">done, next, left out</text><path class="arrow" d="M180,90 L260,45" marker-end="url(#ah)"/><path class="arrow" d="M180,110 L260,155" marker-end="url(#ah)"/><path class="arrow" d="M510,45 L590,45" marker-end="url(#ah)"/><path class="arrow" d="M510,155 L590,155" marker-end="url(#ah)"/></svg></div><figcaption>The README is the front door. Everything else is one link away.</figcaption></figure><div class="col">
+<h2>What was checked and fixed</h2>
+<ul>
+<li><strong>The decision records are complete.</strong> The rules list the decisions that must be written down. Two were missing: the modular monolith and the choice of Spartan. Both now exist, and the index lists all 14.</li>
+<li><strong>The architecture notes were stale.</strong> They still described the OpenStreetMap import as planned. Fixed, and they now name the shared kernel and the UI rules.</li>
+<li><strong>The client's command table</strong> now shows the lint command that includes the class-bloat check.</li>
+</ul>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Links</td><td class="">72 links in the README, roadmap, architecture notes, decision-record index and specs index all resolve. No placeholder text remains.</td></tr><tr><td class="">Specs</td><td class="">Every spec file shows the same status as the specs index.</td></tr><tr><td class="">A clean clone</td><td class="">A fresh clone of the branch: the server build with formatting check and all tests gives 192 passing tests. The client installs from its lock file, and lint, formatting, 182 passing tests and the production build pass. Regenerating the SDK from the committed contract leaves no difference.</td></tr><tr><td class="">The benchmark claim</td><td class="">The numbers in the README are copied from the benchmark results, not recalled.</td></tr></tbody></table></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified, and not done</h3>
+<p>The README has no screenshots or recording, because making them means running the app, which needs your approval. The quick-start commands are the ones the client's README has always listed. The clean-clone check ran tests and builds, it did not start the database, the server or the client. The Swagger UI address in the README is springdoc's default and I have not opened it.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>One criterion stays open until there is a demo to show.</li>
+<li>npm 12 warns during installation that some packages' install scripts were not approved. The build and every test still pass.</li>
+<li>The README's benchmark paragraph is a summary. The method, hardware and plans are in the decision record.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="010-osm-import.html">Previous: OpenStreetMap import</a><a href="014-annotation-update.html" style="text-align:right">Next: Editing annotations</a></nav>
+</main>
+</div>
+</body>
+</html>
