@@ -12,3 +12,4 @@ Short records of decisions that are costly to reverse. Format: context, decision
 | 0006 | [Native SQL for reads, Hibernate Spatial for writes](0006-native-sql-vs-hibernate-spatial.md) | Accepted |
 | 0007 | [Keyset pagination with opaque cursors](0007-keyset-pagination.md) | Accepted |
 | 0008 | [Contract-first SDK from a committed OpenAPI spec](0008-contract-first-sdk.md) | Accepted |
+| 0009 | [Benchmark: 1.2 million annotations on a laptop](0009-benchmark-one-million-rows.md) | Accepted |

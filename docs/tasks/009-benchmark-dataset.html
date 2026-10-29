@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Benchmark with 1M rows - Twin Atlas docs</title>
+<meta name="description" content="Benchmark of the read queries on 1.2 million annotations.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Benchmark with 1M rows</h1>
+<div class="tags"><span class="tag c-white">Task 009</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/benchmark-dataset</code></span></div>
+<p class="lead">Does it stay fast with a million annotations on this laptop? Yes: a seeded dataset of 1.2 million rows, queried through the real API, answers most questions in 5 to 8 ms, and the spatial index is what makes that true.</p>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><pre><code>scripts/benchmark/run.sh          # 1,000,000 points, 200,000 outlines, 200 runs. About 3 minutes.
+scripts/benchmark/run.sh 20000 4000 20   # a quick smoke run</code></pre>
+<p>It uses its own database (<code>twinatlas_bench</code>) and port 18080, so your development data and server are untouched. It writes <code>docs/benchmark/results.md</code> and <code>docs/benchmark/plans.txt</code>. Remove the data afterwards with the command it prints.</p></aside>
+<h2>The short version</h2>
+<ul>
+<li><strong>Feasible here.</strong> 1.2 million annotations seed in 30 seconds. The database container used at most 800.9 MiB at the points sampled, of its 1.5 GB limit, and the server process used 345 MB.</li>
+<li><strong>Fast with the index.</strong> The 250 m view, the nearest queries and the zone query have a median of 5 to 8 ms and a p95 of about 12 ms or less. Without the spatial index the same questions take 5 to 65 times longer (the smallest gap is the 3 km view, which is slow either way).</li>
+<li><strong>Paging stays flat.</strong> Page 500 of the list (rows 99,801 on) has a median of 6.2 ms, against 5.6 ms for page 1.</li>
+<li><strong>One honest weak spot.</strong> A 3 km-wide view is slower (47.4 ms median, 92.3 ms p95), because it holds about 36,000 annotations that must all be sorted to return the first 200.</li>
+</ul>
+<h2>What was built</h2>
+<ul>
+<li><strong>A repeatable seed.</strong> One SQL script with a fixed random seed. 1,000,000 points (800,000 markers, 200,000 notes) and 200,000 outlines in one scene. Real places cluster, so 80% of rows fall near one of 25 hot spots and 20% anywhere.</li>
+<li><strong>Plan capture.</strong> <code>EXPLAIN (ANALYZE, BUFFERS)</code> of the four read queries, with the GiST index and then without it.</li>
+<li><strong>A latency measurer</strong> in plain Node (no dependency). It asks the real API 200 questions per operation, one at a time, after 10 warm-up requests, and reports p50, p95, p99 and the maximum.</li>
+<li><strong>Memory limits recorded.</strong> The Postgres settings and the machine are written into the results file.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 412" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Median response time with and without the spatial index</title><desc id="d">Horizontal bars per operation: tiny green bars with the index, long red bars without it.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-mint" x="270" y="12" width="14" height="14" rx="3"/><text class="t-small" x="292" y="24">with the GiST index</text><rect class="c-blush" x="440" y="12" width="14" height="14" rx="3"/><text class="t-small" x="462" y="24">without it</text><path class="dim" d="M270.0,44 L270.0,370"/><text class="t-small t-center" x="270.0" y="388">0 ms</text><path class="dim" d="M415.0,44 L415.0,370"/><text class="t-small t-center" x="415.0" y="388">100 ms</text><path class="dim" d="M560.0,44 L560.0,370"/><text class="t-small t-center" x="560.0" y="388">200 ms</text><path class="dim" d="M705.0,44 L705.0,370"/><text class="t-small t-center" x="705.0" y="388">300 ms</text><path class="dim" d="M850.0,44 L850.0,370"/><text class="t-small t-center" x="850.0" y="388">400 ms</text><text class="t-title" text-anchor="end" x="256" y="76">View 250 m wide (bbox)</text><rect class="c-mint" x="270" y="52" width="10.9" height="17" rx="3"/><text class="t-small" x="288.875" y="65">7.5 ms</text><rect class="c-blush" x="270" y="74" width="369.0" height="17" rx="3"/><text class="t-small" x="647.025" y="87">254.5 ms</text><text class="t-title" text-anchor="end" x="256" y="142">View 3 km wide (bbox)</text><rect class="c-mint" x="270" y="118" width="68.7" height="17" rx="3"/><text class="t-small" x="346.73" y="131">47.4 ms</text><rect class="c-blush" x="270" y="140" width="314.6" height="17" rx="3"/><text class="t-small" x="592.65" y="153">217 ms</text><text class="t-title" text-anchor="end" x="256" y="208">10 nearest</text><rect class="c-mint" x="270" y="184" width="8.1" height="17" rx="3"/><text class="t-small" x="286.12" y="197">5.6 ms</text><rect class="c-blush" x="270" y="206" width="524.0" height="17" rx="3"/><text class="t-small" x="802.03" y="219">361.4 ms</text><text class="t-title" text-anchor="end" x="256" y="274">10 nearest within 200 m</text><rect class="c-mint" x="270" y="250" width="7.7" height="17" rx="3"/><text class="t-small" x="285.685" y="263">5.3 ms</text><rect class="c-blush" x="270" y="272" width="446.9" height="17" rx="3"/><text class="t-small" x="724.89" y="285">308.2 ms</text><text class="t-title" text-anchor="end" x="256" y="340">Zone 170 m wide (search)</text><rect class="c-mint" x="270" y="316" width="11.0" height="17" rx="3"/><text class="t-small" x="289.02" y="329">7.6 ms</text><rect class="c-blush" x="270" y="338" width="372.8" height="17" rx="3"/><text class="t-small" x="650.7950000000001" y="351">257.1 ms</text></svg></div><figcaption>Median response time per operation. With the spatial index the bars are barely visible; without it every spatial question has to read the whole table.</figcaption></figure><div class="col">
+<h2>Response times through the API</h2>
+<p>This is what a client sees: request sent to response parsed, including the server, the database and the JSON. 200 timed requests per row, with the spatial index.</p>
+</div>
+<div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Operation</th><th class="num">Avg items</th><th class="num">p50 ms</th><th class="num">p95 ms</th><th class="num">p99 ms</th><th class="num">Max ms</th></tr></thead><tbody><tr><td class="">View 250 m wide (bbox)</td><td class="num">151.7</td><td class="num">7.5</td><td class="num">11.5</td><td class="num">15.8</td><td class="num">25</td></tr><tr><td class="">View 3 km wide (bbox)</td><td class="num">200</td><td class="num">47.4</td><td class="num">92.3</td><td class="num">108.5</td><td class="num">134.3</td></tr><tr><td class="">10 nearest</td><td class="num">10</td><td class="num">5.6</td><td class="num">8.8</td><td class="num">16.8</td><td class="num">19</td></tr><tr><td class="">10 nearest within 200 m</td><td class="num">10</td><td class="num">5.3</td><td class="num">7.2</td><td class="num">10.8</td><td class="num">12.1</td></tr><tr><td class="">Zone 170 m wide (search)</td><td class="num">134</td><td class="num">7.6</td><td class="num">12.2</td><td class="num">14.2</td><td class="num">24</td></tr><tr><td class="">List, page 1 (200 rows)</td><td class="num">200</td><td class="num">5.6</td><td class="num">9.7</td><td class="num">14.9</td><td class="num">61.4</td></tr><tr><td class="">List, page 500 (rows 99,801 on)</td><td class="num">200</td><td class="num">6.2</td><td class="num">9</td><td class="num">11</td><td class="num">15.2</td></tr></tbody></table></div></div>
+<div class="col">
+<h2>With and without the index</h2>
+<p>Same questions, with the GiST index dropped (50 runs each, the p95 is therefore less precise). The list query uses a different index, so it is unaffected: 5.9 ms.</p>
+</div>
+<div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Operation</th><th class="num">With index p50</th><th class="num">With p95</th><th class="num">Without p50</th><th class="num">Without p95</th><th class="num">Slower by</th></tr></thead><tbody><tr><td class="">View 250 m wide (bbox)</td><td class="num">7.5</td><td class="num">11.5</td><td class="num">254.5</td><td class="num">457</td><td class="num">34x</td></tr><tr><td class="">View 3 km wide (bbox)</td><td class="num">47.4</td><td class="num">92.3</td><td class="num">217</td><td class="num">298.1</td><td class="num">5x</td></tr><tr><td class="">10 nearest</td><td class="num">5.6</td><td class="num">8.8</td><td class="num">361.4</td><td class="num">405</td><td class="num">65x</td></tr><tr><td class="">10 nearest within 200 m</td><td class="num">5.3</td><td class="num">7.2</td><td class="num">308.2</td><td class="num">407.9</td><td class="num">58x</td></tr><tr><td class="">Zone 170 m wide (search)</td><td class="num">7.6</td><td class="num">12.2</td><td class="num">257.1</td><td class="num">298.2</td><td class="num">34x</td></tr></tbody></table></div></div>
+<div class="col">
+<h2>What the database did</h2>
+<p>One run of each query with <code>EXPLAIN (ANALYZE, BUFFERS)</code>. "Buffers" counts the 8 KB pages touched, which is why the slow plans are slow: they read the whole table.</p>
+</div>
+<div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Query</th><th class="num">With: time</th><th class="num">Buffers</th><th class="">Plan</th><th class="num">Without: time</th><th class="num">Buffers</th><th class="">Plan</th></tr></thead><tbody><tr><td class="">What is in view (250 m box)</td><td class="num">3.092 ms</td><td class="num">281</td><td class="">Index Scan using ix_annotation_geom</td><td class="num">331.179 ms</td><td class="num">23,368</td><td class="">Parallel Seq Scan</td></tr><tr><td class="">10 nearest (KNN)</td><td class="num">9.561 ms</td><td class="num">362</td><td class="">Index Scan using ix_annotation_geom</td><td class="num">300.759 ms</td><td class="num">25,095</td><td class="">Parallel Seq Scan</td></tr><tr><td class="">Zone (170 m)</td><td class="num">0.503 ms</td><td class="num">144</td><td class="">Index Scan using ix_annotation_geom</td><td class="num">269.719 ms</td><td class="num">23,362</td><td class="">Parallel Seq Scan</td></tr><tr><td class="">List page after 500,000 rows</td><td class="num">0.151 ms</td><td class="num">9</td><td class="">Index Scan using ix_annotation_scene_created</td><td class="num">0.148 ms</td><td class="num">9</td><td class="">Index Scan using ix_annotation_scene_created</td></tr></tbody></table></div></div>
+<div class="col">
+<h2>Size on disk</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Relation</th><th class="">Size</th></tr></thead><tbody><tr><td class="">annotation table (1.2 million rows)</td><td class="">183 MB</td></tr><tr><td class="">primary key</td><td class="">45 MB</td></tr><tr><td class="">spatial index (GiST)</td><td class="">49 MB</td></tr><tr><td class="">list index (scene, time, id)</td><td class="">69 MB</td></tr><tr><td class="">unique title index</td><td class="">94 MB</td></tr></tbody></table></div>
+<h2>Why it works this way</h2>
+<p>Each decision made earlier is tested here: bounding-box test first and exact test second (<a href="../adr/0005-reads-bypass-the-core.md">ADR 0005</a>), SQL straight to the response (<a href="../adr/0006-native-sql-vs-hibernate-spatial.md">ADR 0006</a>), and paging by position (<a href="../adr/0007-keyset-pagination.md">ADR 0007</a>). The method and what it showed are in <a href="../adr/0009-benchmark-one-million-rows.md">ADR 0009</a>.</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Is a million rows possible on this machine?</td><td class="">Measured first with a throwaway table: a million points and a spatial index built in under 3 seconds, 66 MB plus a 40 MB index, 188 MB of container memory.</td></tr><tr><td class="">Do the scripts work?</td><td class="">A small run (24,000 rows) went end to end first and caught a real bug: a lookup picked an outline where it needed a point.</td></tr><tr><td class="">Full run</td><td class="">1,000,000 points and 200,000 outlines; seed 30 s; the whole run took under 3 minutes.</td></tr><tr><td class="">Why is the 3 km view slower?</td><td class="">Looked at directly: it matches 36,391 rows and sorts them by time (a top-N heapsort over 15,227 buffers, 39 ms). The 250 m view matches 246 rows.</td></tr><tr><td class="">Reproducible?</td><td class="">The seed uses a fixed random seed and the measurer a seeded generator, so a rerun asks the same questions of the same data. Timings vary a little between runs.</td></tr></tbody></table></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>Concurrent load (one request at a time was measured, not many at once). Many scenes at once (all rows are in one scene). Cold-cache timings (the data fit in memory). Other machines: every number here is this 4-CPU, 7.8 GiB laptop.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>A view that holds tens of thousands of annotations costs more, in proportion to how many it holds, not to the size of the dataset. A zoom-aware limit or clustering on the map would fix it. It is not built.</li>
+<li>The planner estimated about 1,000 rows for that view and found 36,391: clustered data fools its statistics. The plans were still good.</li>
+<li>The data is synthetic. Squares stand in for outlines.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="008-annotation-ui.html">Previous: Annotations on screen</a><a href="015-html-docs.html" style="text-align:right">Next: This documentation</a></nav>
+</main>
+</div>
+</body>
+</html>

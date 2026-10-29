@@ -49,7 +49,7 @@ Every error is an RFC 7807 problem with a stable `code`. Domain rejections map e
 
 ## Data
 
-PostgreSQL with PostGIS. Flyway owns the schema, Hibernate only validates it (`ddl-auto=validate`). Geometry is stored as `geometry(…, 4326)` with GiST indexes ([ADR 0001](docs/adr/0001-geometry-vs-geography.md)). Local development uses `docker compose up` (database only); tests use Testcontainers with the same image.
+PostgreSQL with PostGIS. Flyway owns the schema, Hibernate only validates it (`ddl-auto=validate`). Geometry is stored as `geometry(…, 4326)` with GiST indexes ([ADR 0001](docs/adr/0001-geometry-vs-geography.md)). Local development uses `docker compose up` (database only); tests use Testcontainers with the same image. Performance at scale is measured, not assumed: `scripts/benchmark/run.sh` seeds 1.2 million annotations and records query plans and API latency with and without the spatial index ([ADR 0009](docs/adr/0009-benchmark-one-million-rows.md), results in `docs/benchmark/`).
 
 ## Client
 
