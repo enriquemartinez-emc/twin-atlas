@@ -28,6 +28,7 @@ import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
 import { HlmEmptyImports } from '@shared/ui/empty';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
+import { MapLoading } from './map-loading';
 import { MapStatus } from './map-status';
 import { SceneBar } from './scene-bar/scene-bar';
 import { ToolRail } from './tools/tool-rail';
@@ -54,6 +55,7 @@ const FOCUS_HEIGHT = 250;
     AnnotationForm,
     AnnotationEditor,
     AnnotationList,
+    MapLoading,
     MapStatus,
     SceneBar,
     ToolRail,
@@ -91,9 +93,12 @@ const FOCUS_HEIGHT = 250;
         class="status"
         [mode]="map()?.mode() ?? null"
         [position]="map()?.cameraPosition() ?? null"
-        [failed]="!!loadError()"
         (resetRequested)="resetView()"
       />
+
+      @if (!loadError() && !map()?.tilesReady()) {
+        <app-map-loading class="loading" [mode]="map()?.mode() ?? null" />
+      }
 
       <button
         hlmBtn
@@ -225,6 +230,15 @@ const FOCUS_HEIGHT = 250;
       inset-block-start: 0.75rem;
       inset-inline-start: 4.25rem;
       z-index: 10;
+    }
+
+    .loading {
+      position: absolute;
+      inset-block-start: 50%;
+      inset-inline-start: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 9;
+      pointer-events: none;
     }
 
     .hint {

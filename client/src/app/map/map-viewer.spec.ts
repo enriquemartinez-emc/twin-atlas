@@ -113,6 +113,17 @@ const cesium = vi.hoisted(() => {
     readonly scene = {
       canvas: { kind: 'canvas' },
       primitives: { add: vi.fn() },
+      globe: { tilesLoaded: false },
+      postRender: {
+        listeners: new Set<Listener>(),
+        addEventListener(listener: Listener) {
+          this.listeners.add(listener);
+          return () => this.listeners.delete(listener);
+        },
+        raise() {
+          for (const listener of [...this.listeners]) listener();
+        },
+      },
       pickPositionSupported: true,
       pick: vi.fn(() => state.pickResult),
       pickPosition: vi.fn(() => state.groundPoint),
@@ -144,6 +155,7 @@ const cesium = vi.hoisted(() => {
     viewers: [] as FakeViewer[],
     handlers: [] as FakeHandler[],
     tilesetFails: false,
+    tilesets: [] as { loaded: (() => void)[] }[],
     pickResult: undefined as unknown,
     groundPoint: undefined as { longitude: number; latitude: number } | undefined,
   };
@@ -189,10 +201,18 @@ const cesium = vi.hoisted(() => {
     ClassificationType: { TERRAIN: 'terrain', CESIUM_3D_TILE: 'tiles' },
     UrlTemplateImageryProvider: class {},
     ImageryLayer: class {},
-    createGooglePhotorealistic3DTileset: () =>
-      state.tilesetFails
-        ? Promise.reject(new Error('no access'))
-        : Promise.resolve({ kind: 'tileset' }),
+    createGooglePhotorealistic3DTileset: () => {
+      if (state.tilesetFails) return Promise.reject(new Error('no access'));
+      const tileset = {
+        kind: 'tileset',
+        loaded: [] as Listener[],
+        initialTilesLoaded: {
+          addEventListener: (listener: Listener) => tileset.loaded.push(listener),
+        },
+      };
+      state.tilesets.push(tileset);
+      return Promise.resolve(tileset);
+    },
   };
   return { state, module, FakeEntity };
 });
@@ -233,6 +253,7 @@ describe('MapViewer', () => {
     cesium.state.viewers.length = 0;
     cesium.state.handlers.length = 0;
     cesium.state.tilesetFails = false;
+    cesium.state.tilesets.length = 0;
     cesium.state.pickResult = undefined;
     cesium.state.groundPoint = undefined;
     container = document.createElement('div');
@@ -262,9 +283,50 @@ describe('MapViewer', () => {
     await service.init(container, { ionToken: 'token', initialView: view });
 
     expect(service.mode()).toBe('photorealistic');
-    expect(viewer().scene.primitives.add).toHaveBeenCalledExactlyOnceWith({
-      kind: 'tileset',
-      maximumScreenSpaceError: 8,
+    expect(viewer().scene.primitives.add).toHaveBeenCalledExactlyOnceWith(
+      expect.objectContaining({ kind: 'tileset', maximumScreenSpaceError: 8 }),
+    );
+  });
+
+  describe('first view ready', () => {
+    const tileset = () => {
+      const found = cesium.state.tilesets[0];
+      if (!found) throw new Error('no tileset was created');
+      return found;
+    };
+
+    it('is false until the Google tiles of the first view are loaded', async () => {
+      await service.init(container, { ionToken: 'token', initialView: view });
+      expect(service.tilesReady()).toBe(false);
+
+      tileset().loaded.forEach((listener) => listener());
+
+      expect(service.tilesReady()).toBe(true);
+    });
+
+    it('on the OpenStreetMap globe waits for the globe to report its tiles loaded', async () => {
+      await service.init(container, { ionToken: null, initialView: view });
+      viewer().scene.postRender.raise();
+      expect(service.tilesReady()).toBe(false);
+
+      viewer().scene.globe.tilesLoaded = true;
+      viewer().scene.postRender.raise();
+
+      expect(service.tilesReady()).toBe(true);
+      expect(viewer().scene.postRender.listeners.size).toBe(0);
+    });
+
+    it('waits again when the viewer is rebuilt or destroyed', async () => {
+      await service.init(container, { ionToken: 'token', initialView: view });
+      tileset().loaded.forEach((listener) => listener());
+      expect(service.tilesReady()).toBe(true);
+
+      await service.init(container, { ionToken: 'token', initialView: view });
+      expect(service.tilesReady()).toBe(false);
+
+      cesium.state.tilesets[1]?.loaded.forEach((listener) => listener());
+      service.destroy();
+      expect(service.tilesReady()).toBe(false);
     });
   });
 

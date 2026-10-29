@@ -21,6 +21,7 @@ class FakeMap {
   readonly tilesError = signal<string | null>(null);
   readonly lastClick = signal<MapClick | null>(null);
   readonly epoch = signal(1);
+  readonly tilesReady = signal(true);
   readonly init = vi.fn(() => Promise.resolve());
   readonly setFeatures = vi.fn();
   readonly setDraft = vi.fn();
@@ -456,6 +457,29 @@ describe('Scene', () => {
     http.match(() => true).forEach((r) => r.flush([]));
   });
 
+  it('shows a loading notice until the first view of the map is ready', async () => {
+    map.tilesReady.set(false);
+    await open();
+    expect(el().querySelector('app-map-loading')).not.toBeNull();
+
+    map.tilesReady.set(true);
+    await settle();
+
+    expect(el().querySelector('app-map-loading')).toBeNull();
+  });
+
+  it('does not show the loading notice when the viewer could not start', async () => {
+    map.tilesReady.set(false);
+    map.init.mockRejectedValueOnce(new Error('WebGL is not supported'));
+    fixture = TestBed.createComponent(Scene);
+
+    await settle();
+
+    expect(el().querySelector('app-map-loading')).toBeNull();
+    expect(el().querySelector('[role="alert"]')).not.toBeNull();
+    http.match(() => true).forEach((r) => r.flush([]));
+  });
+
   it('releases the map when the page is destroyed', async () => {
     await open();
 
@@ -472,14 +496,15 @@ describe('Scene', () => {
     const stubClipboard = (writeText: () => Promise<void>) =>
       Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
 
-    it('says the 3D viewer is loading until it is up', async () => {
+    it('says the 3D viewer is starting until it is up', async () => {
       fixture = TestBed.createComponent(Scene);
       fixture.detectChanges();
-      expect(el().textContent).toContain('Loading the 3D viewer');
+      expect(el().textContent).toContain('Starting the 3D viewer');
 
       await settle();
 
-      expect(el().textContent).not.toContain('Loading the 3D viewer');
+      expect(el().textContent).not.toContain('Starting the 3D viewer');
+      expect(el().textContent).not.toContain('Loading the map');
     });
 
     it('copies the address, which carries the scene and the annotation, and says so', async () => {

@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>A loading notice for the map - Twin Atlas docs</title>
+<meta name="description" content="A notice in the middle of the map while the viewer starts and the first tiles load.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../guide.html"><span>Using the app</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="../tasks/022-ui-panel-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li><li><a href="../tasks/023-ui-redesign.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">023</span><span>Redesign: tools and panel</span></a></li><li><a href="../tasks/024-client-structure-tidy.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">024</span><span>Client structure tidy</span></a></li><li><a href="../tasks/025-scene-page-split.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">025</span><span>Scene page split</span></a></li><li><a href="../tasks/026-client-no-barrels.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">026</span><span>Client without barrels</span></a></li><li><a href="../tasks/027-map-loading-notice.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">027</span><span>Map loading notice</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>A loading notice for the map</h1>
+<div class="tags"><span class="tag c-white">Task 027</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/map-loading-notice</code></span></div>
+<p class="lead">Google&#39;s 3D tiles keep arriving for several seconds after the viewer is up, so the screen looked empty. A notice in the middle of the map now says what is going on until the first view is drawn.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Reload the app. A card with a spinner appears in the middle of the map and goes away when the first view is loaded. I have not seen it in a browser yet.</p></aside>
+<h2>What was wrong</h2>
+<p>The only indicator, a spinner in the status bar, stopped as soon as the 3D viewer had been created. Loading the photorealistic tiles starts after that, and nothing said so.</p>
+<h2>What was built</h2>
+<ul>
+<li><strong>The map says when it is ready.</strong> <code>MapViewer</code> has a <code>tilesReady</code> signal. For Google&#39;s tiles it turns true when the tileset reports that the tiles of the initial view are loaded. For the OpenStreetMap globe it turns true when the globe reports all its tiles loaded. It goes back to false when the viewer is rebuilt, for example after a token is saved.</li>
+<li><strong>One notice, in the middle.</strong> It says "Starting the 3D viewer…" and then "Loading the map…", with a line about Google&#39;s tiles being slow when that is the source. Clicks pass through it, and screen readers hear it as a status.</li>
+<li><strong>It admits when it is slow.</strong> After 15 seconds it adds that the map needs an internet connection. That uses Angular&#39;s <code>@defer</code> timer, so there is no timer code to clean up.</li>
+<li><strong>One indicator, not two.</strong> The old spinner left the status bar, which now shows nothing until the source of the map is known.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 700 210" width="700" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">What the notice says over time</title><desc id="d">Four steps in order: the page opens, the viewer starts, the tiles of the first view stream in, the first view is ready. The notice shows during the second and third steps and disappears at the fourth.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker></defs><rect class="c-white" x="10" y="20" width="150" height="70" rx="8"/><text class="t-title" x="20" y="42">Page opens</text><text class="t-small" x="20" y="60">no map yet</text><rect class="c-sky" x="190" y="20" width="150" height="70" rx="8"/><text class="t-title" x="200" y="42">Viewer starts</text><text class="t-small" x="200" y="60">Starting the</text><text class="t-small" x="200" y="76">3D viewer…</text><rect class="c-sky" x="370" y="20" width="160" height="70" rx="8"/><text class="t-title" x="380" y="42">Tiles stream in</text><text class="t-small" x="380" y="60">Loading the map…</text><text class="t-small" x="380" y="76">(Google: a few secs)</text><rect class="c-sky" x="560" y="20" width="130" height="70" rx="8"/><text class="t-title" x="570" y="42">First view</text><text class="t-small" x="570" y="60">ready: notice</text><text class="t-small" x="570" y="76">is gone</text><path class="arrow" d="M160,55 L190,55" marker-end="url(#ah)"/><path class="arrow" d="M340,55 L370,55" marker-end="url(#ah)"/><path class="arrow" d="M530,55 L560,55" marker-end="url(#ah)"/><rect class="c-slate" x="190" y="120" width="380" height="44" rx="8"/><text class="t-small" x="202" y="138">After 15 seconds of waiting the notice adds:</text><text class="t-small" x="202" y="154">"Still loading. The map needs an internet connection."</text><path class="arrow" d="M360,90 L360,120" marker-end="url(#ah)"/><text class="t-small" x="10" y="196">If the viewer fails to start, the notice goes and the error message takes its place.</text></svg></div><figcaption>One notice for the whole wait.</figcaption></figure><div class="col">
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Tests</td><td class="">273 client tests pass (264 before). New: the three ways the first view becomes ready and the reset, the notice texts and its slow message, and the page showing it while loading, hiding it when ready and hiding it after a startup error.</td></tr><tr><td class="">Deliberate breaks</td><td class="">Six, each failed a test: Google tiles never marking ready, the globe ready at once, destroy keeping the ready flag, the notice never hiding, the notice showing over a startup error, and the title never saying the viewer is starting.</td></tr><tr><td class="">Build</td><td class="">Formatting, lint with the class check and the production build are clean. The lazy <code>map-viewer</code> chunk is 8.1 kB.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>How long the notice stays up on a real Google tileset, and whether the signals fire at the right moment with the real Cesium. The tests use a stand-in for Cesium. Checking needs your approval to drive the running app.</p></div>
+<h2>Left out</h2>
+<ul>
+<li>A progress bar. Cesium reports how many requests are pending, not how many there will be in total.</li>
+<li>A notice when you move the camera and more tiles stream in.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="026-client-no-barrels.html">Previous: Client without barrels</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

@@ -5,7 +5,6 @@ import { lucideHouse } from '@ng-icons/lucide';
 import type { MapMode } from '@map/map-viewer';
 import { BadgeDot } from '@shared/badge-dot';
 import { HlmButtonImports } from '@shared/ui/button';
-import { HlmSpinner } from '@shared/ui/spinner';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
 
 export interface CameraPosition {
@@ -22,11 +21,11 @@ const SOURCES: Record<MapMode, { readonly name: string; readonly colour: string 
 /** Where the picture comes from and where the camera is, at the map's bottom edge. */
 @Component({
   selector: 'app-map-status',
-  imports: [DecimalPipe, NgIcon, BadgeDot, HlmButtonImports, HlmSpinner, HlmTooltipImports],
+  imports: [DecimalPipe, NgIcon, BadgeDot, HlmButtonImports, HlmTooltipImports],
   providers: [provideIcons({ lucideHouse })],
   template: `
-    <div class="bar">
-      @if (mode(); as mode) {
+    @if (mode(); as mode) {
+      <div class="bar">
         <app-badge-dot [color]="sources[mode].colour">{{ sources[mode].name }}</app-badge-dot>
         @if (position(); as position) {
           <span class="camera">
@@ -45,11 +44,8 @@ const SOURCES: Record<MapMode, { readonly name: string; readonly colour: string 
           <ng-icon name="lucideHouse" />
           <span class="sr-only">Reset view</span>
         </button>
-      } @else if (!failed()) {
-        <hlm-spinner aria-label="Loading the 3D viewer" />
-        <span>Loading the 3D viewer…</span>
-      }
-    </div>
+      </div>
+    }
   `,
   styles: `
     .bar {
@@ -72,8 +68,6 @@ const SOURCES: Record<MapMode, { readonly name: string; readonly colour: string 
 export class MapStatus {
   readonly mode = input<MapMode | null>(null);
   readonly position = input<CameraPosition | null>(null);
-  /** True when the viewer could not start, so there is nothing to wait for. */
-  readonly failed = input(false);
 
   readonly resetRequested = output<void>();
 

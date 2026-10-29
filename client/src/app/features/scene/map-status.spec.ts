@@ -10,18 +10,10 @@ describe('MapStatus', () => {
     fixture = TestBed.createComponent(MapStatus);
   });
 
-  it('shows a spinner while the viewer starts', () => {
+  it('shows nothing until the source of the map is known', () => {
     fixture.detectChanges();
 
-    expect(el().querySelector('hlm-spinner')).not.toBeNull();
-    expect(el().textContent).toContain('Loading the 3D viewer');
-  });
-
-  it('stops waiting when the viewer could not start', () => {
-    fixture.componentRef.setInput('failed', true);
-    fixture.detectChanges();
-
-    expect(el().querySelector('hlm-spinner')).toBeNull();
+    expect(el().querySelector('.bar')).toBeNull();
   });
 
   it('says where the picture comes from and where the camera is', () => {
@@ -35,7 +27,6 @@ describe('MapStatus', () => {
 
     expect(el().textContent).toContain('Google Photorealistic 3D Tiles');
     expect(el().textContent).toContain('41.4036, 2.1744 · 320 m');
-    expect(el().querySelector('hlm-spinner')).toBeNull();
   });
 
   it('names the open street map fallback', () => {

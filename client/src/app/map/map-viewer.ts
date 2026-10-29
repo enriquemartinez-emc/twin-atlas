@@ -60,6 +60,7 @@ export class MapViewer {
   private readonly tilesErrorState = signal<string | null>(null);
   private readonly lastClickState = signal<MapClick | null>(null);
   private readonly epochState = signal(0);
+  private readonly tilesReadyState = signal(false);
 
   readonly cameraPosition = this.cameraPositionState.asReadonly();
   readonly visibleBbox = this.visibleBboxState.asReadonly();
@@ -69,6 +70,8 @@ export class MapViewer {
   readonly lastClick = this.lastClickState.asReadonly();
   /** Goes up each time a viewer is built. Read it in an effect to redraw after a rebuild. */
   readonly epoch = this.epochState.asReadonly();
+  /** True once the first view is drawn with its tiles, so a loading notice can go away. */
+  readonly tilesReady = this.tilesReadyState.asReadonly();
 
   private cesium: CesiumModule | undefined;
   private viewer: Viewer | undefined;
@@ -104,6 +107,7 @@ export class MapViewer {
         if (generation !== this.generation) return;
         tileset.maximumScreenSpaceError = TILE_SCREEN_SPACE_ERROR;
         viewer.scene.primitives.add(tileset);
+        tileset.initialTilesLoaded.addEventListener(() => this.tilesReadyState.set(true));
         this.modeState.set('photorealistic');
       } catch (error) {
         // Invalid token or no access to the asset: fall back so the user still gets a globe.
@@ -181,6 +185,7 @@ export class MapViewer {
     this.modeState.set(null);
     this.tilesErrorState.set(null);
     this.lastClickState.set(null);
+    this.tilesReadyState.set(false);
   }
 
   private attachInteractions(Cesium: CesiumModule, viewer: Viewer): void {
@@ -216,10 +221,16 @@ export class MapViewer {
       maximumLevel: 19,
       credit: '© OpenStreetMap contributors',
     });
-    return new Cesium.Viewer(container, {
+    const viewer = new Cesium.Viewer(container, {
       ...WIDGETS_OFF,
       baseLayer: new Cesium.ImageryLayer(imagery),
     });
+    const stopWatching = viewer.scene.postRender.addEventListener(() => {
+      if (!viewer.scene.globe.tilesLoaded) return;
+      this.tilesReadyState.set(true);
+      stopWatching();
+    });
+    return viewer;
   }
 
   private attachWidgetsCss(): void {
