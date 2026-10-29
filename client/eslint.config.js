@@ -36,6 +36,16 @@ module.exports = defineConfig([
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
       '@typescript-eslint/consistent-type-imports': 'error',
+      // Components are single-file: template and styles live inline in the .ts.
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "Decorator[expression.callee.name='Component'] Property[key.name=/^(templateUrl|styleUrl|styleUrls)$/]",
+          message:
+            'Write components as a single file: use an inline `template` and `styles`, not templateUrl/styleUrl.',
+        },
+      ],
       'no-restricted-imports': [
         'error',
         {

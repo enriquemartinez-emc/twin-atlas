@@ -109,6 +109,7 @@ Spatial queries (bbox, nearest-N, intersects, keyset-paginated lists) **bypass t
 ## Angular conventions
 
 - Standalone components only, `inject()` over constructor injection. Zoneless: no zone.js.
+- **Single-file components**: `template` and `styles` are inline in the component's `.ts`. Never `templateUrl`, `styleUrl` or separate `.html`/`.css` files (also for CLI-generated components). Enforced by ESLint (`no-restricted-syntax`).
 - Change detection is OnPush. In Angular 22 that is the default, so do not set `ChangeDetectionStrategy.OnPush` explicitly. Never opt into `ChangeDetectionStrategy.Eager` without a comment explaining why.
 - State with signals (`signal`, `computed`, `resource`/`httpResource` where suitable); RxJS only where streams are genuinely needed.
 - Angular 22: forms use Signal Forms. Services use `@Service` (never constructor injection). Heavy services (the Cesium wrapper) are lazy-loaded with `injectAsync`. Experimental APIs (`debounced`, WebMCP) stay out of core paths.
