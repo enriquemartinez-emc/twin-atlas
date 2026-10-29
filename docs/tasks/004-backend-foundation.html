@@ -46,7 +46,7 @@ cd server &amp;&amp; ./mvnw spring-boot:run
 curl localhost:8080/actuator/health</code></pre><p>The answer is <code>{"groups":["liveness","readiness"],"status":"UP"}</code>. The API documentation is at <code>http://localhost:8080/swagger-ui/index.html</code>.</p></aside>
 <h2>What was built</h2>
 <ul>
-<li><strong>A database for development.</strong> <code>docker-compose.yml</code> starts PostgreSQL with PostGIS (<code>postgis/postgis:17-3.6</code>) with a health check and memory settings sized for a laptop. Tests use the very same image, and a test fails if the two ever differ.</li>
+<li><strong>A database for development.</strong> <code>docker-compose.yml</code> starts PostgreSQL with PostGIS (<code>postgis/postgis:17-3.6</code>) with a health check and memory settings that keep it small. Tests use the very same image, and a test fails if the two ever differ.</li>
 <li><strong>Schema by numbered files.</strong> Flyway owns the database structure. Hibernate only checks that it matches.</li>
 <li><strong>Errors in one format.</strong> Every error is an RFC 7807 problem with a stable <code>code</code>.</li>
 <li><strong>GeoJSON</strong> in and out through <code>jackson-datatype-jts</code>, an existing library built for the current Jackson. A custom serializer was planned and dropped once the library turned up.</li>

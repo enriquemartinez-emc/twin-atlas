@@ -1,10 +1,10 @@
-# 0009 — Benchmark: 1.2 million annotations on a laptop
+# 0009 — Benchmark: 1.2 million annotations
 
 **Status:** Accepted · 2026-10-29
 
 ## Context
 
-The project claims to handle large amounts of location data. That is only worth saying if it is measured, on the hardware the project is developed on, through the real API, with the plans to explain the numbers.
+The project claims to handle large amounts of location data. That is only worth saying if it is measured, on one ordinary development setup, through the real API, with the plans to explain the numbers.
 
 ## Decision
 
@@ -13,7 +13,7 @@ Measure it with scripts anyone can rerun (`scripts/benchmark/run.sh`), and keep 
 - **Data:** one scene, 1,000,000 points (800,000 markers and 200,000 notes) and 200,000 square outlines. 80% of rows fall near one of 25 hot spots, 20% are uniform, with a fixed random seed. Seeding took 30 s with all indexes in place.
 - **Plans:** `EXPLAIN (ANALYZE, BUFFERS)` of the four read queries, with the GiST index and without it.
 - **Latency:** a Node script (built-ins only) calls the API, one request at a time, 10 warm-up requests then 200 timed per operation (50 without the index), and reports p50, p95, p99 and the maximum.
-- **Machine:** 4 CPUs, 7.8 GiB visible to Docker, database container capped at 1.5 GiB (`effective_cache_size=1310728kB, maintenance_work_mem=131072kB, max_connections=50, shared_buffers=655368kB, work_mem=16384kB`), server heap 512 MB.
+- **Setup:** database container capped at 1.5 GiB (`effective_cache_size=1310728kB, maintenance_work_mem=131072kB, max_connections=50, shared_buffers=655368kB, work_mem=16384kB`), server heap 512 MB.
 
 ## Results
 
@@ -40,7 +40,7 @@ Memory: the database container reached 800.9 MiB of its 1.5 GiB cap, the server 
 
 ## What it showed
 
-- **A million rows is comfortable on this laptop.** Nothing came near a memory or disk limit.
+- **A million rows is comfortable with these limits.** Nothing came near a memory or disk limit.
 - **The spatial index is the difference.** Without it, view, nearest and zone queries scan about 23,000 buffers (the whole table) and take 5 to 65 times longer. With it they touch a few hundred.
 - **Keyset paging stays flat.** Page 500 costs the same as page 1, which is what [ADR 0007](0007-keyset-pagination.md) promised.
 - **Cost follows the rows in view, not the dataset.** A 3 km-wide view holds 36,391 annotations. Because the list is ordered by time, all of them are fetched and sorted to return the first 200 (39 ms in isolation, 47.4 ms median and 92.3 ms p95 through the API). A 250 m view holds 246.
@@ -53,6 +53,6 @@ Memory: the database container reached 800.9 MiB of its 1.5 GiB cap, the server 
 ## Consequences
 
 - Rerunning `scripts/benchmark/run.sh` after a query change shows its effect in minutes, and the plans file shows why.
-- Not measured, and worth doing before any production claim: concurrent requests, many scenes at once, cold caches, other hardware.
+- Not measured, and worth doing before any production claim: concurrent requests, many scenes at once, cold caches, other environments.
 - If wide views matter, the fix is on the client and API contract (a zoom-aware limit, or clustering), not in the index. It is not built.
 - The planner underestimated the wide view by about 35 times (it expected about 1,000 rows): clustered data skews its statistics. The chosen plans were still good, so no change was made.

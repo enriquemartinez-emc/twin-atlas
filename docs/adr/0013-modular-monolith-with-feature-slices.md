@@ -4,7 +4,7 @@
 
 ## Context
 
-Twin Atlas is built and run by one developer on one laptop, and it has a small number of clearly separate areas: annotations, scenes, imports (and, planned, assets). The code must stay easy to navigate as it grows, and the boundaries between areas must not depend on everyone remembering them.
+Twin Atlas is built and run by one developer, and it has a small number of clearly separate areas: annotations, scenes, imports (and, planned, assets). The code must stay easy to navigate as it grows, and the boundaries between areas must not depend on everyone remembering them.
 
 ## Decision
 

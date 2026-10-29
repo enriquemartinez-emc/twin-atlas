@@ -11,7 +11,7 @@ services:
       - '5432:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
-    # Sized for a 16 GB laptop where Docker gets about 8 GB (benchmark notes land with the benchmark task, spec 009).
+    # Capped so the database runs comfortably next to the server and the client (numbers: docs/adr/0009).
     mem_limit: 1536m
     command: >
       postgres

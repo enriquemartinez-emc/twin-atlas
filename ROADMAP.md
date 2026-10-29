@@ -10,7 +10,7 @@ Where Twin Atlas is, what comes next, and what was left out on purpose. Each tas
 - **A 3D map viewer.** Loads on demand, falls back to OpenStreetMap without a token.
 - **Annotations on screen.** Pick a scene, click the map, save, edit, move. Built on a typed API client.
 - **Editing with a version check.** A stale edit is refused, never overwritten.
-- **A benchmark.** 1.2 million annotations on a laptop, with query plans and latencies ([ADR 0009](docs/adr/0009-benchmark-one-million-rows.md)).
+- **A benchmark.** 1.2 million annotations, with query plans and latencies ([ADR 0009](docs/adr/0009-benchmark-one-million-rows.md)).
 - **OpenStreetMap import.** A bulk endpoint that imports what it can and reports every problem.
 - **Shared-kernel cleanup.** The shared parts are named for what they are and every framework error carries a code.
 - **Figtree and Spartan.** One font and real components, with no piles of style classes.

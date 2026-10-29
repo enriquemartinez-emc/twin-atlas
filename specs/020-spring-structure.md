@@ -26,7 +26,6 @@ The server is a modular monolith packaged by feature (the project rule, and what
 - Evidence: `./mvnw spotless:check verify` on the final tree gives 193 passing tests against real PostGIS. The contract drift test passes without regenerating, and the client is untouched.
 - Rules can fail: a persistence class using a web class, a returned shape using persistence, and a core using persistence each failed their rule. All were restored.
 - A mistake of mine: a malformed mutation command left a stray `record Marker(...)` in `AnnotationPage.java`, because a pipe cut the step that restores the file. The full build still passed with it. I found it by reading the diff, removed it and re-ran everything.
-- The Docker integration of this WSL distro went away during the task, which killed one verify run. The container-free tests ran meanwhile, and the full verify ran again when Docker was back.
 - Widened to `public`: the persistence classes the endpoints use, `AnnotationKind.of/bodyOf`, and a few members. Other slices still cannot reach them (the existing rule passes).
 - The query-plan test moved into `persistence`, which keeps what it tests package-private.
 - Not done: Spring Modulith (a new dependency, needs approval). The app was not started.
