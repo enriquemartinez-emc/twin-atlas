@@ -30,5 +30,3 @@ export function sceneWorkspace(
 
   return { sceneId: selectedSceneId, annotationId, data, selectAnnotation };
 }
-
-export type SceneWorkspace = ReturnType<typeof sceneWorkspace>;

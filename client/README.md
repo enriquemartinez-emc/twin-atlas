@@ -51,7 +51,7 @@ A server test fails when the committed spec is stale, and a new error `code` in 
 
 ## The 3D scene and where its data comes from
 
-The viewer lives in `src/app/features/scene`. Cesium is only touched in `src/app/map` and is loaded lazily, so it never weighs on the first page load.
+The viewer lives in `src/app/features/scene`. Cesium is only touched in `src/app/features/scene/map` and is loaded lazily, so it never weighs on the first page load.
 
 | Mode                | When                          | Data                                                                  |
 | ------------------- | ----------------------------- | --------------------------------------------------------------------- |

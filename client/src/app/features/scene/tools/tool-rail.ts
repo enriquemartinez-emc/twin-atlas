@@ -22,7 +22,7 @@ const TIPS: Record<AnnotationKind, string> = {
   OUTLINE: 'Outline: draw an area, at least three corners',
 };
 
-export const TOOLS: readonly ToolOption[] = [
+const TOOLS: readonly ToolOption[] = [
   {
     tool: 'select',
     label: 'Select',

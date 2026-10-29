@@ -27,7 +27,7 @@ const NAMES: Record<AnnotationKind, string> = {
     HlmTypographyImports,
   ],
   template: `
-    <form hlmFieldGroup novalidate (submit)="onSubmit($event)">
+    <form hlmFieldGroup novalidate (submit)="saveAnnotation($event)">
       <div>
         <p hlmSmall>New {{ name() }}</p>
       </div>
@@ -105,7 +105,7 @@ export class AnnotationForm {
     return errors[0]?.message ?? 'This is not valid.';
   }
 
-  protected onSubmit(event: Event): void {
+  protected saveAnnotation(event: Event): void {
     event.preventDefault();
     void submit(this.annotationForm, async () => {
       this.submitted.emit(this.model());

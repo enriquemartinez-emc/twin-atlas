@@ -16,7 +16,7 @@ import { HlmSelectImports } from '@shared/ui/select';
   template: `
     <div hlmField orientation="horizontal">
       <label class="sr-only" for="scene-select">Scene</label>
-      <hlm-select [value]="selected()" (valueChange)="onPick($event)">
+      <hlm-select [value]="selected()" (valueChange)="chooseScene($event)">
         <hlm-select-trigger buttonId="scene-select" class="[&>button]:w-full">
           <span class="truncate" *hlmSelectValueTemplate="let scene">{{ scene.name }}</span>
         </hlm-select-trigger>
@@ -72,7 +72,7 @@ export class SceneSelect {
   );
 
   /** The select reports whatever value an item holds, so only a known scene is acted on. */
-  protected onPick(value: unknown): void {
+  protected chooseScene(value: unknown): void {
     const picked = this.scenes().find((scene) => scene === value);
     if (picked) this.choose.emit(picked.id);
   }

@@ -2,7 +2,7 @@ import { lucideHexagon, lucideMapPin, lucideMessageSquareText } from '@ng-icons/
 import { PALETTE } from '@features/scene/map/palette';
 import type { AnnotationKind } from './annotation-draft';
 
-export interface KindMeta {
+interface KindMeta {
   readonly label: string;
   readonly plural: string;
   readonly icon: string;

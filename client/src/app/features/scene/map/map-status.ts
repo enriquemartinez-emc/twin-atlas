@@ -2,16 +2,11 @@ import { DecimalPipe } from '@angular/common';
 import { Component, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideHouse } from '@ng-icons/lucide';
-import type { MapMode } from './map/map-viewer';
+import type { CameraPosition } from './bbox';
+import type { MapMode } from './map-viewer';
 import { BadgeDot } from '@shared/badge-dot';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
-
-export interface CameraPosition {
-  readonly latitude: number;
-  readonly longitude: number;
-  readonly height: number;
-}
 
 const SOURCES: Record<MapMode, { readonly name: string; readonly colour: string }> = {
   photorealistic: { name: 'Google Photorealistic 3D Tiles', colour: '#16a34a' },

@@ -1,5 +1,5 @@
 import { Component, computed, input } from '@angular/core';
-import type { MapMode } from './map/map-viewer';
+import type { MapMode } from './map-viewer';
 import { HlmSpinner } from '@shared/ui/spinner';
 
 /** Tells the user the map is on its way, from the viewer starting until the first view is drawn. */

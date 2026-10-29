@@ -1,4 +1,4 @@
-import { appConfig } from '@app/app.config';
+import { appConfig } from './app.config';
 import * as annotation from '@features/scene/annotation/kind-meta';
 import * as scene from '@features/scene/scene.routes';
 import * as sdk from '@api/index';

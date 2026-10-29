@@ -28,7 +28,7 @@ const NAMES: Record<AnnotationResponse['kind'], string> = {
     HlmTypographyImports,
   ],
   template: `
-    <form hlmFieldGroup novalidate aria-label="Edit annotation" (submit)="onSubmit($event)">
+    <form hlmFieldGroup novalidate aria-label="Edit annotation" (submit)="saveChanges($event)">
       <p hlmSmall>Edit {{ name() }}</p>
 
       <div hlmField>
@@ -141,7 +141,7 @@ export class AnnotationEditor {
     return errors[0]?.message ?? 'This is not valid.';
   }
 
-  protected onSubmit(event: Event): void {
+  protected saveChanges(event: Event): void {
     event.preventDefault();
     void submit(this.editForm, async () => {
       this.submitted.emit(this.model());

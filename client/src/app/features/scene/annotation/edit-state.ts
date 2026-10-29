@@ -112,5 +112,3 @@ export function editState(host: EditHost, drawing: Pick<DrawingState, 'tool' | '
     save,
   };
 }
-
-export type EditState = ReturnType<typeof editState>;

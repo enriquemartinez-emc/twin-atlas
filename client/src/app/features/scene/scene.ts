@@ -28,16 +28,16 @@ import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
 import { HlmEmptyImports } from '@shared/ui/empty';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
-import { MapLoading } from './map-loading';
-import { MapStatus } from './map-status';
+import { MapLoading } from './map/map-loading';
+import { MapStatus } from './map/map-status';
 import { SceneBar } from './scene-bar/scene-bar';
 import { ToolRail } from './tools/tool-rail';
 import { drawingState } from './tools/drawing-state';
 import { editState } from './annotation/edit-state';
 import { IonTokenStore } from './scene-bar/ion-token-store';
-import { linkCopy } from './link-copy';
+import { linkCopy } from './scene-bar/link-copy';
 import { SceneData } from './scene-data';
-import { sceneCreation } from './scene-creation';
+import { sceneCreation } from './scene-bar/scene-creation';
 import { sceneWorkspace } from './scene-workspace';
 import { toolHint } from './tools/tool-hint';
 
@@ -376,7 +376,7 @@ export class Scene {
 
     effect(() => {
       const click = this.map()?.lastClick();
-      if (click) untracked(() => this.onMapClick(click));
+      if (click) untracked(() => this.applyMapClick(click));
     });
   }
 
@@ -406,7 +406,7 @@ export class Scene {
   }
 
   /** What a click on the map means depends on the tool in hand and on a move being awaited. */
-  private onMapClick(click: MapClick): void {
+  private applyMapClick(click: MapClick): void {
     const point =
       click.longitude === null || click.latitude === null
         ? null

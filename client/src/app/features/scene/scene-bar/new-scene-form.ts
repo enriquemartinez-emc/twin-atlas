@@ -11,7 +11,7 @@ import { HlmInputImports } from '@shared/ui/input';
   selector: 'app-new-scene-form',
   imports: [FormField, ProblemAlert, HlmButtonImports, HlmFieldImports, HlmInputImports],
   template: `
-    <form hlmFieldGroup novalidate (submit)="onSubmit($event)">
+    <form hlmFieldGroup novalidate (submit)="createScene($event)">
       <div hlmField>
         <label hlmFieldLabel for="scene-name">Name</label>
         <p hlmFieldDescription>The new scene covers the part of the map you are looking at.</p>
@@ -44,7 +44,7 @@ export class NewSceneForm {
     maxLength(path.name, 120, { message: 'Keep the name under 120 characters.' });
   });
 
-  protected onSubmit(event: Event): void {
+  protected createScene(event: Event): void {
     event.preventDefault();
     void submit(this.sceneForm, async () => {
       this.create.emit(this.model().name.trim());

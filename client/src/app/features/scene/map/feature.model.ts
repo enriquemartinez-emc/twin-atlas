@@ -2,11 +2,11 @@
  * What the map is asked to draw. Cesium-free and independent of the API types, but structurally
  * compatible with the generated GeoJSON types, so callers can pass SDK data straight in.
  */
-export type MapGeometry =
+type MapGeometry =
   | { readonly type: 'Point'; readonly coordinates: readonly number[] }
   | { readonly type: 'Polygon'; readonly coordinates: readonly (readonly (readonly number[])[])[] };
 
-export type MapFeatureKind = 'MARKER' | 'NOTE' | 'OUTLINE';
+type MapFeatureKind = 'MARKER' | 'NOTE' | 'OUTLINE';
 
 export interface MapFeature {
   readonly id: string;

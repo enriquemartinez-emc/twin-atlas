@@ -14,7 +14,7 @@ import { HlmFieldImports } from '@shared/ui/field';
           3D tiles could not be loaded with the saved token. Check it and try again.
         </p>
       }
-      <form hlmFieldGroup (submit)="onSubmit($event)">
+      <form hlmFieldGroup (submit)="saveToken($event)">
         <div hlmField>
           <label hlmFieldLabel for="ion-token">Cesium ion token</label>
           <p hlmFieldDescription>
@@ -51,7 +51,7 @@ export class IonTokenPanel {
     return event.target instanceof HTMLInputElement ? event.target.value : '';
   }
 
-  protected onSubmit(event: Event): void {
+  protected saveToken(event: Event): void {
     event.preventDefault();
     this.saved.emit(this.draft());
     this.draft.set('');
