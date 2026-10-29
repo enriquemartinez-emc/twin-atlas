@@ -25,6 +25,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 017 | [Figtree font and a Spartan-built UI](017-ui-figtree-and-spartan.md) | `feat/ui-figtree-spartan` | In progress |
 | 018 | [One command to start the app](018-one-command-start.md) | `feat/one-command-start` | In progress |
 | 019 | [Angular structure, routes and state flow](019-angular-structure.md) | `chore/angular-structure` | In progress |
+| 020 | [Spring Boot structure: roles inside the big feature](020-spring-structure.md) | `chore/spring-structure` | In progress |
 
 ## File template
 
