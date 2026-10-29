@@ -51,9 +51,7 @@ const NAMES: Record<AnnotationResponse['kind'], string> = {
 
       @if (canMove()) {
         <div hlmField>
-          @if (moving()) {
-            <p hlmMuted role="status">Click the map to choose the new position.</p>
-          } @else if (moved()) {
+          @if (moved() && !moving()) {
             <p hlmMuted role="status">A new position is chosen (purple).</p>
           }
           <div hlmField orientation="horizontal">

@@ -14,8 +14,10 @@ export interface AnnotationFormValue {
   readonly body: string;
 }
 
+export const OUTLINE_MIN_POINTS = 3;
+
 export function isDraftReady(kind: AnnotationKind, points: readonly LonLat[]): boolean {
-  return kind === 'OUTLINE' ? points.length >= 3 : points.length === 1;
+  return kind === 'OUTLINE' ? points.length >= OUTLINE_MIN_POINTS : points.length === 1;
 }
 
 export function buildCreateRequest(

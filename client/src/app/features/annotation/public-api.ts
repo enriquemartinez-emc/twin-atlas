@@ -8,6 +8,8 @@ export {
   buildUpdateRequest,
   focusPoint,
   isDraftReady,
+  OUTLINE_MIN_POINTS,
   toMapFeature,
 } from './annotation-draft';
+export { KIND_ICONS, KIND_META, type KindMeta } from './kind-meta';
 export type { AnnotationFormValue, AnnotationKind } from './annotation-draft';

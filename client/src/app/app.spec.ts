@@ -15,26 +15,12 @@ describe('App', () => {
     expect(fixture.componentInstance).toBeTruthy();
   });
 
-  it('should render title', async () => {
+  it('leaves the whole window to the page it shows', async () => {
     const fixture = TestBed.createComponent(App);
     await fixture.whenStable();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Twin Atlas');
-  });
 
-  it('styles the title through Spartan typography, so utility classes reach the page', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.classList.contains('font-semibold')).toBe(true);
-  });
-
-  it('shows the app icon next to the title', async () => {
-    const fixture = TestBed.createComponent(App);
-    await fixture.whenStable();
-    const icon = (fixture.nativeElement as HTMLElement).querySelector('header img');
-
-    expect(icon?.getAttribute('src')).toContain('favicon.svg');
-    expect(icon?.getAttribute('alt')).toBe('');
+    expect(compiled.querySelector('main router-outlet')).not.toBeNull();
+    expect(compiled.querySelector('header')).toBeNull();
   });
 });

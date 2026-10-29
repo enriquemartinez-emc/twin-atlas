@@ -1,4 +1,4 @@
-import { DOCUMENT, DecimalPipe } from '@angular/common';
+import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
   Component,
@@ -17,12 +17,13 @@ import {
 import { Router } from '@angular/router';
 import type { AnnotationSummary } from '@api/index';
 import { environment } from '@env/environment';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucidePanelRightClose, lucidePanelRightOpen } from '@ng-icons/lucide';
 import {
   AnnotationEditor,
   AnnotationForm,
   AnnotationList,
   type AnnotationFormValue,
-  type AnnotationKind,
   annotationData,
   buildCreateRequest,
   buildUpdateRequest,
@@ -33,24 +34,17 @@ import {
 import type { LonLat, MapClick, MapService } from '@map/public-api';
 import { bboxPolygon } from '@shared/geo/geojson';
 import { problemMessage } from '@shared/problems/problem-message';
-import { HlmButtonImports } from '@shared/ui/button';
-import { IonTokenPanel } from './components/ion-token-panel';
-import { IonTokenStore } from './ion-token-store';
-import { ScenePicker } from './components/scene-picker';
-import { SceneData } from './scene-data';
 import { ProblemAlert } from '@shared/components/problem-alert';
+import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
-import { HlmSeparatorImports } from '@shared/ui/separator';
-import { HlmToggleGroupImports } from '@shared/ui/toggle-group';
-
-type Tool = 'select' | AnnotationKind;
-
-const TOOLS: readonly { readonly tool: Tool; readonly label: string }[] = [
-  { tool: 'select', label: 'Select' },
-  { tool: 'MARKER', label: 'Marker' },
-  { tool: 'NOTE', label: 'Note' },
-  { tool: 'OUTLINE', label: 'Outline' },
-];
+import { HlmEmptyImports } from '@shared/ui/empty';
+import { HlmTooltipImports } from '@shared/ui/tooltip';
+import { MapStatus } from './components/map-status';
+import { SceneBar } from './components/scene-bar';
+import { ToolRail, type Tool } from './components/tool-rail';
+import { IonTokenStore } from './ion-token-store';
+import { SceneData } from './scene-data';
+import { toolHint } from './tool-hint';
 
 const LINK_LABELS = {
   idle: 'Copy link',
@@ -63,75 +57,92 @@ const FOCUS_HEIGHT = 250;
 @Component({
   selector: 'app-scene',
   imports: [
-    DecimalPipe,
+    NgIcon,
     HlmButtonImports,
     HlmCardImports,
-    HlmSeparatorImports,
-    HlmToggleGroupImports,
+    HlmEmptyImports,
+    HlmTooltipImports,
     ProblemAlert,
-    ScenePicker,
     AnnotationForm,
     AnnotationEditor,
     AnnotationList,
-    IonTokenPanel,
+    MapStatus,
+    SceneBar,
+    ToolRail,
   ],
+  providers: [provideIcons({ lucidePanelRightClose, lucidePanelRightOpen })],
   template: `
-    <div #viewport class="viewport"></div>
+    <app-scene-bar
+      [scenes]="scenes.scenes()"
+      [selectedId]="selectedSceneId()"
+      [canCreate]="canCreateScene()"
+      [busy]="creatingScene()"
+      [problem]="sceneProblem()"
+      [linkLabel]="linkLabel()"
+      [mapMode]="map()?.mode() ?? null"
+      [tilesError]="map()?.tilesError() ?? null"
+      (choose)="chooseScene($event)"
+      (create)="createScene($event)"
+      (copyLink)="copyLink()"
+      (tokenSaved)="saveToken($event)"
+      (tokenForgotten)="forgetToken()"
+    />
 
-    <button
-      hlmBtn
-      class="show-panel"
-      variant="outline"
-      size="sm"
-      type="button"
-      [hidden]="panelOpen()"
-      (click)="panelOpen.set(true)"
-    >
-      Show panel
-    </button>
+    <div class="stage">
+      <div #viewport class="viewport"></div>
 
-    <aside hlmCard class="panel" aria-label="Scene tools" [hidden]="!panelOpen()">
-      <div hlmCardContent class="stack">
-        <div class="toolbar">
-          <button hlmBtn variant="ghost" size="sm" type="button" (click)="copyLink()">
-            {{ linkLabel() }}
+      @if (selectedSceneId()) {
+        <app-tool-rail class="rail" [tool]="tool()" (chosen)="selectTool($event)" />
+      }
+
+      @if (hint(); as text) {
+        <p class="hint" role="status">{{ text }}</p>
+      }
+
+      <app-map-status
+        class="status"
+        [mode]="map()?.mode() ?? null"
+        [position]="map()?.cameraPosition() ?? null"
+        [failed]="!!loadError()"
+        (resetRequested)="resetView()"
+      />
+
+      <button
+        hlmBtn
+        class="show-panel"
+        variant="outline"
+        size="icon"
+        type="button"
+        hlmTooltip="Show the panel"
+        position="left"
+        [hidden]="panelOpen()"
+        (click)="panelOpen.set(true)"
+      >
+        <ng-icon name="lucidePanelRightOpen" />
+        <span class="sr-only">Show panel</span>
+      </button>
+
+      <aside hlmCard class="panel" aria-label="Places" [hidden]="!panelOpen()">
+        <div hlmCardContent class="stack">
+          <button
+            hlmBtn
+            class="hide-panel"
+            variant="ghost"
+            size="icon-sm"
+            type="button"
+            hlmTooltip="Hide the panel"
+            position="left"
+            (click)="panelOpen.set(false)"
+          >
+            <ng-icon name="lucidePanelRightClose" />
+            <span class="sr-only">Hide panel</span>
           </button>
-          <button hlmBtn variant="ghost" size="sm" type="button" (click)="panelOpen.set(false)">
-            Hide panel
-          </button>
-        </div>
 
-        @if (loadError(); as error) {
-          <app-problem-alert>{{ error }}</app-problem-alert>
-        }
+          @if (loadError(); as error) {
+            <app-problem-alert>{{ error }}</app-problem-alert>
+          }
 
-        <app-scene-picker
-          [scenes]="scenes.scenes()"
-          [selectedId]="selectedSceneId()"
-          [canCreate]="canCreateScene()"
-          [busy]="creatingScene()"
-          [problem]="sceneProblem()"
-          (choose)="chooseScene($event)"
-          (create)="createScene($event)"
-        />
-
-        @if (selectedSceneId()) {
-          <div hlmSeparator></div>
-          <section class="stack" aria-label="Annotations">
-            <div
-              hlmToggleGroup
-              type="single"
-              variant="outline"
-              size="sm"
-              aria-label="Tool"
-              [value]="tool()"
-              (valueChange)="chooseTool($event)"
-            >
-              @for (option of tools; track option.tool) {
-                <button hlmToggleGroupItem [value]="option.tool">{{ option.label }}</button>
-              }
-            </div>
-
+          @if (selectedSceneId()) {
             @if (formKind(); as kind) {
               <app-annotation-form
                 [kind]="kind"
@@ -141,9 +152,7 @@ const FOCUS_HEIGHT = 250;
                 (submitted)="save($event)"
                 (cancelled)="selectTool('select')"
               />
-            }
-
-            @if (editing(); as annotation) {
+            } @else if (editing(); as annotation) {
               <app-annotation-editor
                 [annotation]="annotation"
                 [moving]="moving()"
@@ -157,17 +166,18 @@ const FOCUS_HEIGHT = 250;
                 (reloadRequested)="loadLatest()"
                 (closed)="closeEditor()"
               />
-            } @else if (tool() === 'select' && data.detailFailed()) {
-              <app-problem-alert>Could not load this annotation.</app-problem-alert>
+            } @else {
+              @if (data.detailFailed()) {
+                <app-problem-alert>Could not load this annotation.</app-problem-alert>
+              }
+              <app-annotation-list
+                [items]="data.items()"
+                [selectedId]="selectedAnnotationId()"
+                [truncated]="data.truncated()"
+                [loading]="data.loading()"
+                (selected)="focus($event)"
+              />
             }
-
-            <app-annotation-list
-              [items]="data.items()"
-              [selectedId]="selectedAnnotationId()"
-              [truncated]="data.truncated()"
-              [loading]="data.loading()"
-              (selected)="focus($event)"
-            />
 
             @if (data.failed()) {
               <app-problem-alert>
@@ -177,63 +187,75 @@ const FOCUS_HEIGHT = 250;
                 </button>
               </app-problem-alert>
             }
-          </section>
-        }
-
-        <div hlmSeparator></div>
-        <details open>
-          <summary>Map</summary>
-          <div class="stack">
-            @if (!map() && !loadError()) {
-              <p hlmMuted role="status">Loading the 3D viewer…</p>
-            }
-            @if (map(); as map) {
-              <dl>
-                <dt>Source</dt>
-                <dd>
-                  {{
-                    map.mode() === 'photorealistic'
-                      ? 'Google Photorealistic 3D Tiles'
-                      : 'OpenStreetMap'
-                  }}
-                </dd>
-                @if (map.cameraPosition(); as position) {
-                  <dt>Camera</dt>
-                  <dd>
-                    {{ position.latitude | number: '1.4-4' }},
-                    {{ position.longitude | number: '1.4-4' }} ·
-                    {{ position.height | number: '1.0-0' }} m
-                  </dd>
-                }
-              </dl>
-              <button hlmBtn variant="outline" size="sm" type="button" (click)="resetView()">
-                Reset view
-              </button>
-            }
-            <app-ion-token-panel
-              [mode]="map()?.mode() ?? null"
-              [tilesError]="map()?.tilesError() ?? null"
-              (saved)="saveToken($event)"
-              (forgotten)="forgetToken()"
-            />
-          </div>
-        </details>
-      </div>
-    </aside>
+          } @else {
+            <div hlmEmpty>
+              <div hlmEmptyHeader>
+                <p hlmEmptyTitle>No scene open</p>
+                <p hlmEmptyDescription>
+                  Choose a scene in the top bar, or create one from what the map shows.
+                </p>
+              </div>
+            </div>
+          }
+        </div>
+      </aside>
+    </div>
   `,
   styles: `
+    :host {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .stage {
+      position: relative;
+      flex: 1;
+      min-height: 0;
+    }
+
     .viewport {
       position: absolute;
       inset: 0;
     }
 
-    /* The floating tool panel: pinned to the left edge, scrolls when it is taller than the screen. */
+    .rail {
+      position: absolute;
+      inset-block-start: 0.75rem;
+      inset-inline-start: 0.75rem;
+      z-index: 10;
+    }
+
+    .status {
+      position: absolute;
+      inset-block-end: 0.75rem;
+      inset-inline-start: 0.75rem;
+      z-index: 10;
+    }
+
+    .hint {
+      position: absolute;
+      inset-block-end: 3.5rem;
+      inset-inline-start: 50%;
+      transform: translateX(-50%);
+      z-index: 10;
+      max-width: calc(100% - 2rem);
+      margin: 0;
+      padding: 0.375rem 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      background: color-mix(in oklab, var(--card) 80%, transparent);
+      backdrop-filter: blur(14px) saturate(1.2);
+      font-size: 0.875rem;
+    }
+
+    /* The floating panel: pinned to the right edge, scrolls when it is taller than the screen. */
     .panel {
       position: absolute;
       inset-block: 0.75rem;
-      inset-inline-start: 0.75rem;
+      inset-inline-end: 0.75rem;
       z-index: 10;
-      width: 20rem;
+      width: 21rem;
       max-width: calc(100% - 1.5rem);
       overflow-y: auto;
       background: color-mix(in oklab, var(--card) 68%, transparent);
@@ -248,24 +270,12 @@ const FOCUS_HEIGHT = 250;
     .show-panel {
       position: absolute;
       inset-block-start: 0.75rem;
-      inset-inline-start: 0.75rem;
+      inset-inline-end: 0.75rem;
       z-index: 10;
     }
 
-    .toolbar {
-      display: flex;
-      justify-content: space-between;
-    }
-
-    /* On a phone the panel sits at the bottom, so the map stays visible above it. */
-    @media (max-width: 40rem) {
-      .panel {
-        inset-block: auto 0.5rem;
-        inset-inline: 0.5rem;
-        width: auto;
-        max-width: none;
-        max-height: 55dvh;
-      }
+    .hide-panel {
+      align-self: flex-end;
     }
 
     .stack {
@@ -274,24 +284,33 @@ const FOCUS_HEIGHT = 250;
       gap: 1rem;
     }
 
-    summary {
-      cursor: pointer;
-      font-weight: 500;
-    }
+    /* On a phone the panel is a sheet at the bottom, the tools run along the top. */
+    @media (max-width: 40rem) {
+      .panel {
+        inset-block: auto 0.5rem;
+        inset-inline: 0.5rem;
+        width: auto;
+        max-width: none;
+        max-height: 50dvh;
+      }
 
-    /* Chromium does not apply a flex gap to the children of an open <details>, so they sit in a div. */
-    details > .stack {
-      margin-top: 0.5rem;
-    }
+      .status {
+        inset-block: 0.75rem auto;
+        inset-inline: auto 0.75rem;
+      }
 
-    dl {
-      display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 0.25rem 0.75rem;
-    }
+      .rail {
+        inset-block-start: 0.75rem;
+      }
 
-    dt {
-      color: var(--muted-foreground);
+      .hint {
+        inset-block-end: auto;
+        inset-block-start: 4rem;
+      }
+
+      .show-panel {
+        inset-block: auto 0.75rem;
+      }
     }
   `,
 })
@@ -309,7 +328,6 @@ export class Scene {
   private destroyed = false;
 
   protected readonly scenes = inject(SceneData);
-  protected readonly tools = TOOLS;
 
   protected readonly map = signal<MapService | null>(null);
   protected readonly loadError = signal<string | null>(null);
@@ -382,6 +400,12 @@ export class Scene {
   /** A scene is built from the visible area, so the map must have reported one. */
   protected readonly canCreateScene = computed(() => !!this.map()?.visibleBbox());
 
+  protected readonly hint = computed(() =>
+    this.selectedSceneId()
+      ? toolHint({ tool: this.tool(), points: this.draft().length, moving: this.moving() })
+      : null,
+  );
+
   private readonly mapFeatures = computed(() => this.data.items().map(toMapFeature));
 
   constructor() {
@@ -411,12 +435,6 @@ export class Scene {
       const click = this.map()?.lastClick();
       if (click) untracked(() => this.onMapClick(click));
     });
-  }
-
-  /** The toggle group reports the chosen value as unknown: only a known tool is acted on. */
-  protected chooseTool(value: unknown): void {
-    const chosen = TOOLS.find((option) => option.tool === value)?.tool;
-    if (chosen && chosen !== this.tool()) this.selectTool(chosen);
   }
 
   protected selectTool(tool: Tool): void {

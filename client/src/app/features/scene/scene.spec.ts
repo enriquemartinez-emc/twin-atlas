@@ -80,17 +80,32 @@ describe('Scene', () => {
     await settle();
   };
 
+  /** Dialogs open in an overlay outside the page, so the lookups search it too. */
+  const everywhere = (): readonly ParentNode[] => [
+    el(),
+    ...document.querySelectorAll('.cdk-overlay-container'),
+  ];
+
   const button = (label: string): HTMLButtonElement => {
-    const found = [...el().querySelectorAll('button')].find((b) => b.textContent?.trim() === label);
+    const found = everywhere()
+      .flatMap((root) => [...root.querySelectorAll('button')])
+      .find((b) => b.textContent?.trim() === label);
     if (!found) throw new Error(`no "${label}" button`);
     return found;
+  };
+
+  const openNewScene = async () => {
+    button('New scene').click();
+    await settle();
   };
 
   const click = (longitude: number, latitude: number, featureId: string | null = null) =>
     map.lastClick.set({ longitude, latitude, featureId, sequence: ++clickSequence });
 
   const type = async (selector: string, text: string) => {
-    const input = el().querySelector<HTMLInputElement>(selector);
+    const input = everywhere()
+      .map((root) => root.querySelector<HTMLInputElement>(selector))
+      .find((found) => found !== null);
     if (!input) throw new Error(`no ${selector}`);
     input.value = text;
     input.dispatchEvent(new Event('input'));
@@ -297,6 +312,49 @@ describe('Scene', () => {
     expect(el().textContent).not.toContain('New marker');
   });
 
+  it('says what to do next as the tool is used, and nothing in select mode', async () => {
+    await open();
+    const hint = () => el().querySelector('.hint')?.textContent?.trim() ?? null;
+    expect(hint()).toBeNull();
+
+    button('Marker').click();
+    await settle();
+    expect(hint()).toBe('Click the map to place the marker.');
+
+    click(2.175, 41.405);
+    await settle();
+    expect(hint()).toContain('Placed.');
+
+    button('Select').click();
+    await settle();
+    expect(hint()).toBeNull();
+  });
+
+  it('gives the panel to the form while drawing and back to the list afterwards', async () => {
+    await open();
+    expect(el().querySelector('app-annotation-list')).not.toBeNull();
+
+    button('Marker').click();
+    await settle();
+    expect(el().querySelector('app-annotation-list')).toBeNull();
+    expect(el().querySelector('app-annotation-form')).not.toBeNull();
+
+    button('Cancel').click();
+    await settle();
+    expect(el().querySelector('app-annotation-list')).not.toBeNull();
+    expect(el().querySelector('app-annotation-form')).toBeNull();
+  });
+
+  it('shows no tools and asks for a scene when there is none', async () => {
+    fixture = TestBed.createComponent(Scene);
+    await settle();
+    scenesRequest().flush([]);
+    await settle();
+
+    expect(el().querySelector('app-tool-rail')).toBeNull();
+    expect(el().querySelector('aside')?.textContent).toContain('No scene open');
+  });
+
   it('selects an annotation when it is clicked on the map in select mode', async () => {
     await open();
 
@@ -318,6 +376,7 @@ describe('Scene', () => {
 
   it('creates a scene covering the visible area and selects it', async () => {
     await open();
+    await openNewScene();
     await type('#scene-name', 'Old town');
 
     button('Create scene from this view').click();
@@ -343,6 +402,7 @@ describe('Scene', () => {
     await settle();
 
     expect(el().querySelector<HTMLSelectElement>('#scene-select')?.value).toBe('s2');
+    expect(document.querySelector('#scene-name')).toBeNull();
     http.match(() => true).forEach((r) => r.flush([]));
   });
 
@@ -351,13 +411,14 @@ describe('Scene', () => {
     map.visibleBbox.set({ west: 179, south: 0, east: -179, north: 1 });
     await settle();
     http.match(() => true).forEach((r) => r.flush({ items: [], nextCursor: null }));
+    await openNewScene();
     await type('#scene-name', 'Pacific');
 
     button('Create scene from this view').click();
     await settle();
 
     expect(http.match((r) => r.method === 'POST')).toHaveLength(0);
-    expect(el().textContent).toContain('crosses the date line');
+    expect(document.body.textContent).toContain('crosses the date line');
   });
 
   it('redraws the annotations when the map is rebuilt', async () => {
@@ -744,10 +805,7 @@ describe('Scene', () => {
 
     it('starts half-finished edits afresh when another annotation is chosen', async () => {
       await open([annotation('a1', 'Cracked window'), annotation('a2', 'Leak')]);
-      const rows = () => [
-        ...el().querySelectorAll<HTMLButtonElement>('app-annotation-list li button'),
-      ];
-      rows()[0]?.click();
+      el().querySelector<HTMLButtonElement>('app-annotation-list li button')?.click();
       await settle();
       http.expectOne(detailUrl).flush(responseBody('Cracked window'), { headers: { ETag: '"2"' } });
       await settle();
@@ -755,7 +813,7 @@ describe('Scene', () => {
       await settle();
       expect(el().textContent).toContain('Click the map to choose the new position.');
 
-      rows()[1]?.click();
+      fixture.componentRef.setInput('annotation', 'a2');
       await settle();
       http
         .expectOne((r) => r.method === 'GET' && r.url.endsWith('/api/scenes/s1/annotations/a2'))
@@ -764,6 +822,16 @@ describe('Scene', () => {
 
       expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Leak');
       expect(el().textContent).not.toContain('Click the map to choose the new position.');
+    });
+
+    it('gives the panel to the editor while an annotation is open, and back to the list when it closes', async () => {
+      await openEditor();
+      expect(el().querySelector('app-annotation-list')).toBeNull();
+
+      button('Close').click();
+      await settle();
+
+      expect(el().querySelector('app-annotation-list')).not.toBeNull();
     });
 
     it('closing the editor clears the selection', async () => {

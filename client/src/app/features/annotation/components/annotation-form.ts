@@ -15,18 +15,6 @@ const NAMES: Record<AnnotationKind, string> = {
   OUTLINE: 'outline',
 };
 
-const HINTS: Record<AnnotationKind, string> = {
-  MARKER: 'Click the map to place the marker.',
-  NOTE: 'Click the map to place the note.',
-  OUTLINE: 'Click the map to add corners (at least three), then save.',
-};
-
-const PLACED_HINTS: Record<AnnotationKind, string> = {
-  MARKER: 'Placed. Add a title and save, or click again to move it.',
-  NOTE: 'Placed. Add a title and the text, then save, or click again to move it.',
-  OUTLINE: 'That is enough corners. Add more, or give it a title and save.',
-};
-
 @Component({
   selector: 'app-annotation-form',
   imports: [
@@ -42,7 +30,6 @@ const PLACED_HINTS: Record<AnnotationKind, string> = {
     <form hlmFieldGroup novalidate (submit)="onSubmit($event)">
       <div>
         <p hlmSmall>New {{ name() }}</p>
-        <p hlmMuted>{{ hint() }}</p>
       </div>
 
       <div hlmField>
@@ -98,9 +85,6 @@ export class AnnotationForm {
   readonly cancelled = output<void>();
 
   protected readonly name = computed(() => NAMES[this.kind()]);
-  protected readonly hint = computed(() =>
-    this.ready() ? PLACED_HINTS[this.kind()] : HINTS[this.kind()],
-  );
 
   private readonly model = signal<AnnotationFormValue>({ title: '', body: '' });
 

@@ -44,11 +44,9 @@ describe('AnnotationList', () => {
     const text = (button: Element | undefined, selector: string) =>
       button?.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim();
     expect(text(buttons[0], '[hlmItemTitle]')).toBe('Cracked window');
-    expect(text(buttons[0], '[hlmBadge]')).toBe('Marker');
     expect(text(buttons[0], '[hlmItemDescription]')).toBe('Marker');
     expect(text(buttons[1], '[hlmItemTitle]')).toBe('Leak');
-    expect(text(buttons[1], '[hlmBadge]')).toBe('Note');
-    expect(text(buttons[1], '[hlmItemDescription]')).toBe('Note Water stain');
+    expect(text(buttons[1], '[hlmItemDescription]')).toBe('Water stain');
     expect(buttons[0]?.getAttribute('aria-current')).toBeNull();
     expect(buttons[1]?.getAttribute('aria-current')).toBe('true');
   });
@@ -120,7 +118,7 @@ describe('AnnotationList', () => {
       fixture.detectChanges();
       const filter = (label: string) =>
         [...el().querySelectorAll<HTMLButtonElement>('[hlmToggleGroup] button')].find(
-          (b) => b.textContent?.trim() === label,
+          (b) => b.getAttribute('aria-label') === label,
         );
 
       filter('Markers')?.click();
@@ -132,7 +130,7 @@ describe('AnnotationList', () => {
         'Bar Pep (node/1001)',
       ]);
 
-      filter('All')?.click();
+      filter('All kinds')?.click();
       fixture.detectChanges();
       expect(text()).toContain('4 in view');
     });
@@ -142,7 +140,7 @@ describe('AnnotationList', () => {
       fixture.detectChanges();
 
       [...el().querySelectorAll<HTMLButtonElement>('[hlmToggleGroup] button')]
-        .find((b) => b.textContent?.trim() === 'Outlines')
+        .find((b) => b.getAttribute('aria-label') === 'Outlines')
         ?.click();
       fixture.detectChanges();
 
@@ -150,18 +148,18 @@ describe('AnnotationList', () => {
       expect(el().querySelector('ul')).toBeNull();
     });
 
-    it('gives each kind a dot in the colour the map draws it with', () => {
+    it('gives each kind an icon in the colour the map draws it with', () => {
       fixture.componentRef.setInput('items', many);
       fixture.detectChanges();
 
-      const colours = [...el().querySelectorAll<HTMLElement>('.rounded-full')].map(
-        (dot) => dot.style.backgroundColor,
+      const colours = [...el().querySelectorAll<HTMLElement>('li ng-icon')].map(
+        (icon) => icon.style.color,
       );
 
       const asRgb = (hex: string) => {
         const probe = document.createElement('span');
-        probe.style.backgroundColor = hex;
-        return probe.style.backgroundColor;
+        probe.style.color = hex;
+        return probe.style.color;
       };
       expect(colours).toEqual([
         asRgb(PALETTE.MARKER),
@@ -171,14 +169,30 @@ describe('AnnotationList', () => {
       ]);
     });
 
-    it('explains the titles that come from an import, only when there are some', () => {
+    it('counts each kind on its filter', () => {
+      fixture.componentRef.setInput('items', many);
+      fixture.detectChanges();
+
+      const counts = [...el().querySelectorAll<HTMLButtonElement>('[hlmToggleGroup] button')].map(
+        (b) => `${b.getAttribute('aria-label')}: ${b.textContent?.trim()}`,
+      );
+
+      expect(counts).toEqual(['All kinds: 4', 'Markers: 2', 'Notes: 1', 'Outlines: 1']);
+    });
+
+    it('badges the places that come from an import, and explains the badge once', () => {
       fixture.componentRef.setInput('items', [item('a', 'Cracked window', 'MARKER', null)]);
       fixture.detectChanges();
+      expect(el().querySelector('[hlmBadge]')).toBeNull();
       expect(text()).not.toContain('imported from OpenStreetMap');
 
       fixture.componentRef.setInput('items', many);
       fixture.detectChanges();
-      expect(text()).toContain('imported from OpenStreetMap');
+      const badged = [...el().querySelectorAll('li')]
+        .filter((row) => row.querySelector('[hlmBadge]'))
+        .map((row) => row.querySelector('[hlmItemTitle]')?.textContent);
+      expect(badged).toEqual(['Bar Pep (node/1001)']);
+      expect(text()).toContain('OSM marks places imported from OpenStreetMap');
     });
   });
 });

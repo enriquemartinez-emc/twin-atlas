@@ -1,38 +1,40 @@
 import { Component, computed, input, output, signal } from '@angular/core';
 import type { AnnotationSummary } from '@api/index';
-import { PALETTE } from '@map/palette';
-import { BadgeDot } from '@shared/components/badge-dot';
+import { NgIcon, provideIcons } from '@ng-icons/core';
+import { lucideList } from '@ng-icons/lucide';
+import { HlmBadgeImports } from '@shared/ui/badge';
 import { HlmEmptyImports } from '@shared/ui/empty';
 import { HlmItemImports } from '@shared/ui/item';
 import { HlmSkeleton } from '@shared/ui/skeleton';
 import { HlmToggleGroupImports } from '@shared/ui/toggle-group';
+import { HlmTooltipImports } from '@shared/ui/tooltip';
 import { HlmTypographyImports } from '@shared/ui/typography';
+import { KIND_ICONS, KIND_META } from '../kind-meta';
 
 type Kind = AnnotationSummary['kind'];
 type Filter = 'ALL' | Kind;
 
-const FILTERS: readonly { readonly value: Filter; readonly label: string }[] = [
-  { value: 'ALL', label: 'All' },
-  { value: 'MARKER', label: 'Markers' },
-  { value: 'NOTE', label: 'Notes' },
-  { value: 'OUTLINE', label: 'Outlines' },
-];
-
-const KIND_NAMES: Record<Kind, string> = { MARKER: 'Marker', NOTE: 'Note', OUTLINE: 'Outline' };
+const KINDS: readonly Kind[] = ['MARKER', 'NOTE', 'OUTLINE'];
 
 /** Titles the OpenStreetMap import gives: `Name (node/123)` or `OSM node/123`. */
 const IMPORTED_TITLE = /\((?:node|way)\/\d+\)$|^OSM (?:node|way)\/\d+$/;
 
+const IMPORTED_HINT =
+  'Imported from OpenStreetMap. The reference in the title keeps each place unique, so importing the same data twice adds nothing.';
+
 @Component({
   selector: 'app-annotation-list',
   imports: [
-    BadgeDot,
+    NgIcon,
+    HlmBadgeImports,
     HlmEmptyImports,
     HlmItemImports,
     HlmSkeleton,
     HlmToggleGroupImports,
+    HlmTooltipImports,
     HlmTypographyImports,
   ],
+  providers: [provideIcons({ ...KIND_ICONS, lucideList })],
   template: `
     <section aria-labelledby="in-view">
       <h3 hlmSmall id="in-view">In this view</h3>
@@ -52,7 +54,7 @@ const IMPORTED_TITLE = /\((?:node|way)\/\d+\)$|^OSM (?:node|way)\/\d+$/;
           <div hlmEmptyHeader>
             <p hlmEmptyTitle>Nothing here yet</p>
             <p hlmEmptyDescription>
-              Choose Marker, Note or Outline above, then click the map inside the green area.
+              Choose a tool on the left, then click the map inside the green area.
             </p>
           </div>
         </div>
@@ -67,8 +69,20 @@ const IMPORTED_TITLE = /\((?:node|way)\/\d+\)$|^OSM (?:node|way)\/\d+$/;
           [value]="filter()"
           (valueChange)="chooseFilter($event)"
         >
-          @for (option of filters; track option.value) {
-            <button hlmToggleGroupItem [value]="option.value">{{ option.label }}</button>
+          <button hlmToggleGroupItem value="ALL" aria-label="All kinds">
+            <ng-icon name="lucideList" />
+            {{ items().length }}
+          </button>
+          @for (kind of kinds; track kind) {
+            <button
+              hlmToggleGroupItem
+              [value]="kind"
+              [aria-label]="meta[kind].plural"
+              [hlmTooltip]="meta[kind].plural"
+            >
+              <ng-icon [name]="meta[kind].icon" [style.color]="meta[kind].colour" />
+              {{ counts()[kind] }}
+            </button>
           }
         </div>
 
@@ -86,17 +100,14 @@ const IMPORTED_TITLE = /\((?:node|way)\/\d+\)$|^OSM (?:node|way)\/\d+$/;
                   [attr.aria-current]="item.id === selectedId() ? 'true' : null"
                   (click)="selected.emit(item)"
                 >
+                  <ng-icon [name]="meta[item.kind].icon" [style.color]="meta[item.kind].colour" />
                   <span hlmItemContent>
                     <span hlmItemTitle>{{ item.title }}</span>
-                    <span hlmItemDescription>
-                      <app-badge-dot [color]="colourOf(item.kind)">{{
-                        labelOf(item.kind)
-                      }}</app-badge-dot>
-                      @if (item.body) {
-                        {{ item.body }}
-                      }
-                    </span>
+                    <span hlmItemDescription>{{ item.body || meta[item.kind].label }}</span>
                   </span>
+                  @if (isImported(item)) {
+                    <span hlmBadge variant="outline" [hlmTooltip]="importedHint">OSM</span>
+                  }
                 </button>
               </li>
             }
@@ -104,10 +115,7 @@ const IMPORTED_TITLE = /\((?:node|way)\/\d+\)$|^OSM (?:node|way)\/\d+$/;
         }
 
         @if (hasImported()) {
-          <p hlmMuted>
-            Titles ending in (node/…) or (way/…) were imported from OpenStreetMap. The reference
-            keeps each title unique, so importing the same data twice adds nothing.
-          </p>
+          <p hlmMuted>OSM marks places imported from OpenStreetMap.</p>
         }
       }
 
@@ -153,13 +161,21 @@ export class AnnotationList {
 
   readonly selected = output<AnnotationSummary>();
 
-  protected readonly filters = FILTERS;
+  protected readonly kinds = KINDS;
+  protected readonly meta = KIND_META;
+  protected readonly importedHint = IMPORTED_HINT;
   protected readonly placeholderRows = [1, 2, 3];
   protected readonly filter = signal<Filter>('ALL');
 
   protected readonly shown = computed(() => {
     const filter = this.filter();
     return filter === 'ALL' ? this.items() : this.items().filter((item) => item.kind === filter);
+  });
+
+  protected readonly counts = computed(() => {
+    const counts: Record<Kind, number> = { MARKER: 0, NOTE: 0, OUTLINE: 0 };
+    for (const item of this.items()) counts[item.kind]++;
+    return counts;
   });
 
   protected readonly countText = computed(() => {
@@ -174,15 +190,12 @@ export class AnnotationList {
 
   /** The toggle group reports its value as unknown: only a known filter is acted on. */
   protected chooseFilter(value: unknown): void {
-    const chosen = FILTERS.find((option) => option.value === value)?.value;
-    if (chosen) this.filter.set(chosen);
+    if (value === 'ALL') this.filter.set('ALL');
+    const kind = KINDS.find((candidate) => candidate === value);
+    if (kind) this.filter.set(kind);
   }
 
-  protected labelOf(kind: Kind): string {
-    return KIND_NAMES[kind];
-  }
-
-  protected colourOf(kind: Kind): string {
-    return PALETTE[kind];
+  protected isImported(item: AnnotationSummary): boolean {
+    return IMPORTED_TITLE.test(item.title);
   }
 }

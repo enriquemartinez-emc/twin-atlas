@@ -153,7 +153,7 @@ describe('AnnotationEditor', () => {
 
     fixture.componentRef.setInput('moving', true);
     await flush();
-    expect(el().textContent).toContain('Click the map to choose the new position.');
+    expect(button('Choose again')).toBeDefined();
 
     fixture.componentRef.setInput('moving', false);
     fixture.componentRef.setInput('moved', true);
