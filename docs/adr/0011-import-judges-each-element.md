@@ -29,6 +29,7 @@ OpenStreetMap extracts mix good data with data we cannot use: shops without a na
 
 - A client can import a whole extract and show a per-element report. The response says how many were received, how many were imported and every rejection with its stable code.
 - A race between two imports cannot create a duplicate. A test sends the same extract from six clients at once and expects each annotation exactly once.
+- **The import writes straight into the annotation table.** It repeats what the annotation slice knows about that table: status `DRAFT`, version 0, the kind names and the scene-extent query. ArchUnit checks Java dependencies, not SQL, so the only guard is the endpoint tests (an imported annotation is read and renamed like any other). Putting the insert behind an interface in the annotation slice would add a single-implementation interface, which the project rules forbid.
 - Imported rows are ordinary annotations: they carry version 0, so they have an ETag and can be edited like any other.
 - The first result from a very large extract may be 5,000 elements at a time. Streaming and scheduling imports are out of scope.
 - Map data from OpenStreetMap is © OpenStreetMap contributors and available under the Open Database License (ODbL). The endpoint's description and the docs page say so. Showing attribution next to imported data on the map is a task for the screen that offers import.

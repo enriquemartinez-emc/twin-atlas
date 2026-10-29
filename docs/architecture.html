@@ -31,6 +31,7 @@
 <li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
 <li><a href="tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
 <li><a href="tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="tasks/016-shared-kernel-and-cleanup.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
 </ul></details></nav>
 <main>
 
@@ -49,16 +50,16 @@
 <h2>What the build enforces</h2>
 <p>Rules about the structure are tests, so they cannot quietly rot:</p>
 <ul>
-<li>Code in a <code>core</code> package cannot use Spring, Jakarta or Hibernate.</li>
+<li>Code in a <code>core</code> package, in the shared <code>kernel</code> and in <code>geo</code> cannot use Spring, Jakarta or Hibernate.</li>
 <li>One feature area cannot reach into another's inner parts. Only its <code>core</code> is shared.</li>
-<li>The <code>platform</code> package cannot depend on any feature area.</li>
+<li>The <code>platform</code> package cannot depend on any feature area, and <code>kernel</code> and <code>geo</code> depend on neither a feature area nor the server code around them.</li>
 </ul>
 <p>On the client, ESLint refuses <code>any</code>, imports that climb out of a folder, and reaching into another feature's files.</p>
 
 <h2>Where things live</h2>
 </div>
 <div class="wide">
-<div class="table-wrap"><table><thead><tr><th class="">Folder</th><th class="">What is in it</th></tr></thead><tbody><tr><td class=""><code>server/src/main/java/com/twinatlas/annotation</code></td><td class="">Endpoints, entity, SQL reads. <code>core/</code> holds the pure rules.</td></tr><tr><td class=""><code>server/.../scene</code></td><td class="">Plain create, list and get for scenes. No rules beyond validation.</td></tr><tr><td class=""><code>server/.../platform</code></td><td class="">Error format, ids and clock, GeoJSON, API documentation. <code>core/</code> holds the shared <code>Decision</code> and <code>Rejection</code> types.</td></tr><tr><td class=""><code>server/src/main/resources/db/migration</code></td><td class="">The database schema, one numbered file per change (Flyway).</td></tr><tr><td class=""><code>client/src/app/map</code></td><td class="">The only code that touches Cesium.</td></tr><tr><td class=""><code>client/src/app/features</code></td><td class="">Screens, one folder per feature area, mirroring the server.</td></tr><tr><td class=""><code>client/src/app/api</code></td><td class="">The generated API client. Never edited by hand.</td></tr><tr><td class=""><code>docs/openapi.json</code></td><td class="">The API contract. A server test fails when it is out of date.</td></tr><tr><td class=""><code>docs/adr</code></td><td class="">Short records of the big decisions and why they were made.</td></tr></tbody></table></div>
+<div class="table-wrap"><table><thead><tr><th class="">Folder</th><th class="">What is in it</th></tr></thead><tbody><tr><td class=""><code>server/src/main/java/com/twinatlas/annotation</code></td><td class="">Endpoints, entity, SQL reads. <code>core/</code> holds the pure rules.</td></tr><tr><td class=""><code>server/.../importing</code></td><td class="">The OpenStreetMap import. <code>core/</code> holds the pure conversion and batch rules.</td></tr><tr><td class=""><code>server/.../scene</code></td><td class="">Plain create, list and get for scenes. No rules beyond validation.</td></tr><tr><td class=""><code>server/.../platform</code></td><td class="">Error format, ids and clock, GeoJSON, API documentation. <code>kernel/</code> holds the <code>Decision</code> and <code>Rejection</code> types that every feature shares.</td></tr><tr><td class=""><code>server/.../geo</code></td><td class="">WGS 84: the reference system, the way geometries are built, and the rule for a usable geometry.</td></tr><tr><td class=""><code>server/src/main/resources/db/migration</code></td><td class="">The database schema, one numbered file per change (Flyway).</td></tr><tr><td class=""><code>client/src/app/map</code></td><td class="">The only code that touches Cesium.</td></tr><tr><td class=""><code>client/src/app/features</code></td><td class="">Screens, one folder per feature area, mirroring the server.</td></tr><tr><td class=""><code>client/src/app/api</code></td><td class="">The generated API client. Never edited by hand.</td></tr><tr><td class=""><code>docs/openapi.json</code></td><td class="">The API contract. A server test fails when it is out of date.</td></tr><tr><td class=""><code>docs/adr</code></td><td class="">Short records of the big decisions and why they were made.</td></tr></tbody></table></div>
 </div>
 <div class="col">
 <h2>Decisions on record</h2>

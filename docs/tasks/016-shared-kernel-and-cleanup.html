@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shared kernel and server cleanup - Twin Atlas docs</title>
+<meta name="description" content="Shared kernel and server cleanup.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Shared kernel and server cleanup</h1>
+<div class="tags"><span class="tag c-white">Task 016</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/shared-kernel</code></span></div>
+<p class="lead">A tidy-up of the parts of the server that every feature shares, and a fix for errors that came back without a code. There is nothing new to click in the app.</p>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>With the server running, ask for a URL that does not exist. Before this task the answer had no <code>code</code>, so the app would have said it could not reach the server:</p>
+<pre><code>curl -i localhost:8080/api/does-not-exist
+# 404, and the body now says "code": "NOT_FOUND"</code></pre></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>The shared parts are named for what they are.</strong> <code>platform/core</code> looked like the pure rules of a feature but held none. It is now <code>platform/kernel</code> and holds only the answer type <code>Decision</code> and the list of error codes <code>Rejection</code> (see the <a href="../glossary.html#shared-kernel">glossary</a>).</li>
+<li><strong>The geometry rule has its own home.</strong> <code>Wgs84</code> moved to a <code>geo</code> package. It now also owns the reference system itself (its number, 4326, and the factory that builds shapes in it), which used to be written out in three places.</li>
+<li><strong>The build guards both.</strong> Two architecture tests: code in <code>kernel</code> and <code>geo</code> uses no Spring, and neither may depend on a feature or on the server code around them.</li>
+<li><strong>One table of error answers.</strong> Each rejection's status, title and text used to sit in three separate lists. They are one list now, so a new error code is added once. The deprecated Spring name for status 422 is replaced (same number on the wire), and the five hand-written copies of "build an error response" became one helper.</li>
+<li><strong>Annotation status is typed.</strong> It was a free string. It is now <code>DRAFT</code>, <code>PUBLISHED</code> or <code>ARCHIVED</code> in the database mapping, the API contract and the generated client, so a typo no longer compiles and the mapper has no "unknown status" branch.</li>
+<li><strong>Small tidy-ups.</strong> Unused variables use Java's <code>_</code>. Import elements expose their tags directly, which removed a duplicate switch.</li>
+</ul>
+<h2>What changed in the answers</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Request</th><th class="">Before</th><th class="">Now</th></tr></thead><tbody><tr><td class="">A URL that matches nothing</td><td class="">404, no <code>code</code> in the body</td><td class="">404 <code>NOT_FOUND</code></td></tr><tr><td class="">A method the URL does not support</td><td class="">405, no <code>code</code> in the body</td><td class="">405 <code>REQUEST_INVALID</code></td></tr><tr><td class="">A scene that does not exist, read on its own</td><td class="">404 <code>NOT_FOUND</code></td><td class="">404 <code>SCENE_NOT_FOUND</code>, like every other endpoint</td></tr></tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 940 335" width="940" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Who may depend on whom on the server</title><desc id="d">Features and the server code around them may use the shared kernel and the geometry package. Neither of those may use a feature or the server code.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="frame" x="20" y="10" width="760" height="115" rx="14"/><text class="t-title" x="36" y="36">Features and server code</text><rect class="c-mint" x="40" y="50" width="220" height="60" rx="10"/><text class="t-title" x="54" y="72">annotation core</text><text class="t-small" x="54" y="91">pure rules</text><rect class="c-mint" x="285" y="50" width="220" height="60" rx="10"/><text class="t-title" x="299" y="72">importing core</text><text class="t-small" x="299" y="91">pure rules</text><rect class="c-butter" x="530" y="50" width="230" height="60" rx="10"/><text class="t-title" x="544" y="72">Server code</text><text class="t-small" x="544" y="91">endpoints, Problems, handler</text><rect class="c-mint" x="60" y="175" width="340" height="80" rx="10"/><text class="t-title" x="74" y="197">platform.kernel</text><text class="t-small" x="74" y="216">Decision and Rejection</text><text class="t-small" x="74" y="233">the vocabulary every core shares</text><rect class="c-mint" x="470" y="175" width="410" height="80" rx="10"/><text class="t-title" x="484" y="197">geo</text><text class="t-small" x="484" y="216">Wgs84: the SRID, the geometry factory,</text><text class="t-small" x="484" y="233">and the rule for a usable geometry</text><path class="arrow" d="M230,125 L230,175" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="240" y="156">may use</text><path class="arrow" d="M620,125 L620,175" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="630" y="156">may use</text><rect class="c-blush" x="60" y="280" width="820" height="45" rx="10"/><text class="t-title t-center" x="470.0" y="307.5">Nothing in platform.kernel or geo may depend on a feature or on the server code. The build fails if it does.</text></svg></div><figcaption>The two shared packages sit underneath everything. Dependencies only point down.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Found on the way</h2>
+<ul>
+<li><strong>Errors from the framework carried no code.</strong> While reviewing, I read the error handler and concluded that an unknown URL got the code <code>REQUEST_INVALID</code>. A test written first showed it was worse: those answers had no code at all. Spring builds the body of such errors itself, so the handler never saw it. Every error is promised to have a code, and the app shows "Could not reach the server" when one is missing. Fixed.</li>
+<li><strong>My own claim was wrong, and the test caught it.</strong> That is why the change started with two failing tests, not with the fix.</li>
+</ul>
+<h2>Why it works this way</h2>
+<p>The reasoning and the alternatives are in <a href="../adr/0012-shared-kernel.md">ADR 0012</a>. <a href="../adr/0011-import-judges-each-element.md">ADR 0011</a> now also says plainly that the import writes straight into the annotation table.</p>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Errors</td><td class="">Two new tests (no route, wrong method) failed on the old code and pass now. The scene test expects the one scene code.</td></tr><tr><td class="">Architecture rules can fail</td><td class="">Making a kernel class depend on the server code failed the new rule. Making <code>Wgs84</code> import Spring failed the purity rule. Both were restored.</td></tr><tr><td class="">Whole suites</td><td class="">192 backend tests (3 more than before) and 179 client tests pass. Formatting, lint and the production build are clean.</td></tr><tr><td class="">Contract</td><td class="">The only differences in the API contract are the status values and one corrected description. The client was regenerated and one test fixture needed a more precise type.</td></tr></tbody></table></div>
+<h2>Known limits</h2>
+<ul>
+<li><code>Rejection</code> still lists every feature's codes, so a new feature edits the kernel and the error table. That cost is accepted for one place that maps all errors, and ADR 0012 says when to revisit it.</li>
+<li>A wrong method or content type answers <code>REQUEST_INVALID</code> rather than a code of its own.</li>
+<li><code>GET /api/scenes</code> still returns the newest 100 with no paging. That needs its own design.</li>
+<li>SQL keeps writing 4326 literally, as the migrations do.</li>
+<li>The app was not run in a browser for this task. Nothing on screen was meant to change, and the only client change is a type.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="015-html-docs.html">Previous: This documentation</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

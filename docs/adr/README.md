@@ -15,3 +15,4 @@ Short records of decisions that are costly to reverse. Format: context, decision
 | 0009 | [Benchmark: 1.2 million annotations on a laptop](0009-benchmark-one-million-rows.md) | Accepted |
 | 0010 | [The version check is a pure rule](0010-version-check-is-a-rule.md) | Accepted |
 | 0011 | [An import judges each element on its own](0011-import-judges-each-element.md) | Accepted |
+| 0012 | [A shared kernel for what every core shares](0012-shared-kernel.md) | Accepted |

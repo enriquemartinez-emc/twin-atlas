@@ -8,14 +8,16 @@ Twin Atlas is a modular monolith: one Spring Boot module, packaged by feature, w
 com.twinatlas
 ├── annotation/   markers, notes, outlines on a scene
 │   └── core/     pure rules and transforms (no Spring, Jakarta or Hibernate)
+├── importing/    OpenStreetMap import: one bulk endpoint, judged element by element
+│   └── core/     pure OSM → annotation transforms and the batch rules
 ├── scene/        plain CRUD: the area an annotation must fall inside
-├── platform/     problems, clock/id/geometry beans, JSON, OpenAPI
-│   └── core/     Decision and Rejection, shared by every core
 ├── asset/        (planned) plain CRUD
-└── importing/    (planned) pure OSM → annotation transforms
+├── platform/     problems, clock/id beans, JSON, OpenAPI
+│   └── kernel/   Decision and Rejection: the vocabulary every core shares (not a feature core)
+└── geo/          WGS 84: the SRID, the geometry factory and the rule for a usable geometry
 ```
 
-ArchUnit enforces the boundaries: `..core..` is pure, a slice may only use another slice's `core`, and `platform` depends on no slice.
+ArchUnit enforces the boundaries: `..core..`, `platform.kernel` and `geo` are pure, a slice may only use another slice's `core`, `platform` depends on no slice, and `kernel` and `geo` depend on neither a slice nor the shell around them (ADR 0012).
 
 ## Writes: functional core, imperative shell
 

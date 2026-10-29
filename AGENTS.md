@@ -53,7 +53,9 @@ com.twinatlas
 ├── scene/        plain CRUD, no core
 ├── asset/        plain CRUD, no core
 ├── importing/    core/ (pure OSM -> annotation transforms)
-└── platform/     Problems (ProblemDetail mapping), clock/id beans, security
+├── platform/     Problems (ProblemDetail mapping), clock/id beans, security
+│   └── kernel/   Decision and Rejection, the vocabulary every core shares (pure, not a feature core)
+└── geo/          Wgs84: SRID, geometry factory, the rule for a usable geometry (pure)
 ```
 
 ### Functional core (`..core..` packages)
