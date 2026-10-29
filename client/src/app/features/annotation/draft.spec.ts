@@ -134,7 +134,7 @@ describe('buildUpdateRequest', () => {
     kind: 'MARKER' as const,
     title: 'Cracked window',
     body: null,
-    status: 'DRAFT',
+    status: 'DRAFT' as const,
     createdAt: '2026-01-01T00:00:00Z',
     geometry: { type: 'Point' as const, coordinates: [2.175, 41.405] },
   };

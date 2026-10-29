@@ -22,7 +22,7 @@ export type AnnotationResponse = {
     id: string;
     kind: 'MARKER' | 'NOTE' | 'OUTLINE';
     sceneId: string;
-    status: string;
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
     title: string;
 };
 
@@ -36,7 +36,7 @@ export type AnnotationSummary = {
     id: string;
     kind: 'MARKER' | 'NOTE' | 'OUTLINE';
     sceneId: string;
-    status: string;
+    status: 'DRAFT' | 'PUBLISHED' | 'ARCHIVED';
     title: string;
 };
 
@@ -422,7 +422,7 @@ export type GetSceneData = {
 
 export type GetSceneErrors = {
     /**
-     * NOT_FOUND
+     * SCENE_NOT_FOUND
      */
     404: ProblemResponse;
 };
