@@ -23,7 +23,9 @@
       "@env/*": ["./src/environments/*"],
       "@shared/ui/button": ["./src/app/shared/ui/button/src/index.ts"],
       "@shared/ui/utils": ["./src/app/shared/ui/utils/src/index.ts"],
-      "@shared/ui/input": ["./src/app/shared/ui/input/src/index.ts"]
+      "@shared/ui/input": ["./src/app/shared/ui/input/src/index.ts"],
+      "@shared/ui/label": ["./src/app/shared/ui/label/src/index.ts"],
+      "@shared/ui/textarea": ["./src/app/shared/ui/textarea/src/index.ts"]
     }
   },
   "angularCompilerOptions": {
