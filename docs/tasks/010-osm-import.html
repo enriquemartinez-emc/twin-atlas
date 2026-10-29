@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenStreetMap import - Twin Atlas docs</title>
+<meta name="description" content="Importing OpenStreetMap data into a scene in bulk.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>OpenStreetMap import</h1>
+<div class="tags"><span class="tag c-white">Task 010</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/osm-import</code></span></div>
+<p class="lead">A whole extract of real map data (shops, landmarks, building outlines) can be poured into a scene in one request. What cannot be used is skipped, and the answer lists every skipped element with the reason.</p>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>Create a scene that covers the fixture, then import it twice:</p>
+<pre><code>curl -X POST localhost:8080/api/scenes -H 'Content-Type: application/json' -d '&#123;"name":"Sagrada Familia","extent":&#123;"type":"Polygon","coordinates":[[[2.17,41.40],[2.18,41.40],[2.18,41.41],[2.17,41.41],[2.17,41.40]]]&#125;&#125;'
+
+curl -X POST localhost:8080/api/scenes/SCENE_ID/imports/osm -H 'Content-Type: application/json' --data @server/src/test/resources/osm/overpass-sagrada-familia.json
+# received 9, imported 4, and 5 rejected with their codes
+
+# the same call again: imported 0, and every element says why it was skipped</code></pre>
+<p>The imported items are drafts. They appear in the list and on the map like anything you drew yourself. There is no import button in the app yet.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>A new slice, <code>importing</code>.</strong> Its pure core turns an OpenStreetMap element into the same command a person would send to create one annotation. It does not decide whether that annotation is acceptable.</li>
+<li><strong>The same rules, not a copy.</strong> Each converted element goes through the rules of <a href="005-annotation-create.html">creating an annotation</a>. "Valid shape", "inside the scene" and "title free" mean exactly what they mean there. The import only adds three rules about the source (table below).</li>
+<li><strong>Every problem at once.</strong> Everywhere else the first failed rule is reported. A bulk import is the one exception: a list of 3,000 shops must not stop at shop number 4. Each element gets its own answer.</li>
+<li><strong>One round trip.</strong> The server inserts all accepted annotations in a single batch. The database's unique title index decides conflicts, so two imports running at once cannot create the same annotation twice.</li>
+<li><strong>Titles carry the map reference</strong>, for example <code>Bar Pep (node/123)</code>. Two places called "Bar" stay apart, and importing the same extract again is recognised as a repeat.</li>
+<li><strong>Three new error codes</strong> in the contract. The generated client was rebuilt, and the app's list of readable messages refused to compile until the three had sentences.</li>
+</ul>
+<h2>What happens to each element</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Element in the extract</th><th class="">What happens</th><th class="">Code</th></tr></thead><tbody><tr><td class="">Node with tags</td><td class="">Becomes a <strong>marker</strong>, or a <strong>note</strong> when it has a <code>description</code> or <code>note</code> tag</td><td class="">-</td></tr><tr><td class="">Closed way (at least 4 points, first = last) with tags</td><td class="">Becomes an <strong>outline</strong></td><td class="">-</td></tr><tr><td class="">Open way, or a closed one with too few points</td><td class="">Skipped: it is a street or a path, not an area</td><td class=""><code>OPEN_WAY</code></td></tr><tr><td class="">Node or way with no tags</td><td class="">Skipped: it says nothing about the place</td><td class=""><code>UNTAGGED_ELEMENT</code></td></tr><tr><td class="">Relation, or a node or way with no coordinates</td><td class="">Skipped: not supported yet</td><td class=""><code>UNSUPPORTED_SOURCE_ELEMENT</code></td></tr><tr><td class="">Shape crosses itself, is empty or outside the world</td><td class="">Skipped by the annotation rules</td><td class=""><code>INVALID_GEOMETRY</code></td></tr><tr><td class="">Shape is not entirely inside the scene</td><td class="">Skipped by the annotation rules</td><td class=""><code>GEOMETRY_OUTSIDE_SCENE_EXTENT</code></td></tr><tr><td class="">Title already used in the scene, or twice in the batch</td><td class="">Skipped by the annotation rules</td><td class=""><code>TITLE_ALREADY_USED</code></td></tr></tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 990 345" width="990" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">How an OpenStreetMap import flows through the server</title><desc id="d">The request is read by server code, each element is converted and judged by pure rules, accepted ones are inserted in one batch into the annotation table, and every rejection comes back in the response.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-slate" x="10" y="50" width="150" height="70" rx="10"/><text class="t-title" x="24" y="72">Overpass answer</text><text class="t-small" x="24" y="91">JSON from OpenStreetMap</text><rect class="c-butter" x="200" y="50" width="170" height="70" rx="10"/><text class="t-title" x="214" y="72">Read the request</text><text class="t-small" x="214" y="91">turn JSON into</text><text class="t-small" x="214" y="108">nodes and ways</text><rect class="frame" x="410" y="10" width="320" height="225" rx="14"/><text class="t-title" x="426" y="36">Pure rules (the core)</text><rect class="c-mint" x="430" y="50" width="280" height="70" rx="10"/><text class="t-title" x="444" y="72">Convert each element</text><text class="t-small" x="444" y="91">node: marker, or note with a description</text><text class="t-small" x="444" y="108">closed way: outline</text><rect class="c-mint" x="430" y="140" width="280" height="70" rx="10"/><text class="t-title" x="444" y="162">Judge each element</text><text class="t-small" x="444" y="181">the same rules as creating one annotation</text><text class="t-small" x="444" y="198">by hand, applied to every element</text><rect class="c-butter" x="765" y="50" width="205" height="70" rx="10"/><text class="t-title" x="779" y="72">Insert in one batch</text><text class="t-small" x="779" y="91">skip taken titles</text><rect class="c-lilac" x="765" y="150" width="205" height="70" rx="10"/><text class="t-title" x="779" y="172">annotation table</text><text class="t-small" x="779" y="191">unique title index</text><rect class="c-butter" x="410" y="270" width="320" height="60" rx="10"/><text class="t-title" x="424" y="292">Response</text><text class="t-small" x="424" y="311">received, imported, and every rejection</text><path class="arrow" d="M160,85 L200,85" marker-end="url(#ah)"/><path class="arrow" d="M370,85 L410,85" marker-end="url(#ah)"/><path class="arrow" d="M570,120 L570,140" marker-end="url(#ah)"/><path class="arrow" d="M710,175 L738,175 L738,85 L765,85" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="750" y="130">accepted</text><path class="arrow" d="M867,120 L867,150" marker-end="url(#ah)"/><path class="arrow-bad" d="M570,235 L570,270" marker-end="url(#ah-bad)"/><text class="t-small lbl" text-anchor="start" x="580" y="258">rejected: element + code</text><path class="arrow" d="M867,220 L867,300 L730,300" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="877" y="265">rows inserted</text></svg></div><figcaption>One request. Green is pure rules; the server code around them reads the request and writes the batch.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Whole-request answers</h2>
+</div>
+<div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Whole request</th><th class="">Answer</th></tr></thead><tbody><tr><td class="">The scene does not exist</td><td class="">404 <code>SCENE_NOT_FOUND</code></td></tr><tr><td class="">No elements, or more than 5,000</td><td class="">400 <code>VALIDATION_FAILED</code></td></tr><tr><td class="">Anything else</td><td class="">200, with the counts and one entry per skipped element</td></tr></tbody></table></div></div>
+<div class="col">
+<p>Skipped elements are not errors of the request, so they are not HTTP errors. The request succeeded and the answer says what it did.</p>
+<h2>Why it works this way</h2>
+<p>The reasoning, the alternatives and the consequences are in <a href="../adr/0011-import-judges-each-element.md">ADR 0011</a>. Terms such as node, way and Overpass are in the <a href="../glossary.html#osm">glossary</a>.</p>
+<h2>Found on the way</h2>
+<ul>
+<li><strong>One of my own tests was luck.</strong> It compared the skipped elements with a list built by <code>Map.of</code>, which has no fixed order. It passed at first, then failed when I broke the code on purpose for an unrelated check. It now uses an ordered map and passed three runs in a row.</li>
+</ul>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Rules, table by table</td><td class="">15 cases for converting elements and their titles, 6 for the batch rules (several problems in one batch, repeated element, title in a different letter case, missing scene, empty batch).</td></tr><tr><td class="">Random batches</td><td class="">2 properties over up to 40 mixed elements: every element is either accepted or rejected exactly once, and every accepted one lies inside the scene with a distinct title.</td></tr><tr><td class="">Endpoint on real PostGIS</td><td class="">9 tests: the partial success above, a real extract of 35 elements from Overpass (all imported, and a repeat creates nothing), what is stored (kind, text, draft status, shape type), an imported annotation read and renamed like any other (starts at version 0), a repeat import creates nothing, a title taken by a hand-made annotation is reported and kept, missing scene, empty and oversized batches, and 6 clients importing the same extract at once.</td></tr><tr><td class="">Can the tests fail?</td><td class="">Removing the database conflict clause made the concurrent test fail with a server error. Removing the repeated-title check inside the batch made 3 tests fail. Both were restored.</td></tr><tr><td class="">Whole suites</td><td class="">189 backend tests (including the architecture rules) and 179 client tests pass. Formatting, lint and the production build are clean. The committed contract matches the running app.</td></tr></tbody></table></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3>
+<p>The two test files differ on purpose. One is a real extract, downloaded from the public Overpass service (20 amenities and 15 buildings in the Eixample; phone, e-mail and website tags removed). It imports completely, so it proves real data is understood but contains nothing the import has to turn away. The skipped-element cases come from the second file, which is written by hand in the same format with made-up ids. So no real data containing relations, open ways or broken shapes has been tried. There is no screen for importing, so nothing here has been seen in a browser. How long a full 5,000-element request takes was not measured.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>Relations (buildings with courtyards, for example) are skipped.</li>
+<li>Renaming an imported annotation frees its old title, so importing the same extract again would create it a second time.</li>
+<li>Updates in OpenStreetMap are not followed. Re-importing never changes what is already there.</li>
+<li>The map must credit "&copy; OpenStreetMap contributors" wherever imported data is shown. The endpoint's description says so, and the screen that offers imports will have to show it.</li>
+<li>A request holds at most 5,000 elements. Larger extracts have to be sent in several requests.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="009-benchmark-dataset.html">Previous: Benchmark with 1M rows</a><a href="014-annotation-update.html" style="text-align:right">Next: Editing annotations</a></nav>
+</main>
+</div>
+</body>
+</html>

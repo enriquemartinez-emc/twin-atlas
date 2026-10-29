@@ -15,7 +15,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 007 | [Map viewer](007-map-viewer.md)                            | `feat/map-viewer`                | Done       |
 | 008 | [Annotation UI and SDK](008-annotation-ui.md)              | `feat/annotation-ui`             | Done       |
 | 009 | [Benchmark dataset](009-benchmark-dataset.md)              | `chore/benchmark-dataset`        | Done       |
-| 010 | [OSM import](010-osm-import.md)                            | `feat/osm-import`                | Proposed   |
+| 010 | [OSM import](010-osm-import.md)                            | `feat/osm-import`                | In progress |
 | 011 | [Security and integrations](011-security-and-integrations.md) | `feat/security-and-integrations` | Proposed   |
 | 012 | [Portfolio polish](012-portfolio-polish.md)                | `docs/portfolio-polish`          | Proposed   |
 | 013 | [E2E tests (run only on approval)](013-e2e-tests.md)       | `test/e2e`                       | Proposed   |
