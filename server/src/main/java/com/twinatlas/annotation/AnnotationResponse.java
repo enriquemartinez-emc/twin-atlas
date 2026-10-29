@@ -11,10 +11,6 @@ public record AnnotationResponse(
     AnnotationKind kind,
     String title,
     String body,
-    @Schema(
-            type = "object",
-            description = "GeoJSON geometry (RFC 7946), WGS 84",
-            example = "{\"type\":\"Point\",\"coordinates\":[2.1744,41.4036]}")
-        Geometry geometry,
+    @Schema(ref = "#/components/schemas/GeoJsonGeometry") Geometry geometry,
     String status,
     Instant createdAt) {}

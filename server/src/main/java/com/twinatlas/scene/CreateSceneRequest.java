@@ -11,8 +11,7 @@ import org.locationtech.jts.geom.Polygon;
 
 public record CreateSceneRequest(
     @NotBlank @Size(max = 120) String name,
-    @NotNull @Schema(type = "object", description = "GeoJSON Polygon (RFC 7946), WGS 84")
-        Polygon extent) {
+    @NotNull @Schema(ref = "#/components/schemas/GeoJsonPolygon") Polygon extent) {
 
   @JsonIgnore
   @Schema(hidden = true)

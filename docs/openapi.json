@@ -1,0 +1,676 @@
+{
+  "openapi" : "3.1.0",
+  "info" : {
+    "description" : "Explore and manage geospatial digital twins and their annotations.",
+    "title" : "Twin Atlas API",
+    "version" : "0.0.1"
+  },
+  "servers" : [ {
+    "url" : "/",
+    "description" : "Same origin as the API"
+  } ],
+  "paths" : {
+    "/api/scenes" : {
+      "get" : {
+        "description" : "The 100 newest scenes, newest first.",
+        "operationId" : "list",
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/SceneResponse"
+                  }
+                }
+              }
+            },
+            "description" : "Scenes"
+          }
+        },
+        "summary" : "List scenes",
+        "tags" : [ "scene-controller" ]
+      },
+      "post" : {
+        "operationId" : "create",
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateSceneRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SceneResponse"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "Request shape is invalid"
+          }
+        },
+        "summary" : "Create a scene",
+        "tags" : [ "scene-controller" ]
+      }
+    },
+    "/api/scenes/{id}" : {
+      "get" : {
+        "operationId" : "get",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/SceneResponse"
+                }
+              }
+            },
+            "description" : "The scene"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "NOT_FOUND"
+          }
+        },
+        "summary" : "Get a scene",
+        "tags" : [ "scene-controller" ]
+      }
+    },
+    "/api/scenes/{sceneId}/annotations" : {
+      "get" : {
+        "description" : "Keyset-paginated, ordered by creation time. With `bbox` only annotations that intersect the view are returned. A west value greater than east crosses the antimeridian.",
+        "operationId" : "list_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "description" : "west,south,east,north in degrees",
+          "in" : "query",
+          "name" : "bbox",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "in" : "query",
+          "name" : "limit",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 50,
+            "maximum" : 200,
+            "minimum" : 1
+          }
+        }, {
+          "description" : "`nextCursor` of the previous page",
+          "in" : "query",
+          "name" : "cursor",
+          "required" : false,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationPage"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED or INVALID_CURSOR"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND"
+          }
+        },
+        "summary" : "List annotations, or the ones visible in a map view",
+        "tags" : [ "annotation-read-endpoints" ]
+      },
+      "post" : {
+        "description" : "Creates a draft marker, note or outline. The ETag is the optimistic-lock version.",
+        "operationId" : "create_1",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/CreateAnnotationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "201" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationResponse"
+                }
+              }
+            },
+            "description" : "Created"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "Request shape is invalid"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "TITLE_ALREADY_USED"
+          },
+          "422" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "INVALID_GEOMETRY or GEOMETRY_OUTSIDE_SCENE_EXTENT"
+          }
+        },
+        "summary" : "Create an annotation in a scene",
+        "tags" : [ "create-annotation-endpoint" ]
+      }
+    },
+    "/api/scenes/{sceneId}/annotations/nearest" : {
+      "get" : {
+        "description" : "Ordered by distance (KNN index scan). `distanceMeters` is geodesic.",
+        "operationId" : "nearest",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "in" : "query",
+          "name" : "longitude",
+          "required" : true,
+          "schema" : {
+            "type" : "number",
+            "format" : "double",
+            "maximum" : 180.0,
+            "minimum" : -180.0
+          }
+        }, {
+          "in" : "query",
+          "name" : "latitude",
+          "required" : true,
+          "schema" : {
+            "type" : "number",
+            "format" : "double",
+            "maximum" : 90.0,
+            "minimum" : -90.0
+          }
+        }, {
+          "in" : "query",
+          "name" : "limit",
+          "required" : false,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 10,
+            "maximum" : 100,
+            "minimum" : 1
+          }
+        }, {
+          "description" : "Only annotations within this radius",
+          "in" : "query",
+          "name" : "maxDistanceMeters",
+          "required" : false,
+          "schema" : {
+            "type" : "number",
+            "format" : "double",
+            "exclusiveMinimum" : 0
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "type" : "array",
+                  "items" : {
+                    "$ref" : "#/components/schemas/NearestAnnotation"
+                  }
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND"
+          }
+        },
+        "summary" : "The N annotations closest to a point",
+        "tags" : [ "annotation-read-endpoints" ]
+      }
+    },
+    "/api/scenes/{sceneId}/annotations/search" : {
+      "post" : {
+        "description" : "POST because the zone is a GeoJSON polygon. Keyset-paginated like the list.",
+        "operationId" : "search",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/SearchRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationPage"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED or INVALID_CURSOR"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND"
+          }
+        },
+        "summary" : "Annotations that intersect a zone",
+        "tags" : [ "annotation-read-endpoints" ]
+      }
+    }
+  },
+  "components" : {
+    "schemas" : {
+      "AnnotationPage" : {
+        "type" : "object",
+        "properties" : {
+          "items" : {
+            "type" : "array",
+            "items" : {
+              "$ref" : "#/components/schemas/AnnotationSummary"
+            }
+          },
+          "nextCursor" : {
+            "type" : [ "string", "null" ],
+            "description" : "Pass as `cursor` to get the next page. Null on the last page."
+          }
+        }
+      },
+      "AnnotationResponse" : {
+        "type" : "object",
+        "properties" : {
+          "body" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "geometry" : {
+            "$ref" : "#/components/schemas/GeoJsonGeometry"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "kind" : {
+            "type" : "string",
+            "enum" : [ "MARKER", "NOTE", "OUTLINE" ]
+          },
+          "sceneId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          }
+        }
+      },
+      "AnnotationSummary" : {
+        "type" : "object",
+        "properties" : {
+          "body" : {
+            "type" : "string"
+          },
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "geometry" : {
+            "$ref" : "#/components/schemas/GeoJsonGeometry"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "kind" : {
+            "type" : "string",
+            "enum" : [ "MARKER", "NOTE", "OUTLINE" ]
+          },
+          "sceneId" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "status" : {
+            "type" : "string"
+          },
+          "title" : {
+            "type" : "string"
+          }
+        }
+      },
+      "CreateAnnotationRequest" : {
+        "type" : "object",
+        "properties" : {
+          "body" : {
+            "type" : "string",
+            "description" : "Required for NOTE, not allowed for the other kinds",
+            "maxLength" : 2000,
+            "minLength" : 0
+          },
+          "geometry" : {
+            "$ref" : "#/components/schemas/GeoJsonGeometry"
+          },
+          "kind" : {
+            "type" : "string",
+            "enum" : [ "MARKER", "NOTE", "OUTLINE" ]
+          },
+          "title" : {
+            "type" : "string",
+            "maxLength" : 120,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "geometry", "kind", "title" ]
+      },
+      "CreateSceneRequest" : {
+        "type" : "object",
+        "properties" : {
+          "extent" : {
+            "$ref" : "#/components/schemas/GeoJsonPolygon"
+          },
+          "name" : {
+            "type" : "string",
+            "maxLength" : 120,
+            "minLength" : 0
+          }
+        },
+        "required" : [ "extent", "name" ]
+      },
+      "GeoJsonGeometry" : {
+        "description" : "A GeoJSON geometry the API accepts: Point or Polygon",
+        "discriminator" : {
+          "mapping" : {
+            "Point" : "#/components/schemas/GeoJsonPoint",
+            "Polygon" : "#/components/schemas/GeoJsonPolygon"
+          },
+          "propertyName" : "type"
+        },
+        "oneOf" : [ {
+          "$ref" : "#/components/schemas/GeoJsonPoint"
+        }, {
+          "$ref" : "#/components/schemas/GeoJsonPolygon"
+        } ]
+      },
+      "GeoJsonPoint" : {
+        "type" : "object",
+        "description" : "A single position",
+        "properties" : {
+          "coordinates" : {
+            "type" : "array",
+            "description" : "[longitude, latitude] or [longitude, latitude, height] in WGS 84",
+            "items" : {
+              "type" : "number"
+            },
+            "maxItems" : 3,
+            "minItems" : 2
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "Point" ]
+          }
+        },
+        "required" : [ "coordinates", "type" ]
+      },
+      "GeoJsonPolygon" : {
+        "type" : "object",
+        "description" : "Linear rings: the first is the outer boundary, closed (first position repeated)",
+        "properties" : {
+          "coordinates" : {
+            "type" : "array",
+            "items" : {
+              "type" : "array",
+              "items" : {
+                "type" : "array",
+                "description" : "[longitude, latitude] or [longitude, latitude, height] in WGS 84",
+                "items" : {
+                  "type" : "number"
+                },
+                "maxItems" : 3,
+                "minItems" : 2
+              }
+            }
+          },
+          "type" : {
+            "type" : "string",
+            "enum" : [ "Polygon" ]
+          }
+        },
+        "required" : [ "coordinates", "type" ]
+      },
+      "NearestAnnotation" : {
+        "type" : "object",
+        "properties" : {
+          "annotation" : {
+            "$ref" : "#/components/schemas/AnnotationSummary"
+          },
+          "distanceMeters" : {
+            "type" : "number",
+            "format" : "double"
+          }
+        }
+      },
+      "ProblemResponse" : {
+        "type" : "object",
+        "properties" : {
+          "code" : {
+            "type" : "string",
+            "description" : "Stable machine-readable error code",
+            "enum" : [ "CONCURRENT_MODIFICATION", "GEOMETRY_OUTSIDE_SCENE_EXTENT", "INTERNAL_ERROR", "INVALID_CURSOR", "INVALID_GEOMETRY", "NOT_FOUND", "REQUEST_INVALID", "SCENE_NOT_FOUND", "TITLE_ALREADY_USED", "VALIDATION_FAILED" ]
+          },
+          "detail" : {
+            "type" : "string"
+          },
+          "instance" : {
+            "type" : "string"
+          },
+          "status" : {
+            "type" : "integer",
+            "format" : "int32"
+          },
+          "title" : {
+            "type" : "string"
+          },
+          "type" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SceneResponse" : {
+        "type" : "object",
+        "properties" : {
+          "createdAt" : {
+            "type" : "string",
+            "format" : "date-time"
+          },
+          "extent" : {
+            "$ref" : "#/components/schemas/GeoJsonPolygon"
+          },
+          "id" : {
+            "type" : "string",
+            "format" : "uuid"
+          },
+          "name" : {
+            "type" : "string"
+          }
+        }
+      },
+      "SearchRequest" : {
+        "type" : "object",
+        "properties" : {
+          "cursor" : {
+            "type" : "string"
+          },
+          "limit" : {
+            "type" : "integer",
+            "format" : "int32",
+            "maximum" : 200,
+            "minimum" : 1
+          },
+          "zone" : {
+            "$ref" : "#/components/schemas/GeoJsonPolygon"
+          }
+        },
+        "required" : [ "zone" ]
+      }
+    }
+  }
+}

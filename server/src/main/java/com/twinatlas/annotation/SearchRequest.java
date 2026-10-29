@@ -11,8 +11,7 @@ import org.locationtech.jts.geom.Polygon;
 
 /** Everything that intersects a zone drawn on the scene. */
 public record SearchRequest(
-    @NotNull @Schema(type = "object", description = "GeoJSON Polygon (RFC 7946), WGS 84")
-        Polygon zone,
+    @NotNull @Schema(ref = "#/components/schemas/GeoJsonPolygon") Polygon zone,
     @Min(1) @Max(AnnotationQueries.MAX_PAGE_SIZE) Integer limit,
     String cursor) {
 

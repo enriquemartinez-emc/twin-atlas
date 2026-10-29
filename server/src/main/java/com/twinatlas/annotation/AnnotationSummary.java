@@ -14,5 +14,4 @@ public record AnnotationSummary(
     String body,
     String status,
     Instant createdAt,
-    @Schema(type = "object", description = "GeoJSON geometry (RFC 7946), WGS 84")
-        JsonNode geometry) {}
+    @Schema(ref = "#/components/schemas/GeoJsonGeometry") JsonNode geometry) {}

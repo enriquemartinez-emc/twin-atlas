@@ -8,5 +8,5 @@ import org.locationtech.jts.geom.Polygon;
 public record SceneResponse(
     UUID id,
     String name,
-    @Schema(type = "object", description = "GeoJSON Polygon (RFC 7946), WGS 84") Polygon extent,
+    @Schema(ref = "#/components/schemas/GeoJsonPolygon") Polygon extent,
     Instant createdAt) {}

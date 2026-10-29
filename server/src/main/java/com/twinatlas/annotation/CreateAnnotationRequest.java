@@ -20,12 +20,7 @@ public record CreateAnnotationRequest(
     @NotBlank @Size(max = 120) String title,
     @Size(max = 2000) @Schema(description = "Required for NOTE, not allowed for the other kinds")
         String body,
-    @NotNull
-        @Schema(
-            type = "object",
-            description = "GeoJSON Point for MARKER and NOTE, Polygon for OUTLINE",
-            example = "{\"type\":\"Point\",\"coordinates\":[2.1744,41.4036]}")
-        Geometry geometry) {
+    @NotNull @Schema(ref = "#/components/schemas/GeoJsonGeometry") Geometry geometry) {
 
   @JsonIgnore
   @Schema(hidden = true)
