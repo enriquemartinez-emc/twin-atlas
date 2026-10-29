@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { MapFeature } from './features';
 import { PALETTE } from './palette';
+import { LABEL_RANGE_METRES } from './descriptors';
 import { MapService } from './map.service';
 
 const cesium = vi.hoisted(() => {
@@ -151,6 +152,12 @@ const cesium = vi.hoisted(() => {
     },
     Color: { fromCssColorString: color, WHITE: color('white'), BLACK: color('black') },
     LabelStyle: { FILL_AND_OUTLINE: 'fill-and-outline' },
+    DistanceDisplayCondition: class {
+      constructor(
+        readonly near: number,
+        readonly far: number,
+      ) {}
+    },
     PolygonHierarchy: class {
       constructor(readonly positions: unknown) {}
     },
@@ -345,6 +352,20 @@ describe('MapService', () => {
       };
       expect(point.color.css).toBe(PALETTE.SELECTED);
       expect(point.heightReference).toBe('ground');
+    });
+
+    it('labels a point only when the camera is near, but always the selected one', async () => {
+      await service.init(container, { ionToken: null, initialView: view });
+      const added = () => viewer().source('annotations').entities.added[0];
+      const labelRange = () =>
+        (added()?.['label'] as { distanceDisplayCondition?: { far: number } })
+          .distanceDisplayCondition?.far;
+
+      service.setFeatures([marker], null);
+      expect(labelRange()).toBe(LABEL_RANGE_METRES);
+
+      service.setFeatures([marker], 'm1');
+      expect(labelRange()).toBeUndefined();
     });
 
     it('clamps to the 3D tiles in photorealistic mode', async () => {

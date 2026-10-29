@@ -1,6 +1,7 @@
 import type { AnnotationSummary } from '@api/index';
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
+import { PALETTE } from '@map/palette';
 import { AnnotationList } from './annotation-list';
 
 const item = (id: string, title: string, kind: AnnotationSummary['kind'], body: string | null) => ({
@@ -38,7 +39,7 @@ describe('AnnotationList', () => {
     fixture.componentRef.setInput('selectedId', 'b');
     fixture.detectChanges();
 
-    const buttons = el().querySelectorAll('button');
+    const buttons = el().querySelectorAll<HTMLButtonElement>('li button');
     expect(buttons).toHaveLength(2);
     const text = (button: Element | undefined, selector: string) =>
       button?.querySelector(selector)?.textContent?.replace(/\s+/g, ' ').trim();
@@ -59,7 +60,7 @@ describe('AnnotationList', () => {
     fixture.componentInstance.selected.subscribe((value) => picked.push(value));
     fixture.detectChanges();
 
-    el().querySelectorAll('button')[1]?.click();
+    el().querySelectorAll<HTMLButtonElement>('li button')[1]?.click();
 
     expect(picked).toEqual([second]);
   });
@@ -69,5 +70,115 @@ describe('AnnotationList', () => {
     fixture.detectChanges();
 
     expect(el().querySelector('[role="status"]')?.textContent).toContain('Zoom in');
+  });
+  describe('explaining itself', () => {
+    const many = [
+      item('a', 'Cracked window', 'MARKER', null),
+      item('b', 'Leak', 'NOTE', 'Water stain'),
+      item('c', 'Inspection area', 'OUTLINE', null),
+      item('d', 'Bar Pep (node/1001)', 'MARKER', null),
+    ];
+    const text = () => el().textContent?.replace(/\s+/g, ' ') ?? '';
+
+    it('says what the list is and how to change it', () => {
+      fixture.detectChanges();
+
+      expect(el().querySelector('h3')?.textContent).toBe('In this view');
+      expect(text()).toContain('Everything added inside the part of the map you are looking at');
+      expect(text()).toContain('Pan or zoom the map to change it');
+    });
+
+    it('shows placeholders while the first load runs, and not the empty message', () => {
+      fixture.componentRef.setInput('loading', true);
+      fixture.detectChanges();
+
+      expect(el().querySelectorAll('[hlmSkeleton]').length).toBeGreaterThan(0);
+      expect(el().querySelector('[role="status"]')?.getAttribute('aria-label')).toBe(
+        'Loading annotations',
+      );
+      expect(text()).not.toContain('Nothing here yet');
+    });
+
+    it('keeps showing the list while a new view loads', () => {
+      fixture.componentRef.setInput('items', many);
+      fixture.componentRef.setInput('loading', true);
+      fixture.detectChanges();
+
+      expect(el().querySelectorAll('li button')).toHaveLength(4);
+      expect(el().querySelectorAll('[hlmSkeleton]')).toHaveLength(0);
+    });
+
+    it('counts what is in view', () => {
+      fixture.componentRef.setInput('items', many);
+      fixture.detectChanges();
+
+      expect(text()).toContain('4 in view');
+    });
+
+    it('filters by kind and counts what is shown out of what is in view', async () => {
+      fixture.componentRef.setInput('items', many);
+      fixture.detectChanges();
+      const filter = (label: string) =>
+        [...el().querySelectorAll<HTMLButtonElement>('[hlmToggleGroup] button')].find(
+          (b) => b.textContent?.trim() === label,
+        );
+
+      filter('Markers')?.click();
+      fixture.detectChanges();
+
+      expect(text()).toContain('2 of 4 in view');
+      expect([...el().querySelectorAll('[hlmItemTitle]')].map((t) => t.textContent)).toEqual([
+        'Cracked window',
+        'Bar Pep (node/1001)',
+      ]);
+
+      filter('All')?.click();
+      fixture.detectChanges();
+      expect(text()).toContain('4 in view');
+    });
+
+    it('says so when the chosen kind has nothing in view', () => {
+      fixture.componentRef.setInput('items', [item('a', 'Cracked window', 'MARKER', null)]);
+      fixture.detectChanges();
+
+      [...el().querySelectorAll<HTMLButtonElement>('[hlmToggleGroup] button')]
+        .find((b) => b.textContent?.trim() === 'Outlines')
+        ?.click();
+      fixture.detectChanges();
+
+      expect(text()).toContain('Nothing of that kind in this view');
+      expect(el().querySelector('ul')).toBeNull();
+    });
+
+    it('gives each kind a dot in the colour the map draws it with', () => {
+      fixture.componentRef.setInput('items', many);
+      fixture.detectChanges();
+
+      const colours = [...el().querySelectorAll<HTMLElement>('.rounded-full')].map(
+        (dot) => dot.style.backgroundColor,
+      );
+
+      const asRgb = (hex: string) => {
+        const probe = document.createElement('span');
+        probe.style.backgroundColor = hex;
+        return probe.style.backgroundColor;
+      };
+      expect(colours).toEqual([
+        asRgb(PALETTE.MARKER),
+        asRgb(PALETTE.NOTE),
+        asRgb(PALETTE.OUTLINE),
+        asRgb(PALETTE.MARKER),
+      ]);
+    });
+
+    it('explains the titles that come from an import, only when there are some', () => {
+      fixture.componentRef.setInput('items', [item('a', 'Cracked window', 'MARKER', null)]);
+      fixture.detectChanges();
+      expect(text()).not.toContain('imported from OpenStreetMap');
+
+      fixture.componentRef.setInput('items', many);
+      fixture.detectChanges();
+      expect(text()).toContain('imported from OpenStreetMap');
+    });
   });
 });

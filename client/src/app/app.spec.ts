@@ -28,4 +28,13 @@ describe('App', () => {
     const compiled = fixture.nativeElement as HTMLElement;
     expect(compiled.querySelector('h1')?.classList.contains('font-semibold')).toBe(true);
   });
+
+  it('shows the app icon next to the title', async () => {
+    const fixture = TestBed.createComponent(App);
+    await fixture.whenStable();
+    const icon = (fixture.nativeElement as HTMLElement).querySelector('header img');
+
+    expect(icon?.getAttribute('src')).toContain('favicon.svg');
+    expect(icon?.getAttribute('alt')).toBe('');
+  });
 });

@@ -92,7 +92,14 @@ export class FeatureLayer {
   }
 
   private entityFor(descriptor: FeatureDescriptor): Entity.ConstructorOptions {
-    const { Cartesian2, Cartesian3, Color, LabelStyle, PolygonHierarchy } = this.cesium;
+    const {
+      Cartesian2,
+      Cartesian3,
+      Color,
+      DistanceDisplayCondition,
+      LabelStyle,
+      PolygonHierarchy,
+    } = this.cesium;
     const color = Color.fromCssColorString(descriptor.color);
     if (descriptor.shape === 'point') {
       return {
@@ -114,6 +121,10 @@ export class FeatureLayer {
           outlineWidth: 3,
           style: LabelStyle.FILL_AND_OUTLINE,
           pixelOffset: new Cartesian2(0, -20),
+          distanceDisplayCondition:
+            descriptor.labelRange === null
+              ? undefined
+              : new DistanceDisplayCondition(0, descriptor.labelRange),
           heightReference: this.pointHeight(),
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
         },

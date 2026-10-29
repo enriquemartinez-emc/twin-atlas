@@ -1,10 +1,19 @@
 import type { LonLat, MapFeature } from './features';
 import { PALETTE } from './palette';
 
+/**
+ * How near the camera must be, in metres, for a point's label to be drawn. Farther away the labels
+ * of a crowded view pile on top of each other. A first guess, to be tuned by eye. The selected
+ * annotation is always labelled.
+ */
+export const LABEL_RANGE_METRES = 1500;
+
 export interface PointDescriptor {
   readonly shape: 'point';
   readonly id: string;
   readonly label: string;
+  /** The label shows only within this many metres of the camera, or always when null. */
+  readonly labelRange: number | null;
   readonly longitude: number;
   readonly latitude: number;
   readonly color: string;
@@ -41,7 +50,16 @@ export function describeFeature(
   if (geometry.type === 'Point') {
     const [longitude, latitude] = geometry.coordinates;
     if (longitude === undefined || latitude === undefined) return null;
-    return { shape: 'point', id: feature.id, label: feature.label, longitude, latitude, color };
+    const labelRange = feature.id === selectedId ? null : LABEL_RANGE_METRES;
+    return {
+      shape: 'point',
+      id: feature.id,
+      label: feature.label,
+      labelRange,
+      longitude,
+      latitude,
+      color,
+    };
   }
   const ring = geometry.coordinates[0];
   if (!ring) return null;

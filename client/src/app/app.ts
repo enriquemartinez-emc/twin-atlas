@@ -1,13 +1,15 @@
+import { NgOptimizedImage } from '@angular/common';
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HlmTypographyImports } from '@shared/ui/typography';
 
 @Component({
-  imports: [RouterOutlet, HlmTypographyImports],
+  imports: [NgOptimizedImage, RouterOutlet, HlmTypographyImports],
   selector: 'app-root',
   template: `
     <div class="shell">
       <header>
+        <img ngSrc="favicon.svg" width="22" height="22" alt="" />
         <h1 hlmLarge>{{ title() }}</h1>
       </header>
       <main>
@@ -27,6 +29,7 @@ import { HlmTypographyImports } from '@shared/ui/typography';
     header {
       display: flex;
       align-items: center;
+      gap: 0.5rem;
       padding: 0.5rem 1rem;
       border-bottom: 1px solid var(--border);
     }

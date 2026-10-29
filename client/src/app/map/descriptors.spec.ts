@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describeDraft, describeFeature, ringToDegrees } from './descriptors';
+import { LABEL_RANGE_METRES, describeDraft, describeFeature, ringToDegrees } from './descriptors';
 import type { MapFeature } from './features';
 import { PALETTE } from './palette';
 
@@ -47,10 +47,17 @@ describe('describeFeature', () => {
       shape: 'point',
       id: 'a',
       label: 'Cracked window',
+      labelRange: LABEL_RANGE_METRES,
       longitude: 2.175,
       latitude: 41.405,
       color: PALETTE.MARKER,
     });
+  });
+
+  it('labels a point only when the camera is near, and always for the selected one', () => {
+    expect(describeFeature(marker, null)).toMatchObject({ labelRange: LABEL_RANGE_METRES });
+    expect(describeFeature(marker, 'other')).toMatchObject({ labelRange: LABEL_RANGE_METRES });
+    expect(describeFeature(marker, 'a')).toMatchObject({ labelRange: null });
   });
 
   it('uses the note colour for notes and the selection colour for the selected feature', () => {

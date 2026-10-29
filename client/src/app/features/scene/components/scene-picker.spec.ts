@@ -115,4 +115,27 @@ describe('ScenePicker', () => {
     expect(el().querySelector<HTMLButtonElement>('button[type="submit"]')?.disabled).toBe(true);
     expect(el().textContent).toContain('date line');
   });
+  describe('the new scene form', () => {
+    const trigger = () =>
+      [...el().querySelectorAll<HTMLButtonElement>('button')].find(
+        (b) => b.textContent?.trim() === 'New scene',
+      );
+
+    it('is open while there is nothing to pick yet', async () => {
+      await flush();
+
+      expect(trigger()?.getAttribute('aria-expanded')).toBe('true');
+    });
+
+    it('is tucked away once there are scenes, and can be opened', async () => {
+      fixture.componentRef.setInput('scenes', [scene('a', 'Plaza')]);
+      await flush();
+      expect(trigger()?.getAttribute('aria-expanded')).toBe('false');
+
+      trigger()?.click();
+      await flush();
+
+      expect(trigger()?.getAttribute('aria-expanded')).toBe('true');
+    });
+  });
 });

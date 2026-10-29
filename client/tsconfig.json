@@ -34,7 +34,10 @@
       "@shared/ui/toggle": ["./src/app/shared/ui/toggle/src/index.ts"],
       "@shared/ui/item": ["./src/app/shared/ui/item/src/index.ts"],
       "@shared/ui/field": ["./src/app/shared/ui/field/src/index.ts"],
-      "@shared/ui/typography": ["./src/app/shared/ui/typography/src/index.ts"]
+      "@shared/ui/typography": ["./src/app/shared/ui/typography/src/index.ts"],
+      "@shared/ui/collapsible": ["./src/app/shared/ui/collapsible/src/index.ts"],
+      "@shared/ui/skeleton": ["./src/app/shared/ui/skeleton/src/index.ts"],
+      "@shared/ui/empty": ["./src/app/shared/ui/empty/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

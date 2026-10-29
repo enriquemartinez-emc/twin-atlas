@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common';
+import { DOCUMENT, DecimalPipe } from '@angular/common';
 import {
   afterNextRender,
   Component,
@@ -52,6 +52,12 @@ const TOOLS: readonly { readonly tool: Tool; readonly label: string }[] = [
   { tool: 'OUTLINE', label: 'Outline' },
 ];
 
+const LINK_LABELS = {
+  idle: 'Copy link',
+  copied: 'Link copied',
+  failed: 'Could not copy',
+} as const;
+
 /** How close to fly when the user picks an annotation from the list, in metres. */
 const FOCUS_HEIGHT = 250;
 
@@ -74,8 +80,29 @@ const FOCUS_HEIGHT = 250;
   template: `
     <div #viewport class="viewport"></div>
 
-    <aside hlmCard class="panel" aria-label="Scene tools">
+    <button
+      hlmBtn
+      class="show-panel"
+      variant="outline"
+      size="sm"
+      type="button"
+      [hidden]="panelOpen()"
+      (click)="panelOpen.set(true)"
+    >
+      Show panel
+    </button>
+
+    <aside hlmCard class="panel" aria-label="Scene tools" [hidden]="!panelOpen()">
       <div hlmCardContent class="stack">
+        <div class="toolbar">
+          <button hlmBtn variant="ghost" size="sm" type="button" (click)="copyLink()">
+            {{ linkLabel() }}
+          </button>
+          <button hlmBtn variant="ghost" size="sm" type="button" (click)="panelOpen.set(false)">
+            Hide panel
+          </button>
+        </div>
+
         @if (loadError(); as error) {
           <app-problem-alert>{{ error }}</app-problem-alert>
         }
@@ -140,6 +167,7 @@ const FOCUS_HEIGHT = 250;
               [items]="data.items()"
               [selectedId]="selectedAnnotationId()"
               [truncated]="data.truncated()"
+              [loading]="data.loading()"
               (selected)="focus($event)"
             />
 
@@ -158,6 +186,9 @@ const FOCUS_HEIGHT = 250;
         <details open>
           <summary>Map</summary>
           <div class="stack">
+            @if (!map() && !loadError()) {
+              <p hlmMuted role="status">Loading the 3D viewer…</p>
+            }
             @if (map(); as map) {
               <dl>
                 <dt>Source</dt>
@@ -211,6 +242,34 @@ const FOCUS_HEIGHT = 250;
       backdrop-filter: blur(8px);
     }
 
+    .panel[hidden],
+    .show-panel[hidden] {
+      display: none;
+    }
+
+    .show-panel {
+      position: absolute;
+      inset-block-start: 0.75rem;
+      inset-inline-start: 0.75rem;
+      z-index: 10;
+    }
+
+    .toolbar {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* On a phone the panel sits at the bottom, so the map stays visible above it. */
+    @media (max-width: 40rem) {
+      .panel {
+        inset-block: auto 0.5rem;
+        inset-inline: 0.5rem;
+        width: auto;
+        max-width: none;
+        max-height: 55dvh;
+      }
+    }
+
     .stack {
       display: flex;
       flex-direction: column;
@@ -248,6 +307,7 @@ export class Scene {
   readonly annotation = input<string>();
 
   private readonly router = inject(Router);
+  private readonly document = inject(DOCUMENT);
   private readonly ionTokenStore = inject(IonTokenStore);
   private readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
   private destroyed = false;
@@ -269,6 +329,11 @@ export class Scene {
     this.view,
     this.selectedAnnotationId,
   );
+
+  protected readonly panelOpen = signal(true);
+  protected readonly linkState = signal<'idle' | 'copied' | 'failed'>('idle');
+  protected readonly linkLabel = computed(() => LINK_LABELS[this.linkState()]);
+  private linkTimer: ReturnType<typeof setTimeout> | undefined;
 
   protected readonly tool = signal<Tool>('select');
   /** Cleared when the tool changes, and when another annotation is chosen in select mode. */
@@ -330,6 +395,7 @@ export class Scene {
     afterNextRender(() => void this.start());
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true;
+      clearTimeout(this.linkTimer);
       this.map()?.destroy();
     });
 
@@ -456,6 +522,18 @@ export class Scene {
   protected chooseScene(id: string): void {
     this.scenes.remember(id);
     void this.router.navigate(['/scenes', id]);
+  }
+
+  /** Copies the address, which carries the scene and the annotation, and says whether it worked. */
+  protected async copyLink(): Promise<void> {
+    try {
+      await navigator.clipboard.writeText(this.document.location.href);
+      this.linkState.set('copied');
+    } catch {
+      this.linkState.set('failed');
+    }
+    clearTimeout(this.linkTimer);
+    this.linkTimer = setTimeout(() => this.linkState.set('idle'), 2500);
   }
 
   protected resetView(): void {

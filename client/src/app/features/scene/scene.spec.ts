@@ -388,6 +388,79 @@ describe('Scene', () => {
     expect(map.destroy).toHaveBeenCalledOnce();
   });
 
+  describe('the panel', () => {
+    const labelled = (text: string) =>
+      [...el().querySelectorAll<HTMLButtonElement>('button')].find(
+        (b) => b.textContent?.trim() === text,
+      );
+    const stubClipboard = (writeText: () => Promise<void>) =>
+      Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+
+    it('says the 3D viewer is loading until it is up', async () => {
+      fixture = TestBed.createComponent(Scene);
+      fixture.detectChanges();
+      expect(el().textContent).toContain('Loading the 3D viewer');
+
+      await settle();
+
+      expect(el().textContent).not.toContain('Loading the 3D viewer');
+    });
+
+    it('copies the address, which carries the scene and the annotation, and says so', async () => {
+      const writeText = vi.fn(() => Promise.resolve());
+      stubClipboard(writeText);
+      await open();
+
+      labelled('Copy link')?.click();
+      await settle();
+
+      expect(writeText).toHaveBeenCalledWith(window.location.href);
+      expect(labelled('Link copied')).toBeDefined();
+    });
+
+    it('says plainly when the address could not be copied', async () => {
+      stubClipboard(() => Promise.reject(new Error('denied')));
+      await open();
+
+      labelled('Copy link')?.click();
+      await settle();
+
+      expect(labelled('Could not copy')).toBeDefined();
+    });
+
+    it('can be hidden, and shown again with a button that stays on the map', async () => {
+      await open();
+      const panel = () => el().querySelector<HTMLElement>('aside');
+      const showButton = () => el().querySelector<HTMLButtonElement>('.show-panel');
+      expect(panel()?.hidden).toBe(false);
+      expect(showButton()?.hidden).toBe(true);
+
+      labelled('Hide panel')?.click();
+      await settle();
+      expect(panel()?.hidden).toBe(true);
+      expect(showButton()?.hidden).toBe(false);
+
+      showButton()?.click();
+      await settle();
+      expect(panel()?.hidden).toBe(false);
+      expect(showButton()?.hidden).toBe(true);
+    });
+
+    it('keeps what was typed when the panel is hidden and shown again', async () => {
+      await open();
+      button('Marker').click();
+      await settle();
+      await type('#annotation-title', 'Loose tile');
+
+      labelled('Hide panel')?.click();
+      await settle();
+      el().querySelector<HTMLButtonElement>('.show-panel')?.click();
+      await settle();
+
+      expect(el().querySelector<HTMLInputElement>('#annotation-title')?.value).toBe('Loose tile');
+    });
+  });
+
   describe('routing', () => {
     const annotationRequest = (id: string) => (r: { method: string; url: string }) =>
       r.method === 'GET' && r.url.endsWith(`/api/scenes/s1/annotations/${id}`);

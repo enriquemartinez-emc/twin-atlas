@@ -1,8 +1,9 @@
-import { Component, input, output, signal } from '@angular/core';
+import { Component, input, linkedSignal, output, signal } from '@angular/core';
 import { FormField, form, maxLength, required, submit } from '@angular/forms/signals';
 import type { SceneResponse } from '@api/index';
 import { notBlank } from '@shared/forms/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
+import { HlmCollapsibleImports } from '@shared/ui/collapsible';
 import { HlmInputImports } from '@shared/ui/input';
 import { ProblemAlert } from '@shared/components/problem-alert';
 import { HlmFieldImports } from '@shared/ui/field';
@@ -14,6 +15,7 @@ import { HlmTypographyImports } from '@shared/ui/typography';
     FormField,
     ProblemAlert,
     HlmButtonImports,
+    HlmCollapsibleImports,
     HlmFieldImports,
     HlmInputImports,
     HlmTypographyImports,
@@ -42,27 +44,34 @@ import { HlmTypographyImports } from '@shared/ui/typography';
         }
       </div>
 
-      <form hlmFieldGroup novalidate (submit)="onSubmit($event)">
-        <div hlmField>
-          <label hlmFieldLabel for="scene-name">New scene covering the current view</label>
-          <input hlmInput id="scene-name" autocomplete="off" [formField]="sceneForm.name" />
-          @if (sceneForm.name().touched() && sceneForm.name().invalid()) {
-            <hlm-field-error>{{ sceneForm.name().errors()[0]?.message }}</hlm-field-error>
-          }
-        </div>
-        @if (problem(); as message) {
-          <app-problem-alert>{{ message }}</app-problem-alert>
-        }
-        <button
-          hlmBtn
-          variant="outline"
-          size="sm"
-          type="submit"
-          [disabled]="busy() || !canCreate()"
-        >
-          {{ busy() ? 'Creating…' : 'Create scene from this view' }}
+      <div hlmCollapsible [(expanded)]="newSceneOpen">
+        <button hlmBtn hlmCollapsibleTrigger variant="ghost" size="sm" type="button">
+          New scene
         </button>
-      </form>
+        <hlm-collapsible-content>
+          <form hlmFieldGroup novalidate (submit)="onSubmit($event)">
+            <div hlmField>
+              <label hlmFieldLabel for="scene-name">New scene covering the current view</label>
+              <input hlmInput id="scene-name" autocomplete="off" [formField]="sceneForm.name" />
+              @if (sceneForm.name().touched() && sceneForm.name().invalid()) {
+                <hlm-field-error>{{ sceneForm.name().errors()[0]?.message }}</hlm-field-error>
+              }
+            </div>
+            @if (problem(); as message) {
+              <app-problem-alert>{{ message }}</app-problem-alert>
+            }
+            <button
+              hlmBtn
+              variant="outline"
+              size="sm"
+              type="submit"
+              [disabled]="busy() || !canCreate()"
+            >
+              {{ busy() ? 'Creating…' : 'Create scene from this view' }}
+            </button>
+          </form>
+        </hlm-collapsible-content>
+      </div>
     </section>
   `,
 })
@@ -75,6 +84,9 @@ export class ScenePicker {
   readonly problem = input<string | null>(null);
 
   readonly choose = output<string>();
+
+  /** Open while there is nothing to pick yet, closed once there is. The user can still toggle it. */
+  protected readonly newSceneOpen = linkedSignal(() => this.scenes().length === 0);
   readonly create = output<string>();
 
   private readonly model = signal({ name: '' });
