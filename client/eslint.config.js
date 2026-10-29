@@ -67,12 +67,16 @@ module.exports = defineConfig([
   },
   {
     // Helm components are copied in by the Spartan CLI and keep upstream conventions: `hlm`
-    // selector prefix and non-null assertions in its utilities. Everything else still applies.
+    // selector prefix, aliased inputs that mirror the Brain directives, `type` aliases and
+    // non-null assertions in its utilities. Everything else still applies.
     files: ['src/app/shared/ui/**/*.ts'],
     rules: {
       '@angular-eslint/directive-selector': 'off',
       '@angular-eslint/component-selector': 'off',
       '@typescript-eslint/no-non-null-assertion': 'off',
+      '@angular-eslint/no-input-rename': 'off',
+      '@typescript-eslint/consistent-type-definitions': 'off',
+      '@typescript-eslint/consistent-type-imports': 'off',
     },
   },
   {
