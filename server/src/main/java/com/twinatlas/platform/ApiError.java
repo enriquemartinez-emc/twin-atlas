@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ApiError {
   VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Request validation failed"),
   REQUEST_INVALID(HttpStatus.BAD_REQUEST, "Request is invalid"),
+  NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not found"),
   CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "The resource was modified concurrently"),
   INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "Unexpected server error");
 

@@ -1,6 +1,9 @@
 package com.twinatlas.platform;
 
+import com.twinatlas.platform.core.Rejection;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.http.ResponseEntity;
 
 /** Builds RFC 7807 problems. The {@code code} property is the stable, machine-readable error. */
 public final class Problems {
@@ -14,5 +17,38 @@ public final class Problems {
     problem.setTitle(error.title());
     problem.setProperty(CODE, error.name());
     return problem;
+  }
+
+  /**
+   * The single exhaustive mapping from a domain rejection to a problem. A new code must be mapped
+   * here.
+   */
+  public static ResponseEntity<ProblemDetail> from(Rejection rejection) {
+    HttpStatus status =
+        switch (rejection) {
+          case SCENE_NOT_FOUND -> HttpStatus.NOT_FOUND;
+          case INVALID_GEOMETRY, GEOMETRY_OUTSIDE_SCENE_EXTENT -> HttpStatus.UNPROCESSABLE_ENTITY;
+          case TITLE_ALREADY_USED -> HttpStatus.CONFLICT;
+        };
+    String title =
+        switch (rejection) {
+          case SCENE_NOT_FOUND -> "Scene not found";
+          case INVALID_GEOMETRY -> "Invalid geometry";
+          case GEOMETRY_OUTSIDE_SCENE_EXTENT -> "Geometry outside the scene";
+          case TITLE_ALREADY_USED -> "Title already used";
+        };
+    String detail =
+        switch (rejection) {
+          case SCENE_NOT_FOUND -> "The scene does not exist.";
+          case INVALID_GEOMETRY ->
+              "The geometry is empty, self-intersecting or outside the WGS 84 world.";
+          case GEOMETRY_OUTSIDE_SCENE_EXTENT ->
+              "The geometry is not fully inside the scene extent.";
+          case TITLE_ALREADY_USED -> "Another annotation in this scene already uses this title.";
+        };
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
+    problem.setTitle(title);
+    problem.setProperty(CODE, rejection.name());
+    return ResponseEntity.status(status).body(problem);
   }
 }
