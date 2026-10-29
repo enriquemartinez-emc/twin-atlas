@@ -13,3 +13,4 @@ Short records of decisions that are costly to reverse. Format: context, decision
 | 0007 | [Keyset pagination with opaque cursors](0007-keyset-pagination.md) | Accepted |
 | 0008 | [Contract-first SDK from a committed OpenAPI spec](0008-contract-first-sdk.md) | Accepted |
 | 0009 | [Benchmark: 1.2 million annotations on a laptop](0009-benchmark-one-million-rows.md) | Accepted |
+| 0010 | [The version check is a pure rule](0010-version-check-is-a-rule.md) | Accepted |

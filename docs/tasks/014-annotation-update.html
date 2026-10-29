@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Editing annotations - Twin Atlas docs</title>
+<meta name="description" content="Editing annotations with a version check.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Editing annotations</h1>
+<div class="tags"><span class="tag c-white">Task 014</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/annotation-update</code></span></div>
+<p class="lead">Annotations can now be renamed, given new text and moved, and an edit can never silently overwrite a newer change someone else made.</p>
+</header><div class="col">
+<aside class="callout c-mint"><h3>Try it</h3><p>With the server running, read an annotation and look at its ETag, then change it with that ETag, then try again with the old one:</p>
+<pre><code>curl -i localhost:8080/api/scenes/SCENE_ID/annotations/ANNOTATION_ID
+# ... ETag: "0"
+
+curl -i -X PATCH localhost:8080/api/scenes/SCENE_ID/annotations/ANNOTATION_ID \
+  -H 'Content-Type: application/json' -H 'If-Match: "0"' -d '&#123;"title":"Loose tile"&#125;'
+# 200, and ETag: "1"
+
+# the same request again still says "0", which is now stale:
+# 412 with code STALE_VERSION, and nothing is written</code></pre>
+<p>In the app, click an annotation in the list (or on the map in Select mode): an editor opens. Pins have a <strong>Move on map</strong> button, and the next click on the map is the new position.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>Read one annotation.</strong> <code>GET .../annotations/{id}</code> returns it with its ETag, the version number in quotes (see the <a href="../glossary.html#etag">glossary</a>).</li>
+<li><strong>Change one.</strong> <code>PATCH</code> takes only the fields that change (title, text, geometry) and an <code>If-Match</code> header with the version the caller read. Its kind never changes.</li>
+<li><strong>Pure rules for the update.</strong> A second use case in the functional core, in a fixed order (table below). The version check is one of them: "has this changed since you read it?" is a decision about data, so it is a plain function with a stable code, not a detail of the web layer.</li>
+<li><strong>Small, total transforms:</strong> <code>rename</code>, <code>moveTo</code> and <code>retext</code>, which keep the annotation's lifecycle state. A <code>Change</code> type (keep or replace) says what the caller wants, instead of nullable fields.</li>
+<li><strong>The stored record becomes a domain value.</strong> The conversion from database record to domain object was left out of task 005 because nothing needed it. Updating is the first thing that does.</li>
+<li><strong>One transaction.</strong> The endpoint loads the record, changes that same record, and saves, instead of rebuilding a detached one.</li>
+<li><strong>On screen:</strong> an editor for the selected annotation, "Move on map", and a "Load latest version" button that appears when someone else got there first.</li>
+</ul>
+<h2>The rules, in order</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="num">Order</th><th class="">Rule</th><th class="">Code</th><th class="num">HTTP</th></tr></thead><tbody><tr><td class="num">1</td><td class="">The scene exists</td><td class=""><code>SCENE_NOT_FOUND</code></td><td class="num">404</td></tr><tr><td class="num">2</td><td class="">The annotation exists in that scene</td><td class=""><code>ANNOTATION_NOT_FOUND</code></td><td class="num">404</td></tr><tr><td class="num">3</td><td class="">The version the caller read is still the current one</td><td class=""><code>STALE_VERSION</code></td><td class="num">412</td></tr><tr><td class="num">4</td><td class="">Text is only sent for a note</td><td class=""><code>TEXT_ONLY_FOR_NOTES</code></td><td class="num">422</td></tr><tr><td class="num">5</td><td class="">A new shape matches the kind: pins take a point, outlines a polygon</td><td class=""><code>GEOMETRY_KIND_MISMATCH</code></td><td class="num">422</td></tr><tr><td class="num">6</td><td class="">A new shape is valid and inside the world</td><td class=""><code>INVALID_GEOMETRY</code></td><td class="num">422</td></tr><tr><td class="num">7</td><td class="">A new shape is entirely inside the scene</td><td class=""><code>GEOMETRY_OUTSIDE_SCENE_EXTENT</code></td><td class="num">422</td></tr><tr><td class="num">8</td><td class="">A new title is not used by a different annotation</td><td class=""><code>TITLE_ALREADY_USED</code></td><td class="num">409</td></tr><tr><td class="num">-</td><td class="">No <code>If-Match</code> header at all</td><td class=""><code>PRECONDITION_REQUIRED</code></td><td class="num">428</td></tr><tr><td class="num">-</td><td class="">Two requests really overlap and the database version column catches the second</td><td class=""><code>CONCURRENT_MODIFICATION</code></td><td class="num">409</td></tr></tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 470" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">Two clients editing the same annotation</title><desc id="d">Client A saves first. Client B then saves with the old version and is refused, loads the latest version and saves again.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="50" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="120.0" y="35.0">Client A</text><path class="dim" d="M120,50 L120,460"/><rect class="c-sky" x="380" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="450.0" y="35.0">Client B</text><path class="dim" d="M450,50 L450,460"/><rect class="c-butter" x="710" y="10" width="140" height="40" rx="10"/><text class="t-title t-center" x="780.0" y="35.0">Server</text><path class="dim" d="M780,50 L780,460"/><path class="arrow" d="M120,90 L780,90" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="450.0" y="83">read: GET</text><path class="arrow" d="M780,120 L120,120" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="450.0" y="113">ETag &quot;1&quot;</text><path class="arrow" d="M450,160 L780,160" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="153">read: GET</text><path class="arrow" d="M780,190 L450,190" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="183">ETag &quot;1&quot;</text><path class="arrow" d="M120,240 L780,240" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="450.0" y="233">PATCH, If-Match &quot;1&quot;</text><path class="arrow" d="M780,270 L120,270" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="450.0" y="263">200 OK, new ETag &quot;2&quot;</text><path class="arrow" d="M450,320 L780,320" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="313">PATCH, If-Match &quot;1&quot;</text><path class="arrow-bad" d="M780,350 L450,350" marker-end="url(#ah-bad)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="343">412 STALE_VERSION: nothing written</text><path class="arrow" d="M450,390 L780,390" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="383">Load latest version: GET</text><path class="arrow" d="M780,415 L450,415" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="408">ETag &quot;2&quot;</text><path class="arrow" d="M450,445 L780,445" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="615.0" y="438">PATCH, If-Match &quot;2&quot;  (then 200, ETag &quot;3&quot;)</text></svg></div><figcaption>The stale-version story. Client B read version 1, but A saved first. B is refused instead of overwriting A, loads the latest version, and saves again.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Three guards, each for a different case</h2>
+<p>The pure rule handles the normal case. The database still has the last word when two requests truly race, as it did for creating annotations (<a href="../adr/0003-fcis-decision-functions.md">ADR 0003</a>).</p>
+</div>
+<div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Who catches it</th><th class="">When</th><th class="">Answer</th></tr></thead><tbody><tr><td class="">A pure rule</td><td class="">The caller's version is older or newer than the stored one, which is the normal case</td><td class="">412 <code>STALE_VERSION</code></td></tr><tr><td class="">The database version column</td><td class="">Two requests read the same version and save at the very same moment</td><td class="">409 <code>CONCURRENT_MODIFICATION</code></td></tr><tr><td class="">The unique title index</td><td class="">Two annotations are renamed to the same title at the same moment</td><td class="">409 <code>TITLE_ALREADY_USED</code></td></tr></tbody></table></div></div>
+<div class="col">
+<h2>Why it works this way</h2>
+<p>The decision to make the version check a rule, rather than an <code>if</code> in the controller, is written up in <a href="../adr/0010-version-check-is-a-rule.md">ADR 0010</a>.</p>
+<h2>Found on the way</h2>
+<ul>
+<li><strong>A title of only spaces slipped through.</strong> Signal Forms' <code>required</code> accepts it, so the screen would have sent a blank title and shown a server error. Tests caught it, and one shared "not blank" rule now guards the edit form, the create form and the scene name.</li>
+<li><strong>The typed message map did its job.</strong> After the contract grew five error codes, the client refused to compile until each had a readable sentence.</li>
+</ul>
+<h2>How it was checked</h2>
+<div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Rules and transforms</td><td class="">Table-driven cases for every rule and for which rule wins; each lifecycle state keeps its state; random-input properties (any other version is stale, the stored version never is, a move inside the scene is accepted and outside is rejected).</td></tr><tr><td class="">Endpoints on real PostGIS</td><td class="">Read one, rename, move a pin, retext a note, move an outline, the weak form of the ETag, 428, 400, 412 with nothing written, each rejection, and request validation.</td></tr><tr><td class="">Races</td><td class="">8 clients from the same version: exactly one wins. Two annotations renamed to the same title at once: one owner. A stale "title is free" fact is still stopped by the unique index and the rename is rolled back.</td></tr><tr><td class="">Can the tests fail?</td><td class="">Skipping the version rule made 3 rule tests and the endpoint test fail. Making the title check forget to exclude the annotation itself made the "change the case of my own title" test fail. On the client, a "Load latest version" that no longer re-reads made its test fail. All were restored.</td></tr><tr><td class="">Whole suites</td><td class="">159 backend tests and 176 client tests pass, with formatting, lint and the production build clean (zero warnings).</td></tr><tr><td class="">Contract and SDK</td><td class="">The committed contract matches the running app; regenerating the client leaves no diff.</td></tr></tbody></table></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The edit screen has not been run in a real browser. The page tests use a fake map and a fake HTTP layer, so they prove the flow and the requests, not how it looks or feels. A browser run needs your approval.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>Outlines can be renamed on screen but their corners cannot be moved yet. The API already accepts a new polygon.</li>
+<li>An update cannot clear a note's text, and <code>If-Match: *</code> is not supported.</li>
+<li>Nothing stops editing an archived annotation, because only drafts exist so far and no lifecycle rule has been needed.</li>
+<li>Delete and publish are not built.</li>
+</ul>
+</div></div>
+<nav class="pager" aria-label="Pages"><a href="009-benchmark-dataset.html">Previous: Benchmark with 1M rows</a><a href="015-html-docs.html" style="text-align:right">Next: This documentation</a></nav>
+</main>
+</div>
+</body>
+</html>

@@ -29,7 +29,7 @@ HTTP ──▶ endpoint (shell) ────────────────
                             DB constraint violation → same Rejection ─────┘
 ```
 
-A core decision is advisory under concurrency. The unique index on `(scene_id, lower(title))` is the final enforcer, and `PersistenceConflicts` turns its violation into `TITLE_ALREADY_USED`. See [ADR 0003](docs/adr/0003-fcis-decision-functions.md) and [ADR 0004](docs/adr/0004-entity-mapping-at-the-shell-boundary.md).
+Updates add a version check: the ETag is the version, an update sends it as `If-Match`, and a stale one is a pure rule (`STALE_VERSION`, 412) with the database version column as the last guard ([ADR 0010](docs/adr/0010-version-check-is-a-rule.md)). A core decision is advisory under concurrency. The unique index on `(scene_id, lower(title))` is the final enforcer, and `PersistenceConflicts` turns its violation into `TITLE_ALREADY_USED`. See [ADR 0003](docs/adr/0003-fcis-decision-functions.md) and [ADR 0004](docs/adr/0004-entity-mapping-at-the-shell-boundary.md).
 
 ## Reads: straight to SQL
 

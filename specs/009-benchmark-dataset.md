@@ -1,6 +1,6 @@
 # 009 — Benchmark dataset
 
-**Status:** In progress | **Branch:** `chore/benchmark-dataset`
+**Status:** Done | **Branch:** `chore/benchmark-dataset`
 
 ## Description
 

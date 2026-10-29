@@ -24,12 +24,12 @@
 <li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
 <li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
 <li><a href="../tasks/008-annotation-ui.html" aria-current="page"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
-<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
 <li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></span></li>
 <li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
 <li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></span></li>
 <li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
-<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
 <li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
 </ul></details></nav>
 <main>
@@ -78,7 +78,7 @@ services it calls
 <div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The photorealistic tiles with a real token (see <a href="007-map-viewer.html">the map viewer</a>). Also, the annotation rendering was only seen on the OpenStreetMap globe.</p></div>
 <h2>Known limits</h2>
 <ul>
-<li><strong>No editing yet.</strong> Annotations can be created and viewed. Editing needs an update endpoint and the ETag check (task 014). The server already sends an ETag on creation, and the <a href="../glossary.html#etag">glossary</a> explains what it will be used for.</li>
+<li><strong>No editing in this task.</strong> Annotations can be created and viewed here. Editing came next, with the ETag check (<a href="014-annotation-update.html">task 014</a>; the <a href="../glossary.html#etag">glossary</a> explains the ETag).</li>
 <li>One page of up to 200 annotations is shown per view. If more are in view, the list says to zoom in.</li>
 <li>The generated client contains two <code>any</code> types in its runtime. They are generated, so they are not edited, and the folder is excluded from the lint rule.</li>
 </ul>
