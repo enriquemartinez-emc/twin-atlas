@@ -6,11 +6,11 @@ import { lucideLink, lucidePlus, lucideSettings } from '@ng-icons/lucide';
 import type { MapMode } from '@map/public-api';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmDialogImports } from '@shared/ui/dialog';
-import { HlmNativeSelectImports } from '@shared/ui/native-select';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
 import { HlmTypographyImports } from '@shared/ui/typography';
 import { IonTokenPanel } from './ion-token-panel';
 import { NewSceneForm } from './new-scene-form';
+import { SceneSelect } from './scene-select';
 
 type DialogState = 'open' | 'closed';
 
@@ -22,11 +22,11 @@ type DialogState = 'open' | 'closed';
     NgOptimizedImage,
     HlmButtonImports,
     HlmDialogImports,
-    HlmNativeSelectImports,
     HlmTooltipImports,
     HlmTypographyImports,
     IonTokenPanel,
     NewSceneForm,
+    SceneSelect,
   ],
   providers: [provideIcons({ lucideLink, lucidePlus, lucideSettings })],
   template: `
@@ -36,22 +36,11 @@ type DialogState = 'open' | 'closed';
 
       <div class="scene">
         @if (scenes().length > 0) {
-          <label class="sr-only" for="scene-select">Scene</label>
-          <hlm-native-select
-            selectId="scene-select"
-            [value]="selectedId() ?? ''"
-            (valueChange)="choose.emit($event ?? '')"
-          >
-            @for (scene of scenes(); track scene.id) {
-              <option
-                hlmNativeSelectOption
-                [value]="scene.id"
-                [selected]="scene.id === selectedId()"
-              >
-                {{ scene.name }}
-              </option>
-            }
-          </hlm-native-select>
+          <app-scene-select
+            [scenes]="scenes()"
+            [selectedId]="selectedId()"
+            (choose)="choose.emit($event)"
+          />
         } @else {
           <span hlmMuted>No scenes yet. Fly to a place, then create one.</span>
         }

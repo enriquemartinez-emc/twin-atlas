@@ -244,8 +244,7 @@ const FOCUS_HEIGHT = 250;
       padding: 0.375rem 0.875rem;
       border: 1px solid var(--border);
       border-radius: 999px;
-      background: color-mix(in oklab, var(--card) 80%, transparent);
-      backdrop-filter: blur(14px) saturate(1.2);
+      background: var(--card);
       font-size: 0.875rem;
     }
 
@@ -258,8 +257,7 @@ const FOCUS_HEIGHT = 250;
       width: 21rem;
       max-width: calc(100% - 1.5rem);
       overflow-y: auto;
-      background: color-mix(in oklab, var(--card) 68%, transparent);
-      backdrop-filter: blur(14px) saturate(1.2);
+      background: var(--card);
     }
 
     .panel[hidden],

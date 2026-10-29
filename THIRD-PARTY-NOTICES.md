@@ -4,7 +4,7 @@ Twin Atlas copies code and files from the projects below. Each is used under its
 
 ## Sim UI (MIT)
 
-`client/src/app/shared/components/badge-dot.ts` is copied from Sim UI's `badge-08` example and adapted (<https://github.com/dofu-lab/simui>). Sim UI is a free, open-source, copy-paste collection of Angular components built on Spartan UI and Tailwind CSS.
+Two files are copied from Sim UI and adapted (<https://github.com/dofu-lab/simui>): `client/src/app/shared/components/badge-dot.ts` (from its `badge-08` example) and `client/src/app/features/scene/components/scene-select.ts` (from `select-40`, "Select with description"). Sim UI is a free, open-source, copy-paste collection of Angular components built on Spartan UI and Tailwind CSS.
 
 ```
 MIT License

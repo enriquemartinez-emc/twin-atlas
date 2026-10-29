@@ -41,7 +41,7 @@
       "@shared/ui/spinner": ["./src/app/shared/ui/spinner/src/index.ts"],
       "@shared/ui/tooltip": ["./src/app/shared/ui/tooltip/src/index.ts"],
       "@shared/ui/dialog": ["./src/app/shared/ui/dialog/src/index.ts"],
-      "@shared/ui/native-select": ["./src/app/shared/ui/native-select/src/index.ts"]
+      "@shared/ui/select": ["./src/app/shared/ui/select/src/index.ts"]
     }
   },
   "angularCompilerOptions": {

@@ -94,6 +94,19 @@ describe('Scene', () => {
     return found;
   };
 
+  const chosenScene = () => el().querySelector('#scene-select')?.textContent?.trim();
+
+  const pickScene = async (name: string) => {
+    el().querySelector<HTMLButtonElement>('#scene-select')?.click();
+    await settle();
+    const item = [...document.querySelectorAll('hlm-select-item')].find((i) =>
+      i.textContent?.includes(name),
+    );
+    if (!(item instanceof HTMLElement)) throw new Error(`no "${name}" scene in the list`);
+    item.click();
+    await settle();
+  };
+
   const openNewScene = async () => {
     button('New scene').click();
     await settle();
@@ -135,7 +148,7 @@ describe('Scene', () => {
     await open();
 
     expect(map.init).toHaveBeenCalledOnce();
-    expect(el().querySelector<HTMLSelectElement>('#scene-select')?.value).toBe('s1');
+    expect(chosenScene()).toBe('Plaza');
     expect(el().textContent).toContain('Cracked window');
     const [features, selected] = lastCall(map.setFeatures);
     expect(features).toEqual([expect.objectContaining({ id: 'a1', label: 'Cracked window' })]);
@@ -401,7 +414,7 @@ describe('Scene', () => {
     post.flush({ ...scene, id: 's2', name: 'Old town' });
     await settle();
 
-    expect(el().querySelector<HTMLSelectElement>('#scene-select')?.value).toBe('s2');
+    expect(chosenScene()).toBe('Old town');
     expect(document.querySelector('#scene-name')).toBeNull();
     http.match(() => true).forEach((r) => r.flush([]));
   });
@@ -526,7 +539,6 @@ describe('Scene', () => {
     const annotationRequest = (id: string) => (r: { method: string; url: string }) =>
       r.method === 'GET' && r.url.endsWith(`/api/scenes/s1/annotations/${id}`);
     const other = { ...scene, id: 's2', name: 'Other' };
-    const select = () => el().querySelector<HTMLSelectElement>('#scene-select');
 
     /** Opens the page the way the router does: from an address, with route values as inputs. */
     const openAt = async (url: string, scenes = [scene]) => {
@@ -548,7 +560,7 @@ describe('Scene', () => {
         .flush(annotation('a1', 'Cracked window'), { headers: { ETag: '"2"' } });
       await settle();
 
-      expect(select()?.value).toBe('s1');
+      expect(chosenScene()).toBe('Plaza');
       expect(el().querySelector<HTMLInputElement>('#edit-title')?.value).toBe('Cracked window');
     });
 
@@ -557,7 +569,7 @@ describe('Scene', () => {
 
       await openAt('/scenes/s1', [scene, other]);
 
-      expect(select()?.value).toBe('s1');
+      expect(chosenScene()).toBe('Plaza');
       listRequest().flush({ items: [], nextCursor: null });
     });
 
@@ -566,7 +578,7 @@ describe('Scene', () => {
 
       await openAt('/scenes', [scene, other]);
 
-      expect(select()?.value).toBe('s2');
+      expect(chosenScene()).toBe('Other');
     });
 
     it('puts the chosen annotation into the address', async () => {
@@ -600,14 +612,10 @@ describe('Scene', () => {
       listRequest().flush({ items: [], nextCursor: null });
       await settle();
 
-      const chooser = select();
-      if (!chooser) throw new Error('no scene chooser');
-      chooser.value = 's2';
-      chooser.dispatchEvent(new Event('change'));
-      await settle();
+      await pickScene('Other');
 
       expect(TestBed.inject(Router).url).toBe('/scenes/s2');
-      expect(select()?.value).toBe('s2');
+      expect(chosenScene()).toBe('Other');
     });
 
     it('keeps the page and its map when the scene changes', async () => {

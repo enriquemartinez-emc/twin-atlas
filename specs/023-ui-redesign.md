@@ -13,9 +13,9 @@ The owner asked whether the current screen is the best design on offer. It is no
 - The scene being worked on has no place of its own: the name is only inside the picker.
 - Kinds are told apart by colour alone.
 
-The redesign keeps the colours, the font and the Spartan base, and changes the layout and how each thing is shown. The new dependency is the icon package the owner approved ("add your Sim UI suggested additions"): `@ng-icons/core` and `@ng-icons/lucide`, plus the Spartan components that need it (`spinner`, `tooltip`, `dialog`, `native-select`).
+The redesign keeps the colours, the font and the Spartan base, and changes the layout and how each thing is shown. The new dependency is the icon package the owner approved ("add your Sim UI suggested additions"): `@ng-icons/core` and `@ng-icons/lucide`, plus the Spartan components that need it (`spinner`, `tooltip`, `dialog`, `select`).
 
-Changes made while building, and why: Spartan has no `icon` component (icons are `ng-icon` from the package), so none was copied. `tabs` and the dialog-style `select` were generated and then removed again: the native select keeps keyboard and phone behaviour, and nothing needed a second tab once the map details moved to the status bar, so the panel swaps between list, form and editor instead. The form and editor keep their own Cancel and Close buttons as the way back, so no extra back arrow was added.
+Changes made while building, and why: Spartan has no `icon` component (icons are `ng-icon` from the package), so none was copied. `tabs` was generated and removed again, because nothing needed a second tab once the map details moved to the status bar, so the panel swaps between list, form and editor instead. The form and editor keep their own Cancel and Close buttons as the way back, so no extra back arrow was added.
 
 ## The design
 
@@ -48,7 +48,7 @@ Colour stays as it is: neutral chrome, and the three kind colours as the only st
 
 ## Acceptance criteria
 
-- [x] **Dependency.** `@ng-icons/core` and `@ng-icons/lucide` are added (approved by the owner) and the Spartan components `spinner`, `tooltip`, `dialog` and `native-select` are copied with the CLI. Licences of the icon packages go into `THIRD-PARTY-NOTICES.md`. Nothing else is added.
+- [x] **Dependency.** `@ng-icons/core` and `@ng-icons/lucide` are added (approved by the owner) and the Spartan components `spinner`, `tooltip`, `dialog` and `select` are copied with the CLI, and the scene chooser is Sim UI's "select with description" (`select-40`), copied and adapted with its notice. Licences of the icon packages go into `THIRD-PARTY-NOTICES.md`. Nothing else is added.
 - [x] **Scene bar.** The scene name and chooser are always visible in the header. "New scene…" opens a dialog that holds the name field and its problem message. Copy link is an icon button with a tooltip and still says when it worked or failed (announced to screen readers).
 - [x] **Tool rail.** Four icon buttons with accessible names and tooltips, one active at a time, active state in the kind's colour. Keyboard operable, with a visible focus ring.
 - [x] **Hint.** A status pill states the next step for each tool and each drawing stage (for example, an outline needs three points), and disappears in Select mode unless something is being moved.

@@ -71,8 +71,7 @@ export const TOOLS: readonly ToolOption[] = [
       padding: 0.25rem;
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      background: color-mix(in oklab, var(--card) 68%, transparent);
-      backdrop-filter: blur(14px) saturate(1.2);
+      background: var(--card);
     }
 
     button[aria-pressed='true'] {

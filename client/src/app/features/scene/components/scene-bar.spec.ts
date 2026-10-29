@@ -56,20 +56,22 @@ describe('SceneBar', () => {
     expect(button('New scene')?.classList.contains('bg-primary')).toBe(true);
   });
 
-  it('lists the scenes and emits the chosen one', async () => {
+  it('shows the open scene and passes on the one that is chosen', async () => {
     fixture.componentRef.setInput('scenes', [scene('a', 'Plaza'), scene('b', 'Harbour')]);
     fixture.componentRef.setInput('selectedId', 'a');
     const chosen: string[] = [];
     fixture.componentInstance.choose.subscribe((id) => chosen.push(id));
     await flush();
+    expect(el().querySelector('#scene-select')?.textContent).toContain('Plaza');
 
-    const select = el().querySelector('select');
-    expect([...(select?.options ?? [])].map((o) => o.text.trim())).toEqual(['Plaza', 'Harbour']);
-    expect(select?.value).toBe('a');
-    if (select) {
-      select.value = 'b';
-      select.dispatchEvent(new Event('change'));
-    }
+    el().querySelector<HTMLButtonElement>('#scene-select')?.click();
+    await flush();
+    const harbour = [...document.querySelectorAll('hlm-select-item')].find((i) =>
+      i.textContent?.includes('Harbour'),
+    );
+    if (harbour instanceof HTMLElement) harbour.click();
+    await flush();
+
     expect(chosen).toEqual(['b']);
   });
 
