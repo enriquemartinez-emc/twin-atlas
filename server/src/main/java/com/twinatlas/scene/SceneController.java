@@ -4,12 +4,14 @@ import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.Valid;
 import java.net.URI;
 import java.time.Clock;
+import java.util.List;
 import java.util.UUID;
 import java.util.function.Supplier;
 import org.springframework.http.ResponseEntity;
@@ -52,6 +54,17 @@ class SceneController {
     return ResponseEntity.created(URI.create("/api/scenes/" + saved.getId()))
         .eTag(String.valueOf(saved.getVersion()))
         .body(mapper.toResponse(saved));
+  }
+
+  @GetMapping("/api/scenes")
+  @Operation(summary = "List scenes", description = "The 100 newest scenes, newest first.")
+  @ApiResponse(
+      responseCode = "200",
+      description = "Scenes",
+      content =
+          @Content(array = @ArraySchema(schema = @Schema(implementation = SceneResponse.class))))
+  List<SceneResponse> list() {
+    return mapper.toResponses(repository.findTop100ByOrderByCreatedAtDescIdDesc());
   }
 
   @GetMapping("/api/scenes/{id}")

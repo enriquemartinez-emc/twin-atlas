@@ -88,4 +88,19 @@ class SceneEndpointTest {
     assertThat(result).hasStatus(400);
     assertThat(result).bodyJson().extractingPath("$.errors[0].field").isEqualTo("name");
   }
+
+  @Test
+  void listsScenesNewestFirst() {
+    UUID older = TestScenes.createScene(mvc);
+    UUID newer = TestScenes.createScene(mvc);
+
+    var result = mvc.get().uri("/api/scenes").exchange();
+
+    assertThat(result).hasStatusOk();
+    assertThat(result)
+        .bodyJson()
+        .extractingPath("$[*].id")
+        .asList()
+        .containsSubsequence(newer.toString(), older.toString());
+  }
 }
