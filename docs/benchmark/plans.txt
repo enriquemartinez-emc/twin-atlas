@@ -1,0 +1,182 @@
+
+==================================================================
+WITH the GiST index (ix_annotation_geom)
+==================================================================
+
+-- 1. What is in view: a box about 250 m by 220 m, first page of 200 (&& first, then ST_Intersects)
+                                                                                                                                                                                                                                       QUERY PLAN                                                                                                                                                                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=20.82..21.46 rows=1 width=122) (actual time=2.952..3.051 rows=201 loops=1)
+   Buffers: shared hit=281
+   ->  Result  (cost=20.82..21.46 rows=1 width=122) (actual time=2.950..3.039 rows=201 loops=1)
+         Buffers: shared hit=281
+         ->  Sort  (cost=20.82..20.82 rows=1 width=136) (actual time=2.945..2.953 rows=201 loops=1)
+               Sort Key: created_at, id
+               Sort Method: quicksort  Memory: 70kB
+               Buffers: shared hit=281
+               ->  Index Scan using ix_annotation_geom on annotation a  (cost=0.29..20.81 rows=1 width=136) (actual time=0.088..2.841 rows=246 loops=1)
+                     Index Cond: ((geom && '0103000020E610000001000000050000005B481F205C4401406F9F8CDF4CAD44405B481F205C44014036EBC3688EAD4440FB624EFD804A014036EBC3688EAD4440FB624EFD804A01406F9F8CDF4CAD44405B481F205C4401406F9F8CDF4CAD4440'::geometry) AND (geom && '0103000020E610000001000000050000005B481F205C4401406F9F8CDF4CAD44405B481F205C44014036EBC3688EAD4440FB624EFD804A014036EBC3688EAD4440FB624EFD804A01406F9F8CDF4CAD44405B481F205C4401406F9F8CDF4CAD4440'::geometry))
+                     Filter: ((scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid) AND st_intersects(geom, '0103000020E610000001000000050000005B481F205C4401406F9F8CDF4CAD44405B481F205C44014036EBC3688EAD4440FB624EFD804A014036EBC3688EAD4440FB624EFD804A01406F9F8CDF4CAD44405B481F205C4401406F9F8CDF4CAD4440'::geometry))
+                     Buffers: shared hit=275
+ Planning:
+   Buffers: shared hit=61 dirtied=3
+ Planning Time: 0.520 ms
+ Execution Time: 3.092 ms
+(16 rows)
+
+
+-- 2. The 10 nearest to a point (KNN with the <-> operator)
+                                                                      QUERY PLAN                                                                       
+-------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.29..139.00 rows=10 width=138) (actual time=9.398..9.526 rows=10 loops=1)
+   Buffers: shared hit=362 dirtied=6
+   ->  Index Scan using ix_annotation_geom on annotation a  (cost=0.29..16645296.29 rows=1200000 width=138) (actual time=9.397..9.523 rows=10 loops=1)
+         Order By: (geom <-> '0101000020E6100000ABD5B68E6E470140534528A46DAD4440'::geometry)
+         Filter: (scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid)
+         Buffers: shared hit=362 dirtied=6
+ Planning:
+   Buffers: shared hit=14
+ Planning Time: 0.186 ms
+ Execution Time: 9.561 ms
+(10 rows)
+
+
+-- 3. Everything that intersects a zone about 170 m across, first page of 200
+                                                                                                                                                                                                                                       QUERY PLAN                                                                                                                                                                                                                                        
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=20.82..21.46 rows=1 width=122) (actual time=0.408..0.485 rows=136 loops=1)
+   Buffers: shared hit=144
+   ->  Result  (cost=20.82..21.46 rows=1 width=122) (actual time=0.407..0.477 rows=136 loops=1)
+         Buffers: shared hit=144
+         ->  Sort  (cost=20.82..20.82 rows=1 width=136) (actual time=0.404..0.409 rows=136 loops=1)
+               Sort Key: created_at, id
+               Sort Method: quicksort  Memory: 51kB
+               Buffers: shared hit=144
+               ->  Index Scan using ix_annotation_geom on annotation a  (cost=0.29..20.81 rows=1 width=136) (actual time=0.043..0.361 rows=136 loops=1)
+                     Index Cond: ((geom && '0103000020E610000001000000050000007677FC4462450140365A456D53AD44407677FC44624501406F300BDB87AD4440E03371D87A4901406F300BDB87AD4440E03371D87A490140365A456D53AD44407677FC4462450140365A456D53AD4440'::geometry) AND (geom && '0103000020E610000001000000050000007677FC4462450140365A456D53AD44407677FC44624501406F300BDB87AD4440E03371D87A4901406F300BDB87AD4440E03371D87A490140365A456D53AD44407677FC4462450140365A456D53AD4440'::geometry))
+                     Filter: ((scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid) AND st_intersects(geom, '0103000020E610000001000000050000007677FC4462450140365A456D53AD44407677FC44624501406F300BDB87AD4440E03371D87A4901406F300BDB87AD4440E03371D87A490140365A456D53AD44407677FC4462450140365A456D53AD4440'::geometry))
+                     Rows Removed by Filter: 1
+                     Buffers: shared hit=144
+ Planning Time: 0.279 ms
+ Execution Time: 0.503 ms
+(15 rows)
+
+
+-- 4. One page of the list after 500,000 rows (keyset: continue after a position, no OFFSET)
+                                                                                                    QUERY PLAN                                                                                                     
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.43..149.93 rows=201 width=122) (actual time=0.013..0.125 rows=201 loops=1)
+   Buffers: shared hit=9
+   ->  Index Scan using ix_annotation_scene_created on annotation a  (cost=0.43..520558.39 rows=699870 width=122) (actual time=0.013..0.115 rows=201 loops=1)
+         Index Cond: ((scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid) AND (ROW(created_at, id) > ROW('2026-01-06 18:53:21+00'::timestamp with time zone, '73782344-0d05-44fa-bf11-acf26d5d7898'::uuid)))
+         Buffers: shared hit=9
+ Planning Time: 0.103 ms
+ Execution Time: 0.151 ms
+(7 rows)
+
+
+==================================================================
+WITHOUT the GiST index (dropped)
+==================================================================
+
+-- 1. What is in view: a box about 250 m by 220 m, first page of 200 (&& first, then ST_Intersects)
+                                                                                                                                                                                                                                                                             QUERY PLAN                                                                                                                                                                                                                                                                             
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6281862.11..6281862.75 rows=1 width=122) (actual time=308.310..314.355 rows=201 loops=1)
+   Buffers: shared hit=23368
+   ->  Result  (cost=6281862.11..6281862.75 rows=1 width=122) (actual time=164.726..170.757 rows=201 loops=1)
+         Buffers: shared hit=23368
+         ->  Sort  (cost=6281862.11..6281862.11 rows=1 width=136) (actual time=164.698..170.636 rows=201 loops=1)
+               Sort Key: created_at, id
+               Sort Method: quicksort  Memory: 70kB
+               Buffers: shared hit=23368
+               ->  Gather  (cost=1000.00..6281862.10 rows=1 width=136) (actual time=1.025..170.376 rows=246 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=23362
+                     ->  Parallel Seq Scan on annotation a  (cost=0.00..6280862.00 rows=1 width=136) (actual time=88.531..143.454 rows=82 loops=3)
+                           Filter: ((geom && '0103000020E610000001000000050000005B481F205C4401406F9F8CDF4CAD44405B481F205C44014036EBC3688EAD4440FB624EFD804A014036EBC3688EAD4440FB624EFD804A01406F9F8CDF4CAD44405B481F205C4401406F9F8CDF4CAD4440'::geometry) AND (scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid) AND st_intersects(geom, '0103000020E610000001000000050000005B481F205C4401406F9F8CDF4CAD44405B481F205C44014036EBC3688EAD4440FB624EFD804A014036EBC3688EAD4440FB624EFD804A01406F9F8CDF4CAD44405B481F205C4401406F9F8CDF4CAD4440'::geometry))
+                           Rows Removed by Filter: 399918
+                           Buffers: shared hit=23362
+ Planning:
+   Buffers: shared hit=52
+ Planning Time: 0.445 ms
+ JIT:
+   Functions: 15
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 0.752 ms (Deform 0.394 ms), Inlining 227.523 ms, Optimization 95.775 ms, Emission 73.115 ms, Total 397.165 ms
+ Execution Time: 331.179 ms
+(24 rows)
+
+
+-- 2. The 10 nearest to a point (KNN with the <-> operator)
+                                                                        QUERY PLAN                                                                        
+----------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=353916.84..354049.29 rows=10 width=138) (actual time=290.892..300.209 rows=10 loops=1)
+   Buffers: shared hit=25095
+   ->  Gather Merge  (cost=353916.84..13598091.66 rows=1000000 width=138) (actual time=285.831..295.145 rows=10 loops=1)
+         Workers Planned: 2
+         Workers Launched: 2
+         Buffers: shared hit=25095
+         ->  Result  (cost=352916.82..7235416.82 rows=500000 width=138) (actual time=266.098..266.147 rows=9 loops=3)
+               Buffers: shared hit=25095
+               ->  Sort  (cost=352916.82..354166.82 rows=500000 width=144) (actual time=258.565..258.568 rows=9 loops=3)
+                     Sort Key: ((geom <-> '0101000020E6100000ABD5B68E6E470140534528A46DAD4440'::geometry))
+                     Sort Method: top-N heapsort  Memory: 28kB
+                     Buffers: shared hit=23436
+                     Worker 0:  Sort Method: top-N heapsort  Memory: 29kB
+                     Worker 1:  Sort Method: top-N heapsort  Memory: 29kB
+                     ->  Parallel Seq Scan on annotation a  (cost=0.00..342112.00 rows=500000 width=144) (actual time=2.662..159.793 rows=400000 loops=3)
+                           Filter: (scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid)
+                           Buffers: shared hit=23362
+ Planning:
+   Buffers: shared hit=11
+ Planning Time: 0.200 ms
+ JIT:
+   Functions: 19
+   Options: Inlining false, Optimization false, Expressions true, Deforming true
+   Timing: Generation 1.172 ms (Deform 0.564 ms), Inlining 0.000 ms, Optimization 0.764 ms, Emission 12.277 ms, Total 14.213 ms
+ Execution Time: 300.759 ms
+(25 rows)
+
+
+-- 3. Everything that intersects a zone about 170 m across, first page of 200
+                                                                                                                                                                                                                                                                             QUERY PLAN                                                                                                                                                                                                                                                                             
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=6281862.11..6281862.75 rows=1 width=122) (actual time=263.140..269.274 rows=136 loops=1)
+   Buffers: shared hit=23362
+   ->  Result  (cost=6281862.11..6281862.75 rows=1 width=122) (actual time=202.551..208.675 rows=136 loops=1)
+         Buffers: shared hit=23362
+         ->  Sort  (cost=6281862.11..6281862.11 rows=1 width=136) (actual time=202.522..208.575 rows=136 loops=1)
+               Sort Key: created_at, id
+               Sort Method: quicksort  Memory: 51kB
+               Buffers: shared hit=23362
+               ->  Gather  (cost=1000.00..6281862.10 rows=1 width=136) (actual time=1.236..208.328 rows=136 loops=1)
+                     Workers Planned: 2
+                     Workers Launched: 2
+                     Buffers: shared hit=23362
+                     ->  Parallel Seq Scan on annotation a  (cost=0.00..6280862.00 rows=1 width=136) (actual time=111.746..179.262 rows=45 loops=3)
+                           Filter: ((geom && '0103000020E610000001000000050000007677FC4462450140365A456D53AD44407677FC44624501406F300BDB87AD4440E03371D87A4901406F300BDB87AD4440E03371D87A490140365A456D53AD44407677FC4462450140365A456D53AD4440'::geometry) AND (scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid) AND st_intersects(geom, '0103000020E610000001000000050000007677FC4462450140365A456D53AD44407677FC44624501406F300BDB87AD4440E03371D87A4901406F300BDB87AD4440E03371D87A490140365A456D53AD44407677FC4462450140365A456D53AD4440'::geometry))
+                           Rows Removed by Filter: 399955
+                           Buffers: shared hit=23362
+ Planning Time: 0.250 ms
+ JIT:
+   Functions: 15
+   Options: Inlining true, Optimization true, Expressions true, Deforming true
+   Timing: Generation 1.046 ms (Deform 0.532 ms), Inlining 227.674 ms, Optimization 93.323 ms, Emission 60.720 ms, Total 382.763 ms
+ Execution Time: 269.719 ms
+(22 rows)
+
+
+-- 4. One page of the list after 500,000 rows (keyset: continue after a position, no OFFSET)
+                                                                                                    QUERY PLAN                                                                                                     
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ Limit  (cost=0.43..149.93 rows=201 width=122) (actual time=0.018..0.119 rows=201 loops=1)
+   Buffers: shared hit=9
+   ->  Index Scan using ix_annotation_scene_created on annotation a  (cost=0.43..520558.39 rows=699870 width=122) (actual time=0.017..0.108 rows=201 loops=1)
+         Index Cond: ((scene_id = '00000000-0000-4000-8000-0000000000b1'::uuid) AND (ROW(created_at, id) > ROW('2026-01-06 18:53:21+00'::timestamp with time zone, '73782344-0d05-44fa-bf11-acf26d5d7898'::uuid)))
+         Buffers: shared hit=9
+ Planning Time: 0.086 ms
+ Execution Time: 0.148 ms
+(7 rows)
+
