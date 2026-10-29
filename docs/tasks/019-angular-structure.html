@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Angular structure and routes - Twin Atlas docs</title>
+<meta name="description" content="Angular structure, routes and state flow.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Angular structure and routes</h1>
+<div class="tags"><span class="tag c-white">Task 019</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/angular-structure</code></span></div>
+<p class="lead">The client now follows Angular's recommended structure, has real addresses for scenes and annotations, and no longer copies state between signals with effects. Nothing looks different on screen.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Start the app with <code>./dev.sh</code>, pick an annotation, and look at the address bar: it now reads like <code>/scenes/&lt;scene id&gt;?annotation=&lt;annotation id&gt;</code>. Paste that address into a new tab and the same scene and annotation open. I have not seen any of this in a browser yet, and I will not run the app without your approval.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>Angular's layout.</strong> Each feature has its main component named after it (<code>scene.ts</code>), a <code>components/</code> folder for its parts, its routes, and services named for the data they hold (<code>scene-data.ts</code>, <code>annotation-data.ts</code>). The old <code>.page.ts</code>, <code>.service.ts</code> and dotted names are gone, and so is the empty <code>asset</code> folder.</li>
+<li><strong>Real addresses.</strong> <code>/scenes</code> shows the scene you used last, <code>/scenes/&lt;id&gt;</code> shows that scene, and <code>?annotation=&lt;id&gt;</code> selects an annotation. Anything else shows a not-found page with a way back. Every page has a title.</li>
+<li><strong>One route, on purpose.</strong> With two routes the router would rebuild the page, and the 3D map with it, the first time you pick a scene. One route with a custom matcher keeps both. A test guards it.</li>
+<li><strong>No copying between signals.</strong> The annotation data now receives the scene, the map view and the selection as signals, so nothing has to be pushed into it. Half-finished edits reset by themselves when you choose another annotation.</li>
+<li><strong>A narrower import rule.</strong> A component may import a file from its parent folder, which is how <code>components/</code> reaches its feature. Climbing further, or into another feature's folder, is still refused.</li>
+</ul>
+<h2>Measured</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Measured</th><th class="">Before</th><th class="">After</th></tr></thead><tbody><tr><td class="">Routes</td><td class="">1 (<code>/scene</code>)</td><td class="">3: the empty address, scenes (one route for <code>/scenes</code> and <code>/scenes/:sceneId</code>), not found</td></tr><tr><td class="">Effects in the scene page</td><td class="">7 (3 copied state into the data service)</td><td class="">3, all for the map</td></tr><tr><td class="">Where the selected scene and annotation live</td><td class="">memory and <code>localStorage</code></td><td class="">the address (and <code>localStorage</code> only for <code>/scenes</code>)</td></tr><tr><td class="">Empty placeholder folders</td><td class=""><code>features/asset</code></td><td class="">none</td></tr><tr><td class="">Client tests</td><td class="">182</td><td class="">194</td></tr><tr><td class="">Lines in the scene page</td><td class="">440</td><td class="">531 (it grew)</td></tr></tbody></table></div></div>
+<figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 345" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">How an address becomes data on screen</title><desc id="d">The router turns the address into inputs of the scene page. The page passes the scene, the map view and the selection as signals to the annotation data, which asks the API. Nothing is copied by hand between them.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="c-sky" x="10" y="20" width="230" height="90" rx="10"/><text class="t-title" x="24" y="42">The address</text><text class="t-small" x="24" y="61">/scenes/s1</text><text class="t-small" x="24" y="78">?annotation=a1</text><rect class="c-slate" x="300" y="20" width="230" height="90" rx="10"/><text class="t-title" x="314" y="42">The router</text><text class="t-small" x="314" y="61">one route, one matcher</text><text class="t-small" x="314" y="78">sets the inputs</text><rect class="c-sky" x="590" y="20" width="300" height="90" rx="10"/><text class="t-title" x="604" y="42">Scene (the page)</text><text class="t-small" x="604" y="61">sceneId and annotation</text><text class="t-small" x="604" y="78">arrive as signal inputs</text><rect class="c-sky" x="590" y="200" width="300" height="100" rx="10"/><text class="t-title" x="604" y="222">annotationData(...)</text><text class="t-small" x="604" y="241">gets the scene, the map view</text><text class="t-small" x="604" y="258">and the selection as signals</text><rect class="c-butter" x="300" y="200" width="230" height="100" rx="10"/><text class="t-title" x="314" y="222">The API</text><text class="t-small" x="314" y="241">httpResource, through</text><text class="t-small" x="314" y="258">the generated client</text><rect class="c-sky" x="10" y="200" width="230" height="100" rx="10"/><text class="t-title" x="24" y="222">The map</text><text class="t-small" x="24" y="241">reports its visible area</text><text class="t-small" x="24" y="258">as a signal</text><path class="arrow" d="M240,65 L300,65" marker-end="url(#ah)"/><path class="arrow" d="M530,65 L590,65" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="560" y="57">inputs</text><path class="arrow" d="M740,110 L740,200" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="start" x="752" y="160">signals</text><path class="arrow" d="M590,250 L530,250" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="560" y="242">requests</text><path class="arrow" d="M125,300 L125,330 L740,330 L740,300" marker-end="url(#ah)"/><text class="t-small lbl" text-anchor="middle" x="430" y="322">the visible area</text></svg></div><figcaption>The address is the single source. Everything below it is derived.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<h2>Found on the way</h2>
+<ul>
+<li><strong>My spec said the page would shrink. It grew</strong> from 440 to 531 lines, because the routing inputs and the self-resetting edit state live there now. It still does too much. Splitting it is the next step.</li>
+<li><strong>A test that proved nothing.</strong> The first edit-reset test passed even when I broke the code, because the editor was not on screen either way. It now waits for the second annotation to load.</li>
+<li><strong>Shadowed names.</strong> Turning the annotation data into a function made two local names hide the ones they came from. The compiler caught both.</li>
+</ul>
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Tests</td><td class="">194 client tests pass. 12 are new: the address selects the scene and the annotation, the address beats the scene used last, choosing updates the address, closing clears it, the page and its map are reused when the scene changes, the address is followed when it changes, an edit starts afresh when another annotation is chosen, and three route tests (redirect, not found, extra parts).</td></tr><tr><td class="">Rules can fail</td><td class="">Ignoring the address, never updating it, and two routes instead of one each failed tests. A plain signal for the edit state first survived, because my test never let the second annotation load. The test was fixed and then failed on the same break.</td></tr><tr><td class="">Import rule</td><td class="">Two deliberately bad imports (into another feature, and two folders up) are refused. The allowed form passes.</td></tr><tr><td class="">Build</td><td class="">Lint with the class check, formatting and the production build are clean, with no <code>any</code>.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>Deep links, the back button and the not-found page in a real browser. The tests use Angular's router test tools, not a browser.</p></div>
+<h2>Known limits</h2>
+<ul>
+<li>An address with a scene id that does not exist shows the generic "could not load" message, not a not-found page.</li>
+<li><code>/scenes</code> is not rewritten to <code>/scenes/&lt;id&gt;</code>, so the address bar stays short until you choose a scene.</li>
+<li>The scene page is still large.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="018-one-command-start.html">Previous: One command to start the app</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>
