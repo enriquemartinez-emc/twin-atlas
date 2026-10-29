@@ -10,8 +10,6 @@ Information about a real place is scattered. A cracked window is a photo on some
 
 Twin Atlas pins each piece of information to a real position on a 3D map. A **marker** is a point ("this window needs repair"), a **note** is a point with text, an **outline** is an area ("inspection area"). Everyone sees the same place, and things are found by where they are: what is in the current view, what is nearest to a point, what falls inside a zone. It is built to stay fast with a million of them (measured, see below), and other software can read and add to the same data through a documented API.
 
-**What it is not, yet.** It does not build 3D models: the buildings come from Google's photorealistic tiles through Cesium, and you need your own free token to see them. There is no login and no teams: whoever opens the app shares one database. It is a portfolio project, built to show how a system like this is engineered, not a product to deploy as it is.
-
 ## Quick start
 
 You need JDK 25, Node 24 and Docker. One command starts the database, the API and the client, waits until they answer, and stops them all when you press Ctrl+C:
@@ -40,7 +38,7 @@ cd client && npm run lint && npm test -- --watch=false && npm run build
 
 ## A first session
 
-Five minutes, in the order that makes sense.
+Five minutes, in the order that makes sense. The [user guide](docs/guide.html) explains every part of the screen, and why the list can be long.
 
 1. **Open the app** at http://localhost:4200. On a fresh database the panel says there are no scenes yet. The map starts at the Sagrada Família in Barcelona.
 2. **Make a scene.** A scene is the area you work in. Pan and zoom to a place you care about, type a name under "New scene covering the current view", and press "Create scene from this view". A green rectangle shows the scene's area. Everything you add must fall inside it, and the app tells you when it does not.
@@ -101,14 +99,16 @@ Each point says where the evidence is.
 | ------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Backend       | Java 25, Spring Boot 4, Hibernate 7 with Hibernate Spatial, PostgreSQL and PostGIS, Flyway, MapStruct, springdoc |
 | Backend tests | JUnit 5, AssertJ, jqwik, Testcontainers, ArchUnit                                                                |
-| Client        | Angular 22 (zoneless, Signal Forms, Vitest), CesiumJS, Spartan UI with Tailwind, Figtree                         |
+| Client        | Angular 22 (zoneless, Signal Forms, Vitest), CesiumJS, Spartan UI                                                |
 
 ## Where to read more
 
+- [`docs/guide.html`](docs/guide.html): the user guide, what each part of the screen does.
 - [`docs/index.html`](docs/index.html): the documentation site, one page per task in plain words with diagrams. Open it straight from disk.
 - [`ARCHITECTURE.md`](ARCHITECTURE.md) and [`docs/adr/`](docs/adr/README.md): how it fits together and why.
 - [`ROADMAP.md`](ROADMAP.md): what is done, what is next, what was left out on purpose.
 - [`specs/`](specs/README.md): one file per task with its acceptance criteria and status.
 - [`AGENTS.md`](AGENTS.md): the working rules of the project.
+- [`THIRD-PARTY-NOTICES.md`](THIRD-PARTY-NOTICES.md): the licences of the code and fonts copied into the project.
 
 Map data in the OpenStreetMap import is © OpenStreetMap contributors, available under the [ODbL](https://www.openstreetmap.org/copyright).

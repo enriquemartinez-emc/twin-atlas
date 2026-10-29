@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Panel polish and a guide - Twin Atlas docs</title>
+<meta name="description" content="Panel polish: a list that explains itself, readable labels, honest loading and a user guide.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../guide.html"><span>Using the app</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="../tasks/022-ui-panel-polish.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Panel polish and a guide</h1>
+<div class="tags"><span class="tag c-white">Task 022</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/ui-panel-polish</code></span></div>
+<p class="lead">The list in the side panel now says what it is, the map&#39;s labels stay readable, loading and empty states are honest, and there is finally a user guide that explains every part of the screen.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Read <a href="../guide.html">Using the app</a> first: it explains the panel with a diagram. Then reload the app. The list has a heading, a one-line explanation, a count and a filter, and each row has a dot in the colour its kind has on the map. I have not looked at any of this in a browser yet.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>A list that explains itself.</strong> "In this view" with a line saying it is everything inside the part of the map you are looking at. A count ("26 in view", or "12 of 26" when filtered) and a filter by kind. Rows imported from OpenStreetMap get a note about their titles.</li>
+<li><strong>Labels that stay readable.</strong> A point&#39;s label shows only when the camera is within 1,500 metres of it. The annotation you selected is always labelled. The distance is a first guess to tune by eye.</li>
+<li><strong>Honest loading.</strong> Grey placeholder rows while the first load runs, the empty message only after it finished, and "Loading the 3D viewer…" until the map is up.</li>
+<li><strong>Tidier panel.</strong> "New scene" is folded away once you have a scene. "Copy link" copies the address. The panel can be hidden and brought back. On a phone it sits at the bottom. The app icon sits next to the title.</li>
+<li><strong>A component copied from Sim UI.</strong> The badge with a coloured status dot, adapted so the dot takes the kind&#39;s map colour. Its licence notice is kept.</li>
+<li><strong>A user guide</strong> in the documentation site, linked from the README and from every page.</li>
+</ul>
+<h2>About Sim UI</h2>
+<p>Sim UI is a free, open-source, copy-paste collection of Angular components built on Spartan UI and Tailwind, under the MIT licence. Most of its examples are short compositions of Spartan&#39;s own components, so the polish comes largely from Spartan pieces we had not installed yet. The richer examples (accordion, tabs, dialog, select) need an icon package we do not have. That is a new dependency, so it is your decision, and it is listed in the spec as a candidate.</p>
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Tests</td><td class="">216 client tests pass (19 new). Five deliberate breaks each failed a test: the label range not reaching Cesium, the import note never shown, the panel never hiding, the New scene form always closed, and the count ignoring the filter.</td></tr><tr><td class="">Packages</td><td class="">None added. <code>package.json</code> and the lock file are untouched. The collapsible, skeleton and empty parts come from Spartan&#39;s own tool.</td></tr><tr><td class="">Sim UI</td><td class="">Its repository was read: MIT licence, copy-paste model. The badge with a status dot was copied with its notice in <code>THIRD-PARTY-NOTICES.md</code>.</td></tr><tr><td class="">The user guide</td><td class="">The page was written from the code and the tests. Its panel diagram was looked at in a browser, and its 717 links across the site resolve.</td></tr><tr><td class="">Build</td><td class="">Lint with the class check, formatting and the production build are clean.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>How any of it looks in a real browser, the label distance, the phone layout, and the clipboard. These need your approval to drive the running app.</p></div>
+<h2>Left for later</h2>
+<ul>
+<li>Components that need the icon package (a spinner, tabs, dialogs, a nicer select).</li>
+<li>A page title that follows the selected scene. The router resets it on every navigation, so it needs a title strategy.</li>
+<li>Better titles for imported places.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="021-ui-polish.html">Previous: UI polish and a guide</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

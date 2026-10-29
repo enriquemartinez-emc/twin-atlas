@@ -10,18 +10,26 @@ About Sim UI (read from its site and repository, not assumed): a free, open-sour
 
 ## Acceptance criteria
 
-- [ ] **Labels.** A point's label is drawn only when the camera is within a set range of it, except the selected annotation, whose label always shows. The rule sits in the pure descriptor and is unit-tested. The range is a first guess, to be tuned by eye.
-- [ ] **The list explains itself.** The panel says what the list is: a heading ("In this view"), one line saying it is everything added inside the part of the map you are looking at and that panning or zooming changes it, and, when items come from an import, that their titles carry the OpenStreetMap reference. Nobody should have to guess why there are many markers.
-- [ ] **List.** It shows a count ("26 in view", or "12 of 26 in view" when filtered), a filter by kind (All, Markers, Notes, Outlines), and for each kind an outline badge with a dot in the map's own colour (Sim UI's status-dot pattern), taken from the same palette the map uses. Each row is still a button in a list item.
-- [ ] **Loading and empty.** Skeleton rows show while the first load runs. The empty message (Spartan's `empty`) shows only once loading has finished. The Map section says the 3D viewer is loading until it is up.
-- [ ] **Scene forms.** "New scene" sits in a collapsible (Spartan's `collapsible`), open when there are no scenes and closed otherwise.
-- [ ] **Panel.** A "Copy link" button copies the address and says so (and says plainly if it could not). The panel can be hidden and shown again. On narrow screens it sits at the bottom with a limited height.
-- [ ] **Header.** The pin icon sits next to the title.
-- [ ] **A user guide page.** `docs/guide.html`, "Using Twin Atlas", is in "Start here" on every page and linked from the README. It explains the panel section by section (with a labelled diagram), what markers, notes and outlines are, why a scene can hold many of them (including imports), how the list relates to the map view, and the first-session workflow.
-- [ ] **Attribution.** `THIRD-PARTY-NOTICES.md` lists Sim UI (MIT, with its notice), Spartan UI, Figtree and Geist Mono with their licences, and the README links to it.
-- [ ] **No new package.** `collapsible`, `skeleton` and `empty` come from the Spartan CLI.
-- [ ] Prettier, lint (with the class check), unit tests and the production build are green, with no `any`. A docs page is written.
+- [x] **Labels.** A point's label is drawn only when the camera is within a set range of it, except the selected annotation, whose label always shows. The rule sits in the pure descriptor and is unit-tested. The range is a first guess, to be tuned by eye.
+- [x] **The list explains itself.** The panel says what the list is: a heading ("In this view"), one line saying it is everything added inside the part of the map you are looking at and that panning or zooming changes it, and, when items come from an import, that their titles carry the OpenStreetMap reference. Nobody should have to guess why there are many markers.
+- [x] **List.** It shows a count ("26 in view", or "12 of 26 in view" when filtered), a filter by kind (All, Markers, Notes, Outlines), and for each kind an outline badge with a dot in the map's own colour (Sim UI's status-dot pattern), taken from the same palette the map uses. Each row is still a button in a list item.
+- [x] **Loading and empty.** Skeleton rows show while the first load runs. The empty message (Spartan's `empty`) shows only once loading has finished. The Map section says the 3D viewer is loading until it is up.
+- [x] **Scene forms.** "New scene" sits in a collapsible (Spartan's `collapsible`), open when there are no scenes and closed otherwise.
+- [x] **Panel.** A "Copy link" button copies the address and says so (and says plainly if it could not). The panel can be hidden and shown again. On narrow screens it sits at the bottom with a limited height.
+- [x] **Header.** The pin icon sits next to the title.
+- [x] **A user guide page.** `docs/guide.html`, "Using Twin Atlas", is in "Start here" on every page and linked from the README. It explains the panel section by section (with a labelled diagram), what markers, notes and outlines are, why a scene can hold many of them (including imports), how the list relates to the map view, and the first-session workflow.
+- [x] **Attribution.** `THIRD-PARTY-NOTICES.md` lists Sim UI (MIT, with its notice), Spartan UI, Figtree and Geist Mono with their licences, and the README links to it.
+- [x] **No new package.** `collapsible`, `skeleton` and `empty` come from the Spartan CLI.
+- [x] Prettier, lint (with the class check), unit tests and the production build are green, with no `any`. A docs page is written.
 - [ ] Not verified, and said so: how it looks, the label range, the narrow-screen layout and the clipboard in a real browser. Needs the owner's approval to drive the running app.
+
+## Notes
+
+- Sim UI, read from its repository: the only licence is MIT, the model is copy and paste, and the components are mostly short compositions of Spartan's Helm components. The badge with a status dot (`badge-08`) is copied into `shared/components/badge-dot.ts`, with its notice, and adapted (inputs instead of a fixed colour and word, a span instead of a div inside a span). The collapsible, skeleton and empty parts come from Spartan itself, because Sim UI's richer examples (accordion, tabs, dialog, select) need the `@ng-icons` package. Spartan's own `spinner`, `tabs`, `dialog`, `select` and `accordion` need it too, which I checked in the CLI's templates.
+- Tests 197 to 216 (two files changed their selectors from every button to the list's rows). Five deliberate breaks each failed a test: the label range not reaching Cesium, the import note never shown, the panel never hiding, the New scene form always closed, and the count ignoring the filter.
+- The hide-the-panel test also checks that what was typed survives, because the panel is hidden with an attribute and not removed.
+- Not verified in a browser: how it looks, the label range (1500 m is a first guess), the narrow-screen layout, and the clipboard.
+- The user guide describes the code and the tests. It has a labelled diagram of the panel, which was looked at.
 
 ## Candidates, not in scope unless the owner asks
 

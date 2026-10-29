@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Using the app - Twin Atlas docs</title>
+<meta name="description" content="What Twin Atlas is for and what each part of the screen does.">
+<link rel="stylesheet" href="assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="index.html"><span>Overview</span></a></li>
+<li><a href="guide.html" aria-current="page"><span>Using the app</span></a></li>
+<li><a href="architecture.html"><span>How it fits together</span></a></li>
+<li><a href="glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="tasks/022-ui-panel-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li>
+</ul></details></nav>
+<main>
+
+<header class="head col">
+<h1>Using the app</h1>
+<p class="lead">What Twin Atlas is for, what each part of the screen does, and why the list on the side can be long. Written for someone opening the app for the first time.</p>
+</header>
+<div class="col">
+<aside class="callout c-sky"><h3>Start the app</h3><p>From the top of the repository run <code>./dev.sh</code> and open <code>http://localhost:4200</code>. The README has the details, and the commands to bring in real map data.</p></aside>
+<h2>What it is for</h2>
+<p>You pin information to a real place on a 3D map: a marker for a spot, a note for a spot with a message, an outline for an area. Everyone sees the same place, and you find things by where they are, not by hunting through photos and spreadsheets. Other software can read and add to the same data through the API.</p>
+<h2>Three kinds of annotation</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Kind</th><th class="">Use it for</th><th class="">How you make it</th><th class="">It needs</th><th class="">On the map</th></tr></thead><tbody><tr><td class=""><strong>Marker</strong></td><td class="">a place: "this window needs repair"</td><td class="">click one point</td><td class="">a title</td><td class="">a blue dot</td></tr><tr><td class=""><strong>Note</strong></td><td class="">a place with a message</td><td class="">click one point</td><td class="">a title and some text</td><td class="">an amber dot</td></tr><tr><td class=""><strong>Outline</strong></td><td class="">an area: "inspection area"</td><td class="">click three or more corners</td><td class="">a title</td><td class="">a green area</td></tr></tbody></table></div></div><div class="col">
+<p>An annotation is the general word for all three. Each has a title, and titles are unique inside a scene (upper or lower case does not matter).</p>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Colour on the map</th><th class="">Meaning</th></tr></thead><tbody><tr><td class="">Blue, amber, green</td><td class="">a saved marker, note, outline</td></tr><tr><td class="">Red</td><td class="">the annotation you have selected</td></tr><tr><td class="">Purple</td><td class="">what you are drawing now and have not saved yet</td></tr></tbody></table></div></div><div class="col">
+<h2>The scene and its green area</h2>
+<p>A scene is the area you work in. When you make one, it covers whatever the map shows at that moment, and a green rectangle marks it. Everything you add must fall inside that rectangle. If you click outside it, the app tells you where it should go.</p>
+<h2>The side panel, section by section</h2>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 612" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The side panel, section by section</title><desc id="d">The panel has six parts from top to bottom: a toolbar, the scene, the tools, a form or editor, the list of what is in view, and the map section. Each is explained to the right.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker><marker id="ah-bad" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#e27c74"/></marker></defs><rect class="frame" x="10" y="8" width="300" height="596" rx="14"/><rect class="c-sky" x="24" y="22" width="272" height="56" rx="8"/><text class="t-title" x="38" y="44">1  Toolbar</text><text class="t-small" x="38" y="62">Copy link, Hide panel</text><path class="arrow" d="M296,50 L350,50" marker-end="url(#ah)"/><text class="t-title" x="362" y="54">Copy link: copies the address of this exact view</text><text class="t-small" x="362" y="71">Hide panel: gives the whole screen to the map</text><rect class="c-sky" x="24" y="88" width="272" height="64" rx="8"/><text class="t-title" x="38" y="110">2  Scene</text><text class="t-small" x="38" y="128">your scenes, and + New scene</text><path class="arrow" d="M296,116 L350,116" marker-end="url(#ah)"/><text class="t-title" x="362" y="120">A scene is the area you work in. Pick one here.</text><text class="t-small" x="362" y="137">+ New scene: pan the map first, then name it and create it</text><rect class="c-sky" x="24" y="162" width="272" height="56" rx="8"/><text class="t-title" x="38" y="184">3  Tools</text><text class="t-small" x="38" y="202">Select  Marker  Note  Outline</text><path class="arrow" d="M296,190 L350,190" marker-end="url(#ah)"/><text class="t-title" x="362" y="194">Choose what a click on the map does</text><text class="t-small" x="362" y="211">Select: click an annotation to look at it or edit it</text><rect class="c-sky" x="24" y="228" width="272" height="64" rx="8"/><text class="t-title" x="38" y="250">4  Form or editor</text><text class="t-small" x="38" y="268">New marker, or Edit marker</text><path class="arrow" d="M296,256 L350,256" marker-end="url(#ah)"/><text class="t-title" x="362" y="260">Appears when you choose a tool, or select something</text><text class="t-small" x="362" y="277">Title, text for a note, Save, Move on map</text><rect class="c-sky" x="24" y="302" width="272" height="226" rx="8"/><text class="t-title" x="38" y="324">5  In this view</text><text class="t-small" x="38" y="342">what is inside the map you see</text><path class="arrow" d="M296,330 L350,330" marker-end="url(#ah)"/><text class="t-title" x="362" y="334">The list of what is inside the part of the map you see</text><text class="t-small" x="362" y="351">Pan or zoom, and the list changes with the map</text><rect class="c-sky" x="24" y="538" width="272" height="56" rx="8"/><text class="t-title" x="38" y="560">6  Map</text><text class="t-small" x="38" y="578">source, camera, Reset view, 3D token</text><path class="arrow" d="M296,566 L350,566" marker-end="url(#ah)"/><text class="t-title" x="362" y="570">Where the map data comes from, and where the camera is</text><text class="t-small" x="362" y="587">Paste a free Cesium token here to see 3D buildings</text><text class="t-small" x="38" y="368">26 in view</text><rect class="c-white" x="38" y="378" width="244" height="24" rx="6"/><text class="t-small" x="46" y="394">All  Markers  Notes  Outlines</text><rect class="c-white" x="38" y="412" width="244" height="24" rx="6"/><circle cx="51" cy="424" r="4" fill="#2563eb"/><text class="t-small" x="63" y="428">Cracked window</text><rect class="c-white" x="38" y="442" width="244" height="24" rx="6"/><circle cx="51" cy="454" r="4" fill="#d97706"/><text class="t-small" x="63" y="458">Leak, water stain</text><rect class="c-white" x="38" y="472" width="244" height="24" rx="6"/><circle cx="51" cy="484" r="4" fill="#16a34a"/><text class="t-small" x="63" y="488">Inspection area</text><text class="t-small" x="38" y="516">one row each, with a dot for its kind</text></svg></div><figcaption>The panel from top to bottom. The numbers are used in the text below.</figcaption><div class="legend"><span><i class="c-sky"></i>Browser</span><span><i class="c-mint"></i>Pure rules</span><span><i class="c-butter"></i>Server code</span><span><i class="c-lilac"></i>Data</span><span><i class="c-slate"></i>Tooling or generated</span><span><i class="c-blush"></i>Errors and risks</span></div></figure><div class="col">
+<ol>
+<li><strong>Toolbar.</strong> "Copy link" copies the address of what you are looking at, so you can send someone the same scene and annotation. "Hide panel" gives the whole screen to the map, and a "Show panel" button stays in the corner.</li>
+<li><strong>Scene.</strong> Pick the scene you want. "New scene" is folded away once you have one. Pan the map to the place first, because the new scene covers what you see.</li>
+<li><strong>Tools.</strong> Select, Marker, Note and Outline decide what a click on the map does. After you save something, the tool returns to Select.</li>
+<li><strong>Form or editor.</strong> Choosing a tool opens a form for something new. Selecting an annotation opens an editor for it: rename it, change a note's text, or "Move on map" and click the new spot. Outlines can be renamed but not moved yet.</li>
+<li><strong>In this view.</strong> The list. It is explained next.</li>
+<li><strong>Map.</strong> The source of the map (an OpenStreetMap globe, or Google's 3D buildings if you paste a free Cesium token), where the camera is, and "Reset view".</li>
+</ol>
+<h2>Why is the list full of markers?</h2>
+<p>The list is not a list of everything in the scene. It is <strong>everything inside the part of the map you are looking at</strong>, so it grows when you zoom out and shrinks when you zoom in. It has several answers to "why so many":</p>
+<ul>
+<li><strong>You, or someone else, added many.</strong> The count above the list ("26 in view") says how many. Use the filter (All, Markers, Notes, Outlines) to narrow it, and click a row to fly to it.</li>
+<li><strong>They were imported.</strong> Real map data from OpenStreetMap (shops, landmarks, building outlines) arrives in bulk, and each place becomes a marker. Their titles end in a reference such as <code>(node/123)</code> or <code>(way/456)</code>, or read <code>OSM node/123</code> when the place has no name. The reference is how the app tells two places called "Bar" apart and notices when you import the same data twice.</li>
+<li><strong>You are zoomed far out.</strong> The list shows at most 200. Past that it says "More annotations are in view than shown. Zoom in to see them all."</li>
+</ul>
+<p>On the map, labels appear only when the camera is fairly close, so a crowded view stays readable. The annotation you have selected is always labelled.</p>
+<h2>A first session</h2>
+<ol>
+<li>Open the app. With no scenes yet, the panel says so.</li>
+<li>Pan and zoom to a place, name a scene under "New scene", and create it. A green rectangle appears.</li>
+<li>Choose Marker, click inside the green area, give it a title, and Save.</li>
+<li>Find it in "In this view", click it to fly to it, and edit it.</li>
+<li>Copy the link and open it in another tab: you land on the same scene and annotation.</li>
+</ol>
+<h2>Two people at once</h2>
+<p>If someone saves a change to an annotation while you have it open, your save is refused with "Someone changed this annotation since you opened it", and "Load latest version" shows what they did. Nothing is overwritten.</p>
+<h2>What it does not do yet</h2>
+<ul>
+<li>There is no delete, and no login: whoever opens the app shares one database.</li>
+<li>There is no import screen. Real map data goes in through the API (see the README).</li>
+<li>Outlines cannot be moved on the map, only renamed.</li>
+</ul>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>This page describes the app from its code and tests. I have not yet looked at the newest parts (the toolbar, the count and filter, the folded "New scene") in a real browser, and the label distance is a first guess.</p></div>
+<p>Related: the <a href="../README.md">README</a> for the quick start and the import commands, the <a href="glossary.html">glossary</a> for unfamiliar words, and the <a href="architecture.html">architecture page</a> for how it is built.</p>
+</div>
+</main>
+</div>
+</body>
+</html>
