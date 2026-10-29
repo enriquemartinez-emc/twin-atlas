@@ -146,6 +146,10 @@ class CreateAnnotationRulesTest {
             "SCENE_NOT_FOUND",
             "INVALID_GEOMETRY",
             "GEOMETRY_OUTSIDE_SCENE_EXTENT",
-            "TITLE_ALREADY_USED");
+            "TITLE_ALREADY_USED",
+            "ANNOTATION_NOT_FOUND",
+            "STALE_VERSION",
+            "GEOMETRY_KIND_MISMATCH",
+            "TEXT_ONLY_FOR_NOTES");
   }
 }

@@ -1,9 +1,11 @@
 package com.twinatlas.annotation;
 
 import com.twinatlas.annotation.core.CreateContext;
+import com.twinatlas.annotation.core.CurrentAnnotation;
 import com.twinatlas.annotation.core.SceneFacts;
 import com.twinatlas.annotation.core.SceneFacts.NoScene;
 import com.twinatlas.annotation.core.SceneFacts.SceneFound;
+import com.twinatlas.annotation.core.UpdateContext;
 import java.util.UUID;
 import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.Polygon;
@@ -28,6 +30,31 @@ class AnnotationFacts {
     SceneFacts scene = sceneFacts(sceneId);
     boolean titleInUse = scene instanceof SceneFound && titleInUse(sceneId, title);
     return new CreateContext(scene, titleInUse);
+  }
+
+  /**
+   * Facts for an update. The annotation itself was already loaded by the endpoint, so only the
+   * scene and the title check need SQL. A title is only checked when the update replaces it.
+   */
+  UpdateContext forUpdate(
+      UUID sceneId, UUID annotationId, CurrentAnnotation current, String replacementTitle) {
+    SceneFacts scene = sceneFacts(sceneId);
+    boolean usedByAnother =
+        scene instanceof SceneFound
+            && replacementTitle != null
+            && titleUsedByAnother(sceneId, annotationId, replacementTitle);
+    return new UpdateContext(scene, current, usedByAnother);
+  }
+
+  private boolean titleUsedByAnother(UUID sceneId, UUID annotationId, String title) {
+    return jdbc.sql(
+            "SELECT EXISTS (SELECT 1 FROM annotation WHERE scene_id = :sceneId"
+                + " AND lower(title) = lower(:title) AND id <> :id)")
+        .param("sceneId", sceneId)
+        .param("title", title)
+        .param("id", annotationId)
+        .query(Boolean.class)
+        .single();
   }
 
   private SceneFacts sceneFacts(UUID sceneId) {

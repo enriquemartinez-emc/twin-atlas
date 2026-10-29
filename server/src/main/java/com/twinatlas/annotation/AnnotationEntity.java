@@ -20,6 +20,8 @@ import org.locationtech.jts.geom.Geometry;
 class AnnotationEntity {
 
   static final String DRAFT = "DRAFT";
+  static final String PUBLISHED = "PUBLISHED";
+  static final String ARCHIVED = "ARCHIVED";
 
   @Id private UUID id;
 

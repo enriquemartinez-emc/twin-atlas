@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 public enum ApiError {
   VALIDATION_FAILED(HttpStatus.BAD_REQUEST, "Request validation failed"),
   REQUEST_INVALID(HttpStatus.BAD_REQUEST, "Request is invalid"),
+  PRECONDITION_REQUIRED(HttpStatus.PRECONDITION_REQUIRED, "A version is required"),
   INVALID_CURSOR(HttpStatus.BAD_REQUEST, "The cursor is not valid"),
   NOT_FOUND(HttpStatus.NOT_FOUND, "Resource not found"),
   CONCURRENT_MODIFICATION(HttpStatus.CONFLICT, "The resource was modified concurrently"),

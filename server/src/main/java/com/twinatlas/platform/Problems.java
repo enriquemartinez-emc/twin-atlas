@@ -26,8 +26,13 @@ public final class Problems {
   public static ResponseEntity<ProblemDetail> from(Rejection rejection) {
     HttpStatus status =
         switch (rejection) {
-          case SCENE_NOT_FOUND -> HttpStatus.NOT_FOUND;
-          case INVALID_GEOMETRY, GEOMETRY_OUTSIDE_SCENE_EXTENT -> HttpStatus.UNPROCESSABLE_ENTITY;
+          case SCENE_NOT_FOUND, ANNOTATION_NOT_FOUND -> HttpStatus.NOT_FOUND;
+          case INVALID_GEOMETRY,
+              GEOMETRY_OUTSIDE_SCENE_EXTENT,
+              GEOMETRY_KIND_MISMATCH,
+              TEXT_ONLY_FOR_NOTES ->
+              HttpStatus.UNPROCESSABLE_ENTITY;
+          case STALE_VERSION -> HttpStatus.PRECONDITION_FAILED;
           case TITLE_ALREADY_USED -> HttpStatus.CONFLICT;
         };
     String title =
@@ -36,6 +41,10 @@ public final class Problems {
           case INVALID_GEOMETRY -> "Invalid geometry";
           case GEOMETRY_OUTSIDE_SCENE_EXTENT -> "Geometry outside the scene";
           case TITLE_ALREADY_USED -> "Title already used";
+          case ANNOTATION_NOT_FOUND -> "Annotation not found";
+          case STALE_VERSION -> "Annotation changed";
+          case GEOMETRY_KIND_MISMATCH -> "Wrong kind of shape";
+          case TEXT_ONLY_FOR_NOTES -> "Text is only for notes";
         };
     String detail =
         switch (rejection) {
@@ -45,6 +54,11 @@ public final class Problems {
           case GEOMETRY_OUTSIDE_SCENE_EXTENT ->
               "The geometry is not fully inside the scene extent.";
           case TITLE_ALREADY_USED -> "Another annotation in this scene already uses this title.";
+          case ANNOTATION_NOT_FOUND -> "The annotation does not exist in this scene.";
+          case STALE_VERSION ->
+              "The annotation changed since you read it. Load the latest version and try again.";
+          case GEOMETRY_KIND_MISMATCH -> "Markers and notes need a point, outlines need a polygon.";
+          case TEXT_ONLY_FOR_NOTES -> "Only notes have text.";
         };
     ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
     problem.setTitle(title);

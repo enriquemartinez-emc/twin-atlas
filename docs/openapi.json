@@ -412,6 +412,166 @@
         "summary" : "Annotations that intersect a zone",
         "tags" : [ "annotation-read-endpoints" ]
       }
+    },
+    "/api/scenes/{sceneId}/annotations/{id}" : {
+      "get" : {
+        "description" : "The ETag header is the version to send back as If-Match when updating.",
+        "operationId" : "getAnnotation",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        } ],
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationResponse"
+                }
+              }
+            },
+            "description" : "OK"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND or ANNOTATION_NOT_FOUND"
+          }
+        },
+        "summary" : "Get one annotation",
+        "tags" : [ "get-annotation-endpoint" ]
+      },
+      "patch" : {
+        "description" : "Send only what changes. Send the ETag you read as If-Match: if the annotation changed since, the answer is 412 and nothing is written. The answer carries the new ETag.",
+        "operationId" : "updateAnnotation",
+        "parameters" : [ {
+          "in" : "path",
+          "name" : "sceneId",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "in" : "path",
+          "name" : "id",
+          "required" : true,
+          "schema" : {
+            "type" : "string",
+            "format" : "uuid"
+          }
+        }, {
+          "description" : "The ETag from the response you read, for example \"3\"",
+          "in" : "header",
+          "name" : "If-Match",
+          "required" : true,
+          "schema" : {
+            "type" : "string"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "application/json" : {
+              "schema" : {
+                "$ref" : "#/components/schemas/UpdateAnnotationRequest"
+              }
+            }
+          },
+          "required" : true
+        },
+        "responses" : {
+          "200" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/AnnotationResponse"
+                }
+              }
+            },
+            "description" : "Updated"
+          },
+          "400" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "VALIDATION_FAILED or REQUEST_INVALID"
+          },
+          "404" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "SCENE_NOT_FOUND or ANNOTATION_NOT_FOUND"
+          },
+          "409" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "TITLE_ALREADY_USED or CONCURRENT_MODIFICATION"
+          },
+          "412" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "STALE_VERSION"
+          },
+          "422" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "INVALID_GEOMETRY, GEOMETRY_OUTSIDE_SCENE_EXTENT, GEOMETRY_KIND_MISMATCH or TEXT_ONLY_FOR_NOTES"
+          },
+          "428" : {
+            "content" : {
+              "*/*" : {
+                "schema" : {
+                  "$ref" : "#/components/schemas/ProblemResponse"
+                }
+              }
+            },
+            "description" : "PRECONDITION_REQUIRED: If-Match is missing"
+          }
+        },
+        "summary" : "Rename, retext or move an annotation",
+        "tags" : [ "update-annotation-endpoint" ]
+      }
     }
   },
   "components" : {
@@ -620,7 +780,7 @@
           "code" : {
             "type" : "string",
             "description" : "Stable machine-readable error code",
-            "enum" : [ "CONCURRENT_MODIFICATION", "GEOMETRY_OUTSIDE_SCENE_EXTENT", "INTERNAL_ERROR", "INVALID_CURSOR", "INVALID_GEOMETRY", "NOT_FOUND", "REQUEST_INVALID", "SCENE_NOT_FOUND", "TITLE_ALREADY_USED", "VALIDATION_FAILED" ]
+            "enum" : [ "ANNOTATION_NOT_FOUND", "CONCURRENT_MODIFICATION", "GEOMETRY_KIND_MISMATCH", "GEOMETRY_OUTSIDE_SCENE_EXTENT", "INTERNAL_ERROR", "INVALID_CURSOR", "INVALID_GEOMETRY", "NOT_FOUND", "PRECONDITION_REQUIRED", "REQUEST_INVALID", "SCENE_NOT_FOUND", "STALE_VERSION", "TEXT_ONLY_FOR_NOTES", "TITLE_ALREADY_USED", "VALIDATION_FAILED" ]
           },
           "detail" : {
             "type" : "string"
@@ -678,6 +838,28 @@
           }
         },
         "required" : [ "zone" ]
+      },
+      "UpdateAnnotationRequest" : {
+        "type" : "object",
+        "properties" : {
+          "body" : {
+            "type" : [ "string", "null" ],
+            "description" : "New text. Only notes have text",
+            "maxLength" : 2000,
+            "minLength" : 0,
+            "pattern" : ".*\\S.*"
+          },
+          "geometry" : {
+            "$ref" : "#/components/schemas/GeoJsonGeometry"
+          },
+          "title" : {
+            "type" : [ "string", "null" ],
+            "description" : "New title",
+            "maxLength" : 120,
+            "minLength" : 0,
+            "pattern" : ".*\\S.*"
+          }
+        }
       }
     }
   }
