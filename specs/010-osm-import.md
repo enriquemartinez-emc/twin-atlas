@@ -1,6 +1,6 @@
 # 010 — OSM import
 
-**Status:** In progress | **Branch:** `feat/osm-import`
+**Status:** Done | **Branch:** `feat/osm-import`
 
 ## Description
 
