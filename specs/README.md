@@ -39,3 +39,4 @@ Two or three sentences.
 
 - ...
 ```
+| 014 | [Annotation update (rename and move)](014-annotation-update.md) | `feat/annotation-update`        | Proposed    |
