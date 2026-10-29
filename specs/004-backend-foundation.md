@@ -1,6 +1,6 @@
 # 004 — Backend foundation
 
-**Status:** In progress | **Branch:** `chore/backend-foundation`
+**Status:** Done | **Branch:** `chore/backend-foundation`
 
 ## Description
 

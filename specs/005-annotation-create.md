@@ -1,6 +1,6 @@
 # 005 — Annotation create (FCIS reference slice)
 
-**Status:** In progress | **Branch:** `feat/annotation-create`
+**Status:** Done | **Branch:** `feat/annotation-create`
 
 ## Description
 

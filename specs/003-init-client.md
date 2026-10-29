@@ -1,6 +1,6 @@
 # 003 — Angular 22 client init
 
-**Status:** In progress | **Branch:** `chore/init-client`
+**Status:** Done | **Branch:** `chore/init-client`
 
 ## Description
 

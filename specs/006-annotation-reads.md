@@ -1,6 +1,6 @@
 # 006 — Annotation spatial reads
 
-**Status:** In progress | **Branch:** `feat/annotation-reads`
+**Status:** Done | **Branch:** `feat/annotation-reads`
 
 ## Description
 
