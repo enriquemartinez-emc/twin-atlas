@@ -16,12 +16,13 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 008 | [Annotation UI and SDK](008-annotation-ui.md)              | `feat/annotation-ui`             | Done       |
 | 009 | [Benchmark dataset](009-benchmark-dataset.md)              | `chore/benchmark-dataset`        | Done       |
 | 010 | [OSM import](010-osm-import.md)                            | `feat/osm-import`                | Done        |
-| 011 | [Security and integrations](011-security-and-integrations.md) | `feat/security-and-integrations` | Proposed   |
+| 011 | [Security and integrations](011-security-and-integrations.md) | `feat/security-and-integrations` | Paused     |
 | 012 | [Portfolio polish](012-portfolio-polish.md)                | `docs/portfolio-polish`          | Proposed   |
 | 013 | [E2E tests (run only on approval)](013-e2e-tests.md)       | `test/e2e`                       | Proposed   |
 | 014 | [Annotation update (rename and move)](014-annotation-update.md) | `feat/annotation-update`        | Done        |
 | 015 | [HTML documentation](015-html-docs.md)                     | `docs/html-docs`                 | Done       |
 | 016 | [Shared kernel and server cleanup](016-shared-kernel-and-cleanup.md) | `chore/shared-kernel` | Done        |
+| 017 | [Figtree font and a Spartan-built UI](017-ui-figtree-and-spartan.md) | `feat/ui-figtree-spartan` | In progress |
 
 ## File template
 

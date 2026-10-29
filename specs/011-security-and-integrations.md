@@ -1,8 +1,10 @@
 # 011 — Security and integrations
 
-**Status:** Proposed | **Branch:** `feat/security-and-integrations`
+**Status:** Paused | **Branch:** `feat/security-and-integrations`
 
 ## Description
+
+> Paused on 2026-10-29 by the owner: too complex for a demo project. Nothing here is started, and it should not be proposed again unprompted. It would also lock the write endpoints, which the screen (no login) relies on.
 
 Make the API usable by outside systems: JWT resource server, API versioning, and a small example integration that uses only the generated SDK. This is the "APIs and SDKs with developer feedback" story.
 
