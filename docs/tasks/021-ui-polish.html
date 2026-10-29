@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>UI polish and a guide - Twin Atlas docs</title>
+<meta name="description" content="UI polish: the app&#39;s own icon and name, and a guide for new users.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>UI polish and a guide</h1>
+<div class="tags"><span class="tag c-white">Task 021</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>feat/ui-polish</code></span></div>
+<p class="lead">The app has its own icon and name instead of the Angular starter&#39;s, the form tells you what to do next once you have placed something, and the README now says what the app is for, how to use it, and what is worth a reviewer&#39;s time.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Reload the app&#39;s tab: the title reads "Twin Atlas" and the tab shows a white map pin on a dark square. Place a marker and watch the hint change from "Click the map to place the marker" to "Placed. Add a title and save, or click again to move it." Then open the README at the top of the repository. I have not looked at the icon in a real tab.</p></aside>
+<h2>What was built</h2>
+<ul>
+<li><strong>The app&#39;s own icon.</strong> A white map pin on a dark square, drawn by hand as an SVG, plus two PNG versions for browsers that ignore SVG icons and for the home screen. Angular&#39;s icon file is removed. No tool or package was added: the PNGs were drawn from the SVG by the Chromium that was already installed.</li>
+<li><strong>A real page title.</strong> It was "Client", the starter&#39;s default. It now reads "Twin Atlas", with a description and a theme colour.</li>
+<li><strong>A hint that moves on.</strong> After you place a marker, the form no longer asks you to click the map again. A note and an outline have their own wording.</li>
+<li><strong>A README for a newcomer.</strong> It says what problem the app solves and what it is not, walks through a first five-minute session in the order that makes sense (make a scene, add a marker, find it, edit it, watch a conflict being refused, share a link, load real map data), and ends with what a reviewer should look at, each point with its evidence.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 900 225" width="900" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The app icon at its sizes</title><desc id="d">A white map pin on a dark square, shown as the small tab icon, the 48 pixel fallback, the scalable SVG and the full-bleed home screen icon.</desc><g transform="translate(60,80) scale(0.25)"><rect width="64" height="64" rx="3.5" fill="#171717"/><path fill="#ffffff" d="M32 11c-9.4 0-17 7.2-17 16.2C15 39.4 32 54 32 54s17-14.6 17-26.8C49 18.2 41.4 11 32 11z"/><circle cx="32" cy="27" r="6.5" fill="#171717"/></g><text class="t-small" x="40" y="130">16 px, the tab</text><g transform="translate(260,60) scale(0.75)"><rect width="64" height="64" rx="14" fill="#171717"/><path fill="#ffffff" d="M32 11c-9.4 0-17 7.2-17 16.2C15 39.4 32 54 32 54s17-14.6 17-26.8C49 18.2 41.4 11 32 11z"/><circle cx="32" cy="27" r="6.5" fill="#171717"/></g><text class="t-small" x="240" y="130">48 px, fallback PNG</text><g transform="translate(500,20) scale(2.5)"><rect width="64" height="64" rx="14" fill="#171717"/><path fill="#ffffff" d="M32 11c-9.4 0-17 7.2-17 16.2C15 39.4 32 54 32 54s17-14.6 17-26.8C49 18.2 41.4 11 32 11z"/><circle cx="32" cy="27" r="6.5" fill="#171717"/></g><text class="t-small" x="500" y="205">SVG, any size</text><g transform="translate(720,20) scale(2.5)"><rect width="64" height="64" rx="0" fill="#171717"/><path fill="#ffffff" d="M32 11c-9.4 0-17 7.2-17 16.2C15 39.4 32 54 32 54s17-14.6 17-26.8C49 18.2 41.4 11 32 11z"/><circle cx="32" cy="27" r="6.5" fill="#171717"/></g><text class="t-small" x="715" y="205">180 px, home screen</text></svg></div><figcaption>One drawing, four uses.</figcaption></figure><div class="col">
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Icons</td><td class="">The three icon files were rendered and then looked at as images. The build output contains them, the old Angular <code>favicon.ico</code> is not in it, and the page title in the build is "Twin Atlas".</td></tr><tr><td class="">Tests</td><td class="">197 client tests pass (3 new, for the hint). Breaking the hint on purpose fails two of them. Two older tests were asserting the old wording while the fixture had the shape already placed, and now say what they mean.</td></tr><tr><td class="">README</td><td class="">Every step of the first session was checked against the code and the app&#39;s own texts. The import commands match what I ran against the live server earlier (35 of 35, and a repeat adds nothing). Its 24 links resolve.</td></tr><tr><td class="">Build</td><td class="">Lint with the class check, formatting and the production build are clean.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>How the icon looks in a real browser tab, and the README&#39;s seventh step, where the address bar follows your selection. That one is covered by router tests only. Both need a look in a browser.</p></div>
+<h2>Left for later</h2>
+<ul>
+<li>Map labels overlap where markers are dense.</li>
+<li>Imported titles such as "OSM node/1361887169" are noisy.</li>
+<li>A separate user guide in <code>docs/</code>. The README carries the five-minute path for now, and a fuller guide would belong in the documentation site if the app grows.</li>
+</ul>
+</div>
+<nav class="pager" aria-label="Pages"><a href="020-spring-structure.html">Previous: Spring Boot structure</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>
