@@ -21,7 +21,7 @@ interface AnnotationMapper {
   @Mapping(target = "kind", expression = "java(AnnotationKind.of(draft.shape()))")
   @Mapping(target = "body", expression = "java(AnnotationKind.bodyOf(draft.shape()))")
   @Mapping(target = "geom", expression = "java(draft.shape().geometry())")
-  @Mapping(target = "status", constant = AnnotationEntity.DRAFT)
+  @Mapping(target = "status", constant = "DRAFT")
   AnnotationEntity toEntity(Draft draft);
 
   @Mapping(target = "geometry", source = "geom")
@@ -46,16 +46,15 @@ interface AnnotationMapper {
   default Annotation toDomain(AnnotationEntity entity) {
     Shape shape = shapeOf(entity);
     return switch (entity.getStatus()) {
-      case AnnotationEntity.DRAFT ->
+      case DRAFT ->
           new Draft(
               entity.getId(), entity.getSceneId(), entity.getTitle(), shape, entity.getCreatedAt());
-      case AnnotationEntity.PUBLISHED ->
+      case PUBLISHED ->
           new Published(
               entity.getId(), entity.getSceneId(), entity.getTitle(), shape, entity.getCreatedAt());
-      case AnnotationEntity.ARCHIVED ->
+      case ARCHIVED ->
           new Archived(
               entity.getId(), entity.getSceneId(), entity.getTitle(), shape, entity.getCreatedAt());
-      default -> throw new IllegalStateException("Unknown annotation status " + entity.getStatus());
     };
   }
 

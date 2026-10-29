@@ -1,21 +1,21 @@
 package com.twinatlas.annotation.core;
 
-import static com.twinatlas.platform.core.Decision.accepted;
-import static com.twinatlas.platform.core.Decision.rejected;
-import static com.twinatlas.platform.core.Rejection.ANNOTATION_NOT_FOUND;
-import static com.twinatlas.platform.core.Rejection.GEOMETRY_KIND_MISMATCH;
-import static com.twinatlas.platform.core.Rejection.GEOMETRY_OUTSIDE_SCENE_EXTENT;
-import static com.twinatlas.platform.core.Rejection.INVALID_GEOMETRY;
-import static com.twinatlas.platform.core.Rejection.SCENE_NOT_FOUND;
-import static com.twinatlas.platform.core.Rejection.STALE_VERSION;
-import static com.twinatlas.platform.core.Rejection.TEXT_ONLY_FOR_NOTES;
-import static com.twinatlas.platform.core.Rejection.TITLE_ALREADY_USED;
+import static com.twinatlas.platform.kernel.Decision.accepted;
+import static com.twinatlas.platform.kernel.Decision.rejected;
+import static com.twinatlas.platform.kernel.Rejection.ANNOTATION_NOT_FOUND;
+import static com.twinatlas.platform.kernel.Rejection.GEOMETRY_KIND_MISMATCH;
+import static com.twinatlas.platform.kernel.Rejection.GEOMETRY_OUTSIDE_SCENE_EXTENT;
+import static com.twinatlas.platform.kernel.Rejection.INVALID_GEOMETRY;
+import static com.twinatlas.platform.kernel.Rejection.SCENE_NOT_FOUND;
+import static com.twinatlas.platform.kernel.Rejection.STALE_VERSION;
+import static com.twinatlas.platform.kernel.Rejection.TEXT_ONLY_FOR_NOTES;
+import static com.twinatlas.platform.kernel.Rejection.TITLE_ALREADY_USED;
 
 import com.twinatlas.annotation.core.Change.Replace;
 import com.twinatlas.annotation.core.CurrentAnnotation.Present;
 import com.twinatlas.annotation.core.SceneFacts.SceneFound;
-import com.twinatlas.platform.core.Decision;
-import com.twinatlas.platform.core.Wgs84;
+import com.twinatlas.geo.Wgs84;
+import com.twinatlas.platform.kernel.Decision;
 import org.locationtech.jts.geom.Geometry;
 
 /**

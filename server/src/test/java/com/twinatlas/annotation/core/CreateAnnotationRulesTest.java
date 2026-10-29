@@ -1,9 +1,9 @@
 package com.twinatlas.annotation.core;
 
-import static com.twinatlas.platform.core.Rejection.GEOMETRY_OUTSIDE_SCENE_EXTENT;
-import static com.twinatlas.platform.core.Rejection.INVALID_GEOMETRY;
-import static com.twinatlas.platform.core.Rejection.SCENE_NOT_FOUND;
-import static com.twinatlas.platform.core.Rejection.TITLE_ALREADY_USED;
+import static com.twinatlas.platform.kernel.Rejection.GEOMETRY_OUTSIDE_SCENE_EXTENT;
+import static com.twinatlas.platform.kernel.Rejection.INVALID_GEOMETRY;
+import static com.twinatlas.platform.kernel.Rejection.SCENE_NOT_FOUND;
+import static com.twinatlas.platform.kernel.Rejection.TITLE_ALREADY_USED;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.twinatlas.annotation.core.SceneFacts.NoScene;
@@ -11,10 +11,11 @@ import com.twinatlas.annotation.core.SceneFacts.SceneFound;
 import com.twinatlas.annotation.core.Shape.Marker;
 import com.twinatlas.annotation.core.Shape.Note;
 import com.twinatlas.annotation.core.Shape.Outline;
-import com.twinatlas.platform.core.Decision;
-import com.twinatlas.platform.core.Decision.Accepted;
-import com.twinatlas.platform.core.Decision.Rejected;
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.geo.Wgs84;
+import com.twinatlas.platform.kernel.Decision;
+import com.twinatlas.platform.kernel.Decision.Accepted;
+import com.twinatlas.platform.kernel.Decision.Rejected;
+import com.twinatlas.platform.kernel.Rejection;
 import java.util.UUID;
 import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
@@ -70,7 +71,7 @@ class CreateAnnotationRulesTest {
         Arguments.of(
             "empty polygon",
             SCENE_AND_FREE_TITLE,
-            new Outline(Geo.FACTORY.createPolygon()),
+            new Outline(Wgs84.FACTORY.createPolygon()),
             INVALID_GEOMETRY),
         Arguments.of(
             "longitude beyond the world",

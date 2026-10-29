@@ -5,16 +5,14 @@ import com.twinatlas.annotation.core.Shape;
 import com.twinatlas.annotation.core.Shape.Marker;
 import com.twinatlas.annotation.core.Shape.Note;
 import com.twinatlas.annotation.core.Shape.Outline;
+import com.twinatlas.geo.Wgs84;
 import com.twinatlas.importing.core.OsmElement.Node;
 import com.twinatlas.importing.core.OsmElement.Unsupported;
 import com.twinatlas.importing.core.OsmElement.Way;
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 
 /**
  * Total transforms from OpenStreetMap elements to the commands the annotation core already
@@ -22,9 +20,6 @@ import org.locationtech.jts.geom.PrecisionModel;
  * that. This only says what an element would become, or why it cannot become anything.
  */
 public final class OsmTransform {
-
-  /** Same reference system as everything else: WGS 84. */
-  private static final GeometryFactory GEOMETRY = new GeometryFactory(new PrecisionModel(), 4326);
 
   private static final int MAX_TITLE = 120;
   private static final int MAX_TEXT = 2000;
@@ -41,16 +36,15 @@ public final class OsmTransform {
 
   public static Conversion convert(UUID sceneId, OsmElement element) {
     return switch (element) {
-      case Unsupported unsupported ->
+      case Unsupported _ ->
           new Conversion.Unconvertible(element.reference(), Rejection.UNSUPPORTED_SOURCE_ELEMENT);
-      case Node node when node.tags().isEmpty() ->
-          new Conversion.Unconvertible(element.reference(), Rejection.UNTAGGED_ELEMENT);
-      case Way way when way.tags().isEmpty() ->
+      case OsmElement untagged when untagged.tags().isEmpty() ->
           new Conversion.Unconvertible(element.reference(), Rejection.UNTAGGED_ELEMENT);
       case Node node -> converted(sceneId, node, pin(node));
       case Way way ->
           isClosedRing(way.points())
-              ? converted(sceneId, way, new Outline(GEOMETRY.createPolygon(ring(way.points()))))
+              ? converted(
+                  sceneId, way, new Outline(Wgs84.FACTORY.createPolygon(ring(way.points()))))
               : new Conversion.Unconvertible(element.reference(), Rejection.OPEN_WAY);
     };
   }
@@ -62,7 +56,7 @@ public final class OsmTransform {
    */
   public static String titleFor(OsmElement element) {
     String reference = element.reference();
-    String name = tagsOf(element).getOrDefault("name", "").trim();
+    String name = element.tags().getOrDefault("name", "").trim();
     if (name.isEmpty()) {
       return "OSM " + reference;
     }
@@ -81,7 +75,8 @@ public final class OsmTransform {
 
   /** A pin, or a note when the place carries a description. */
   private static Shape pin(Node node) {
-    var point = GEOMETRY.createPoint(new Coordinate(node.position().lon(), node.position().lat()));
+    var point =
+        Wgs84.FACTORY.createPoint(new Coordinate(node.position().lon(), node.position().lat()));
     String text = firstNonBlank(node.tags().get("description"), node.tags().get("note"));
     return text.isEmpty() ? new Marker(point) : new Note(point, clip(text, MAX_TEXT));
   }
@@ -92,14 +87,6 @@ public final class OsmTransform {
 
   private static Coordinate[] ring(List<Position> points) {
     return points.stream().map(p -> new Coordinate(p.lon(), p.lat())).toArray(Coordinate[]::new);
-  }
-
-  private static Map<String, String> tagsOf(OsmElement element) {
-    return switch (element) {
-      case Node node -> node.tags();
-      case Way way -> way.tags();
-      case Unsupported unsupported -> Map.of();
-    };
   }
 
   private static String firstNonBlank(String first, String second) {

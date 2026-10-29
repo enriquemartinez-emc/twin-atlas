@@ -1,7 +1,7 @@
 package com.twinatlas.importing.core;
 
 import com.twinatlas.annotation.core.CreateAnnotation;
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import java.util.List;
 
 /** What a batch will do: the annotations to create, and every element that was turned away. */

@@ -13,6 +13,6 @@ public record AnnotationSummary(
     @NotNull AnnotationKind kind,
     @NotNull String title,
     @Schema(nullable = true, description = "Only notes carry text") String body,
-    @NotNull String status,
+    @NotNull AnnotationStatus status,
     @NotNull Instant createdAt,
     @NotNull @Schema(ref = "#/components/schemas/GeoJsonGeometry") JsonNode geometry) {}

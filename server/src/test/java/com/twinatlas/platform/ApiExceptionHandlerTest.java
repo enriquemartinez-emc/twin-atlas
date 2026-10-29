@@ -67,6 +67,24 @@ class ApiExceptionHandlerTest {
   }
 
   @Test
+  void aUrlThatMatchesNoRouteIsANotFoundProblem() {
+    assertThat(mvc.get().uri("/probe/does-not-exist"))
+        .hasStatus(404)
+        .bodyJson()
+        .extractingPath("$.code")
+        .isEqualTo("NOT_FOUND");
+  }
+
+  @Test
+  void anUnsupportedMethodIsARequestInvalidProblem() {
+    assertThat(mvc.post().uri("/probe/conflict"))
+        .hasStatus(405)
+        .bodyJson()
+        .extractingPath("$.code")
+        .isEqualTo("REQUEST_INVALID");
+  }
+
+  @Test
   void optimisticLockFailureIsAConflictProblem() {
     assertThat(mvc.get().uri("/probe/conflict"))
         .hasStatus(409)

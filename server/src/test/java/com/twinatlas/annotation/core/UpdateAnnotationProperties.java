@@ -1,16 +1,16 @@
 package com.twinatlas.annotation.core;
 
-import static com.twinatlas.platform.core.Rejection.GEOMETRY_OUTSIDE_SCENE_EXTENT;
-import static com.twinatlas.platform.core.Rejection.STALE_VERSION;
+import static com.twinatlas.platform.kernel.Rejection.GEOMETRY_OUTSIDE_SCENE_EXTENT;
+import static com.twinatlas.platform.kernel.Rejection.STALE_VERSION;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.twinatlas.annotation.core.Annotation.Draft;
 import com.twinatlas.annotation.core.CurrentAnnotation.Present;
 import com.twinatlas.annotation.core.SceneFacts.SceneFound;
 import com.twinatlas.annotation.core.Shape.Marker;
-import com.twinatlas.platform.core.Decision;
-import com.twinatlas.platform.core.Decision.Accepted;
-import com.twinatlas.platform.core.Decision.Rejected;
+import com.twinatlas.platform.kernel.Decision;
+import com.twinatlas.platform.kernel.Decision.Accepted;
+import com.twinatlas.platform.kernel.Decision.Rejected;
 import java.time.Instant;
 import java.util.UUID;
 import net.jqwik.api.Arbitraries;

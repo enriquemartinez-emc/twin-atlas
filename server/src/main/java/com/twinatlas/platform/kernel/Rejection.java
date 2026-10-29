@@ -1,4 +1,4 @@
-package com.twinatlas.platform.core;
+package com.twinatlas.platform.kernel;
 
 /**
  * Stable codes for every way a use case can refuse a command. Codes, never messages or HTTP

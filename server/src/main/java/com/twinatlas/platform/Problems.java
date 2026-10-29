@@ -1,6 +1,6 @@
 package com.twinatlas.platform;
 
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
 import org.springframework.http.ResponseEntity;
@@ -19,62 +19,79 @@ public final class Problems {
     return problem;
   }
 
+  /** The response for an error that is not a domain rejection. */
+  public static ResponseEntity<ProblemDetail> response(ApiError error, String detail) {
+    ProblemDetail problem = of(error, detail);
+    return ResponseEntity.status(error.status()).body(problem);
+  }
+
+  /** HTTP status, title and detail of one rejection. */
+  private record Mapping(HttpStatus status, String title, String detail) {}
+
   /**
    * The single exhaustive mapping from a domain rejection to a problem. A new code must be mapped
-   * here.
+   * here, once.
    */
   public static ResponseEntity<ProblemDetail> from(Rejection rejection) {
-    HttpStatus status =
-        switch (rejection) {
-          case SCENE_NOT_FOUND, ANNOTATION_NOT_FOUND -> HttpStatus.NOT_FOUND;
-          case INVALID_GEOMETRY,
-              GEOMETRY_OUTSIDE_SCENE_EXTENT,
-              GEOMETRY_KIND_MISMATCH,
-              TEXT_ONLY_FOR_NOTES,
-              UNSUPPORTED_SOURCE_ELEMENT,
-              OPEN_WAY,
-              UNTAGGED_ELEMENT ->
-              HttpStatus.UNPROCESSABLE_ENTITY;
-          case STALE_VERSION -> HttpStatus.PRECONDITION_FAILED;
-          case TITLE_ALREADY_USED -> HttpStatus.CONFLICT;
-        };
-    String title =
-        switch (rejection) {
-          case SCENE_NOT_FOUND -> "Scene not found";
-          case INVALID_GEOMETRY -> "Invalid geometry";
-          case GEOMETRY_OUTSIDE_SCENE_EXTENT -> "Geometry outside the scene";
-          case TITLE_ALREADY_USED -> "Title already used";
-          case ANNOTATION_NOT_FOUND -> "Annotation not found";
-          case STALE_VERSION -> "Annotation changed";
-          case GEOMETRY_KIND_MISMATCH -> "Wrong kind of shape";
-          case TEXT_ONLY_FOR_NOTES -> "Text is only for notes";
-          case UNSUPPORTED_SOURCE_ELEMENT -> "Unsupported source element";
-          case OPEN_WAY -> "Way is not an area";
-          case UNTAGGED_ELEMENT -> "Element has no tags";
-        };
-    String detail =
-        switch (rejection) {
-          case SCENE_NOT_FOUND -> "The scene does not exist.";
-          case INVALID_GEOMETRY ->
-              "The geometry is empty, self-intersecting or outside the WGS 84 world.";
-          case GEOMETRY_OUTSIDE_SCENE_EXTENT ->
-              "The geometry is not fully inside the scene extent.";
-          case TITLE_ALREADY_USED -> "Another annotation in this scene already uses this title.";
-          case ANNOTATION_NOT_FOUND -> "The annotation does not exist in this scene.";
-          case STALE_VERSION ->
-              "The annotation changed since you read it. Load the latest version and try again.";
-          case GEOMETRY_KIND_MISMATCH -> "Markers and notes need a point, outlines need a polygon.";
-          case TEXT_ONLY_FOR_NOTES -> "Only notes have text.";
-          case UNSUPPORTED_SOURCE_ELEMENT ->
-              "Only nodes and ways can be imported, and they need coordinates.";
-          case OPEN_WAY ->
-              "A way becomes an outline only when it is a closed ring of at least four points.";
-          case UNTAGGED_ELEMENT ->
-              "An element with no tags says nothing about the place, so it is not imported.";
-        };
-    ProblemDetail problem = ProblemDetail.forStatusAndDetail(status, detail);
-    problem.setTitle(title);
+    Mapping mapping = mappingOf(rejection);
+    ProblemDetail problem = ProblemDetail.forStatusAndDetail(mapping.status(), mapping.detail());
+    problem.setTitle(mapping.title());
     problem.setProperty(CODE, rejection.name());
-    return ResponseEntity.status(status).body(problem);
+    return ResponseEntity.status(mapping.status()).body(problem);
+  }
+
+  private static Mapping mappingOf(Rejection rejection) {
+    return switch (rejection) {
+      case SCENE_NOT_FOUND ->
+          new Mapping(HttpStatus.NOT_FOUND, "Scene not found", "The scene does not exist.");
+      case ANNOTATION_NOT_FOUND ->
+          new Mapping(
+              HttpStatus.NOT_FOUND,
+              "Annotation not found",
+              "The annotation does not exist in this scene.");
+      case INVALID_GEOMETRY ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT,
+              "Invalid geometry",
+              "The geometry is empty, self-intersecting or outside the WGS 84 world.");
+      case GEOMETRY_OUTSIDE_SCENE_EXTENT ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT,
+              "Geometry outside the scene",
+              "The geometry is not fully inside the scene extent.");
+      case GEOMETRY_KIND_MISMATCH ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT,
+              "Wrong kind of shape",
+              "Markers and notes need a point, outlines need a polygon.");
+      case TEXT_ONLY_FOR_NOTES ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT, "Text is only for notes", "Only notes have text.");
+      case UNSUPPORTED_SOURCE_ELEMENT ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT,
+              "Unsupported source element",
+              "Only nodes and ways can be imported, and they need coordinates.");
+      case OPEN_WAY ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT,
+              "Way is not an area",
+              "A way becomes an outline only when it is a closed ring of at least four points.");
+      case UNTAGGED_ELEMENT ->
+          new Mapping(
+              HttpStatus.UNPROCESSABLE_CONTENT,
+              "Element has no tags",
+              "An element with no tags says nothing about the place, so it is not imported.");
+      case STALE_VERSION ->
+          new Mapping(
+              HttpStatus.PRECONDITION_FAILED,
+              "Annotation changed",
+              "The annotation changed since you read it. Load the latest version and try again.");
+      case TITLE_ALREADY_USED ->
+          new Mapping(
+              HttpStatus.CONFLICT,
+              "Title already used",
+              "Another annotation in this scene already uses this title.");
+    };
   }
 }

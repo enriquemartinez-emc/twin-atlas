@@ -1,6 +1,6 @@
 package com.twinatlas.platform;
 
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
 import io.swagger.v3.oas.models.media.ArraySchema;

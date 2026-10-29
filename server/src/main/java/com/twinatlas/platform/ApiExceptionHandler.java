@@ -68,36 +68,41 @@ public class ApiExceptionHandler extends ResponseEntityExceptionHandler {
       HttpHeaders headers,
       HttpStatusCode statusCode,
       WebRequest request) {
-    if (body instanceof ProblemDetail problem
+    // For exceptions that describe themselves (no route, wrong method...) the body is built in
+    // super, so the code is added to whatever comes back.
+    ResponseEntity<Object> response =
+        super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    if (response != null
+        && response.getBody() instanceof ProblemDetail problem
         && (problem.getProperties() == null
             || !problem.getProperties().containsKey(Problems.CODE))) {
-      problem.setProperty(
-          Problems.CODE,
-          (statusCode.is5xxServerError() ? ApiError.INTERNAL_ERROR : ApiError.REQUEST_INVALID)
-              .name());
+      problem.setProperty(Problems.CODE, codeFor(statusCode).name());
     }
-    return super.handleExceptionInternal(ex, body, headers, statusCode, request);
+    return response;
+  }
+
+  private static ApiError codeFor(HttpStatusCode status) {
+    if (status.is5xxServerError()) {
+      return ApiError.INTERNAL_ERROR;
+    }
+    return status.value() == 404 ? ApiError.NOT_FOUND : ApiError.REQUEST_INVALID;
   }
 
   @ExceptionHandler(ApiException.class)
   ResponseEntity<ProblemDetail> handleApiException(ApiException ex) {
-    ProblemDetail problem = Problems.of(ex.error(), ex.getMessage());
-    return ResponseEntity.status(problem.getStatus()).body(problem);
+    return Problems.response(ex.error(), ex.getMessage());
   }
 
   @ExceptionHandler(OptimisticLockingFailureException.class)
   ResponseEntity<ProblemDetail> handleOptimisticLock(OptimisticLockingFailureException ex) {
-    ProblemDetail problem =
-        Problems.of(
-            ApiError.CONCURRENT_MODIFICATION,
-            "The resource changed since you read it. Reload it and try again.");
-    return ResponseEntity.status(problem.getStatus()).body(problem);
+    return Problems.response(
+        ApiError.CONCURRENT_MODIFICATION,
+        "The resource changed since you read it. Reload it and try again.");
   }
 
   @ExceptionHandler(Exception.class)
   ResponseEntity<ProblemDetail> handleUnexpected(Exception ex) {
     log.error("Unhandled exception", ex);
-    ProblemDetail problem = Problems.of(ApiError.INTERNAL_ERROR, "An unexpected error occurred.");
-    return ResponseEntity.status(problem.getStatus()).body(problem);
+    return Problems.response(ApiError.INTERNAL_ERROR, "An unexpected error occurred.");
   }
 }

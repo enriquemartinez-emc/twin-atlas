@@ -3,6 +3,7 @@ package com.twinatlas.platform;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.twinatlas.TestcontainersConfiguration;
+import com.twinatlas.geo.Wgs84;
 import org.junit.jupiter.api.Test;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.GeometryFactory;
@@ -36,7 +37,7 @@ class JtsJsonTest {
     assertThat(tree.get("coordinates").get(0).asDouble()).isEqualTo(2.1744);
     assertThat(tree.get("coordinates").get(1).asDouble()).isEqualTo(41.4036);
     assertThat(parsed.equalsExact(point)).isTrue();
-    assertThat(parsed.getSRID()).isEqualTo(PlatformConfig.SRID);
+    assertThat(parsed.getSRID()).isEqualTo(Wgs84.SRID);
   }
 
   @Test
@@ -56,7 +57,7 @@ class JtsJsonTest {
 
     assertThat(mapper.readTree(json).get("type").asString()).isEqualTo("Polygon");
     assertThat(parsed.equalsExact(polygon)).isTrue();
-    assertThat(parsed.getSRID()).isEqualTo(PlatformConfig.SRID);
+    assertThat(parsed.getSRID()).isEqualTo(Wgs84.SRID);
   }
 
   @Test

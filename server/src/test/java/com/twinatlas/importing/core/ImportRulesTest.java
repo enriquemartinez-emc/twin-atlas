@@ -12,7 +12,7 @@ import com.twinatlas.importing.core.ImportRules.Outcome;
 import com.twinatlas.importing.core.ImportRules.Outcome.Planned;
 import com.twinatlas.importing.core.ImportRules.Outcome.SceneMissing;
 import com.twinatlas.importing.core.OsmElement.Unsupported;
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;

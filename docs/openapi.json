@@ -101,7 +101,7 @@
                 }
               }
             },
-            "description" : "NOT_FOUND"
+            "description" : "SCENE_NOT_FOUND"
           }
         },
         "summary" : "Get a scene",
@@ -678,7 +678,8 @@
             "format" : "uuid"
           },
           "status" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "DRAFT", "PUBLISHED", "ARCHIVED" ]
           },
           "title" : {
             "type" : "string"
@@ -713,7 +714,8 @@
             "format" : "uuid"
           },
           "status" : {
-            "type" : "string"
+            "type" : "string",
+            "enum" : [ "DRAFT", "PUBLISHED", "ARCHIVED" ]
           },
           "title" : {
             "type" : "string"

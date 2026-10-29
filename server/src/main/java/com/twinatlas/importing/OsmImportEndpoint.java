@@ -14,7 +14,7 @@ import com.twinatlas.importing.core.OsmElement;
 import com.twinatlas.importing.core.OsmTransform;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -155,9 +155,9 @@ class OsmImportEndpoint {
 
   private static String kindOf(Shape shape) {
     return switch (shape) {
-      case Marker marker -> "MARKER";
-      case Note note -> "NOTE";
-      case Outline outline -> "OUTLINE";
+      case Marker _ -> "MARKER";
+      case Note _ -> "NOTE";
+      case Outline _ -> "OUTLINE";
     };
   }
 }

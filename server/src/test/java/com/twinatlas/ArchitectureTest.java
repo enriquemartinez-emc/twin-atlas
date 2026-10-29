@@ -2,12 +2,14 @@ package com.twinatlas;
 
 import static com.tngtech.archunit.base.DescribedPredicate.not;
 import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAPackage;
+import static com.tngtech.archunit.core.domain.JavaClass.Predicates.resideInAnyPackage;
 import static com.tngtech.archunit.lang.syntax.ArchRuleDefinition.noClasses;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
 import com.tngtech.archunit.core.importer.ClassFileImporter;
 import com.tngtech.archunit.core.importer.ImportOption;
 import java.util.List;
+import java.util.stream.Stream;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -28,16 +30,36 @@ class ArchitectureTest {
             .importPackages(ROOT);
   }
 
+  /** The cores, the shared kernel and the geometry rules are plain Java. */
   @Test
-  void corePackagesArePure() {
+  void pureCodeIsFreeOfFrameworks() {
     noClasses()
         .that()
-        .resideInAPackage("..core..")
+        .resideInAnyPackage("..core..", ROOT + ".platform.kernel..", ROOT + ".geo..")
         .should()
         .dependOnClassesThat()
         .resideInAnyPackage("org.springframework..", "jakarta..", "org.hibernate..")
         .allowEmptyShould(true)
         .because("the functional core is plain Java: no framework, persistence or I/O")
+        .check(classes);
+  }
+
+  /** What every core shares must not lean on any feature, or on the server code around it. */
+  @Test
+  void sharedKernelAndGeoDependOnNoSliceAndNoShell() {
+    String[] forbidden =
+        Stream.concat(
+                SLICES.stream().map(s -> ROOT + "." + s + ".."), Stream.of(ROOT + ".platform"))
+            .toArray(String[]::new);
+
+    noClasses()
+        .that()
+        .resideInAnyPackage(ROOT + ".platform.kernel..", ROOT + ".geo..")
+        .should()
+        .dependOnClassesThat(
+            resideInAnyPackage(forbidden)
+                .and(not(resideInAnyPackage(ROOT + ".platform.kernel..", ROOT + ".geo.."))))
+        .allowEmptyShould(true)
         .check(classes);
   }
 

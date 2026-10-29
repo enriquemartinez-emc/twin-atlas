@@ -13,5 +13,5 @@ public record AnnotationResponse(
     @NotNull String title,
     @Schema(nullable = true, description = "Only notes carry text") String body,
     @NotNull @Schema(ref = "#/components/schemas/GeoJsonGeometry") Geometry geometry,
-    @NotNull String status,
+    @NotNull AnnotationStatus status,
     @NotNull Instant createdAt) {}

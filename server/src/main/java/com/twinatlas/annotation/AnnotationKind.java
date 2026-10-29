@@ -15,9 +15,9 @@ public enum AnnotationKind {
 
   static AnnotationKind of(Shape shape) {
     return switch (shape) {
-      case Marker marker -> MARKER;
-      case Note note -> NOTE;
-      case Outline outline -> OUTLINE;
+      case Marker _ -> MARKER;
+      case Note _ -> NOTE;
+      case Outline _ -> OUTLINE;
     };
   }
 

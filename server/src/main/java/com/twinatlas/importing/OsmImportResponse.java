@@ -1,6 +1,6 @@
 package com.twinatlas.importing;
 
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import io.swagger.v3.oas.annotations.media.Schema;
 import java.util.List;
 

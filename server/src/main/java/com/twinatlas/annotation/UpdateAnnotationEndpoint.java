@@ -11,8 +11,8 @@ import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.Etags;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
-import com.twinatlas.platform.core.Decision;
-import com.twinatlas.platform.core.Decision.Rejected;
+import com.twinatlas.platform.kernel.Decision;
+import com.twinatlas.platform.kernel.Decision.Rejected;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -102,11 +102,9 @@ class UpdateAnnotationEndpoint {
       @RequestHeader(value = "If-Match", required = false) String ifMatch,
       @Valid @RequestBody UpdateAnnotationRequest request) {
     if (ifMatch == null) {
-      var problem =
-          Problems.of(
-              ApiError.PRECONDITION_REQUIRED,
-              "Send the ETag you read as If-Match, so an update never overwrites a newer version.");
-      return ResponseEntity.status(problem.getStatus()).body(problem);
+      return Problems.response(
+          ApiError.PRECONDITION_REQUIRED,
+          "Send the ETag you read as If-Match, so an update never overwrites a newer version.");
     }
     long expectedVersion = Etags.parseVersion(ifMatch);
     try {

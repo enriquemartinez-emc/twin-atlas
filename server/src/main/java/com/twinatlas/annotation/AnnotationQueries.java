@@ -200,7 +200,7 @@ class AnnotationQueries {
         AnnotationKind.valueOf(rs.getString("kind")),
         rs.getString("title"),
         rs.getString("body"),
-        rs.getString("status"),
+        AnnotationStatus.valueOf(rs.getString("status")),
         rs.getObject("created_at", OffsetDateTime.class).toInstant(),
         json.readTree(rs.getString("geojson")));
   }

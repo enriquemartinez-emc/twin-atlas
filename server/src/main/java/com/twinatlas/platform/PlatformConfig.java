@@ -1,10 +1,10 @@
 package com.twinatlas.platform;
 
+import com.twinatlas.geo.Wgs84;
 import java.time.Clock;
 import java.util.UUID;
 import java.util.function.Supplier;
 import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 import org.n52.jackson.datatype.jts.JtsModule;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +12,6 @@ import org.springframework.context.annotation.Configuration;
 /** Infrastructure beans the shell passes into the pure core: time, ids and the geometry factory. */
 @Configuration(proxyBeanMethods = false)
 public class PlatformConfig {
-
-  /** Storage and API use WGS 84 (see ADR 0001). */
-  public static final int SRID = 4326;
 
   @Bean
   Clock clock() {
@@ -28,7 +25,7 @@ public class PlatformConfig {
 
   @Bean
   GeometryFactory geometryFactory() {
-    return new GeometryFactory(new PrecisionModel(), SRID);
+    return Wgs84.FACTORY;
   }
 
   /** GeoJSON (de)serialization for JTS geometries. Parsed geometries carry SRID 4326. */

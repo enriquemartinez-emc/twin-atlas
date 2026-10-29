@@ -6,7 +6,7 @@ import com.twinatlas.annotation.core.SceneFacts.NoScene;
 import com.twinatlas.importing.core.ImportPlan.Accepted;
 import com.twinatlas.importing.core.ImportPlan.ItemRejection;
 import com.twinatlas.importing.core.OsmTransform.Conversion;
-import com.twinatlas.platform.core.Decision.Rejected;
+import com.twinatlas.platform.kernel.Decision.Rejected;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;

@@ -12,7 +12,7 @@ import com.twinatlas.importing.core.OsmElement.Unsupported;
 import com.twinatlas.importing.core.OsmTransform.Conversion;
 import com.twinatlas.importing.core.OsmTransform.Conversion.Converted;
 import com.twinatlas.importing.core.OsmTransform.Conversion.Unconvertible;
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Stream;

@@ -1,8 +1,8 @@
 package com.twinatlas.scene;
 
-import com.twinatlas.platform.ApiError;
 import com.twinatlas.platform.ProblemResponse;
 import com.twinatlas.platform.Problems;
+import com.twinatlas.platform.kernel.Rejection;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -78,7 +78,7 @@ class SceneController {
       content = @Content(schema = @Schema(implementation = SceneResponse.class)))
   @ApiResponse(
       responseCode = "404",
-      description = "NOT_FOUND",
+      description = "SCENE_NOT_FOUND",
       content = @Content(schema = @Schema(implementation = ProblemResponse.class)))
   ResponseEntity<?> get(@PathVariable UUID id) {
     return repository
@@ -88,9 +88,6 @@ class SceneController {
                 ResponseEntity.ok()
                     .eTag(String.valueOf(scene.getVersion()))
                     .body(mapper.toResponse(scene)))
-        .orElseGet(
-            () ->
-                ResponseEntity.status(ApiError.NOT_FOUND.status())
-                    .body(Problems.of(ApiError.NOT_FOUND, "The scene does not exist.")));
+        .orElseGet(() -> Problems.from(Rejection.SCENE_NOT_FOUND));
   }
 }

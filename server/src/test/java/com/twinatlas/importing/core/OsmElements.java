@@ -1,23 +1,20 @@
 package com.twinatlas.importing.core;
 
 import com.twinatlas.annotation.core.SceneFacts.SceneFound;
+import com.twinatlas.geo.Wgs84;
 import com.twinatlas.importing.core.OsmElement.Node;
 import com.twinatlas.importing.core.OsmElement.Way;
 import java.util.List;
 import java.util.Map;
 import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
-import org.locationtech.jts.geom.PrecisionModel;
 
 /** Fixtures for importing core tests. Plain Java and JTS: no Spring, no database. */
 final class OsmElements {
 
-  static final GeometryFactory FACTORY = new GeometryFactory(new PrecisionModel(), 4326);
-
   /** The scene covers lon 2.17..2.18, lat 41.40..41.41. */
   static final SceneFound SCENE =
       new SceneFound(
-          FACTORY.createPolygon(
+          Wgs84.FACTORY.createPolygon(
               new Coordinate[] {
                 new Coordinate(2.17, 41.40),
                 new Coordinate(2.18, 41.40),

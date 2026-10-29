@@ -54,7 +54,7 @@ class SceneEndpointTest {
     var result = mvc.get().uri("/api/scenes/{id}", UUID.randomUUID()).exchange();
 
     assertThat(result).hasStatus(404);
-    assertThat(result).bodyJson().extractingPath("$.code").isEqualTo("NOT_FOUND");
+    assertThat(result).bodyJson().extractingPath("$.code").isEqualTo("SCENE_NOT_FOUND");
   }
 
   @Test

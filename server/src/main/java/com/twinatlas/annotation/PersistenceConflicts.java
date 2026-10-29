@@ -1,6 +1,6 @@
 package com.twinatlas.annotation;
 
-import com.twinatlas.platform.core.Rejection;
+import com.twinatlas.platform.kernel.Rejection;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;

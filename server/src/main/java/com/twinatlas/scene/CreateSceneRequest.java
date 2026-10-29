@@ -1,7 +1,7 @@
 package com.twinatlas.scene;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.twinatlas.platform.core.Wgs84;
+import com.twinatlas.geo.Wgs84;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotBlank;

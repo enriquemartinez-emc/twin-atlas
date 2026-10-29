@@ -14,6 +14,9 @@ public sealed interface OsmElement {
   /** For example {@code node/123}: the stable name of the element in OpenStreetMap. */
   String reference();
 
+  /** What the map says about the element. Empty when it says nothing. */
+  Map<String, String> tags();
+
   record Node(long id, Position position, Map<String, String> tags) implements OsmElement {
     @Override
     public String reference() {
@@ -33,6 +36,11 @@ public sealed interface OsmElement {
     @Override
     public String reference() {
       return type + "/" + id;
+    }
+
+    @Override
+    public Map<String, String> tags() {
+      return Map.of();
     }
   }
 }

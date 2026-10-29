@@ -19,10 +19,6 @@ import org.locationtech.jts.geom.Geometry;
 @Table(name = "annotation")
 class AnnotationEntity {
 
-  static final String DRAFT = "DRAFT";
-  static final String PUBLISHED = "PUBLISHED";
-  static final String ARCHIVED = "ARCHIVED";
-
   @Id private UUID id;
 
   @Column(name = "scene_id", nullable = false)
@@ -40,8 +36,9 @@ class AnnotationEntity {
   @Column(name = "geom", nullable = false, columnDefinition = "geometry(Geometry,4326)")
   private Geometry geom;
 
+  @Enumerated(EnumType.STRING)
   @Column(nullable = false)
-  private String status;
+  private AnnotationStatus status;
 
   @Version private Long version;
 
@@ -96,11 +93,11 @@ class AnnotationEntity {
     this.geom = geom;
   }
 
-  public String getStatus() {
+  public AnnotationStatus getStatus() {
     return status;
   }
 
-  public void setStatus(String status) {
+  public void setStatus(AnnotationStatus status) {
     this.status = status;
   }
 

@@ -1,4 +1,4 @@
-package com.twinatlas.platform.core;
+package com.twinatlas.platform.kernel;
 
 /** Outcome of a decision function: the command may proceed, or it is rejected with a reason. */
 public sealed interface Decision {
