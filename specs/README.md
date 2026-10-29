@@ -30,7 +30,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 022 | [Panel polish: readable map, clearer list, honest loading, tidier forms](022-ui-panel-polish.md) | `feat/ui-panel-polish` | In progress |
 | 023 | [Redesign: a tool rail, a scene bar and a panel that does one thing at a time](023-ui-redesign.md) | `feat/ui-redesign` | In progress |
 | 024 | [Client structure tidy: names and homes](024-client-structure-tidy.md) | `chore/client-structure-tidy` | In progress |
-| 025 | [Scene page split: a thin component and feature-scoped state](025-scene-page-split.md) | `chore/scene-state-split` | Proposed |
+| 025 | [Scene page split: a thin component and feature-scoped state](025-scene-page-split.md) | `chore/scene-state-split` | In progress |
 
 ## File template
 

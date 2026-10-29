@@ -1,4 +1,3 @@
-import { DOCUMENT } from '@angular/common';
 import {
   afterNextRender,
   Component,
@@ -9,7 +8,6 @@ import {
   inject,
   injectAsync,
   input,
-  linkedSignal,
   signal,
   untracked,
   viewChild,
@@ -23,17 +21,10 @@ import {
   AnnotationEditor,
   AnnotationForm,
   AnnotationList,
-  type AnnotationFormValue,
-  annotationData,
-  buildCreateRequest,
-  buildUpdateRequest,
   focusPoint,
-  isDraftReady,
   toMapFeature,
 } from '@features/annotation';
-import type { LonLat, MapClick, MapViewer } from '@map';
-import { bboxPolygon } from '@map';
-import { problemMessage } from '@app/core/problems/problem-message';
+import type { MapClick, MapViewer } from '@map';
 import { ProblemAlert } from '@shared/components/problem-alert';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
@@ -41,16 +32,15 @@ import { HlmEmptyImports } from '@shared/ui/empty';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
 import { MapStatus } from './components/map-status';
 import { SceneBar } from './components/scene-bar';
-import { ToolRail, type Tool } from './components/tool-rail';
+import { ToolRail } from './components/tool-rail';
+import { drawingState } from './drawing-state';
+import { editState } from './edit-state';
 import { IonTokenStore } from './ion-token-store';
+import { linkCopy } from './link-copy';
 import { SceneData } from './scene-data';
+import { sceneCreation } from './scene-creation';
+import { sceneWorkspace } from './scene-workspace';
 import { toolHint } from './tool-hint';
-
-const LINK_LABELS = {
-  idle: 'Copy link',
-  copied: 'Link copied',
-  failed: 'Could not copy',
-} as const;
 
 const FOCUS_HEIGHT = 250;
 
@@ -74,16 +64,16 @@ const FOCUS_HEIGHT = 250;
   template: `
     <app-scene-bar
       [scenes]="scenes.scenes()"
-      [selectedId]="selectedSceneId()"
-      [canCreate]="canCreateScene()"
-      [busy]="creatingScene()"
-      [problem]="sceneProblem()"
-      [linkLabel]="linkLabel()"
+      [selectedId]="workspace.sceneId()"
+      [canCreate]="creation.canCreate()"
+      [busy]="creation.busy()"
+      [problem]="creation.problem()"
+      [linkLabel]="link.label()"
       [mapMode]="map()?.mode() ?? null"
       [tilesError]="map()?.tilesError() ?? null"
       (choose)="chooseScene($event)"
-      (create)="createScene($event)"
-      (copyLink)="copyLink()"
+      (create)="creation.create($event)"
+      (copyLink)="link.copy()"
       (tokenSaved)="saveToken($event)"
       (tokenForgotten)="forgetToken()"
     />
@@ -91,8 +81,8 @@ const FOCUS_HEIGHT = 250;
     <div class="stage">
       <div #viewport class="viewport"></div>
 
-      @if (selectedSceneId()) {
-        <app-tool-rail class="rail" [tool]="tool()" (chosen)="selectTool($event)" />
+      @if (workspace.sceneId()) {
+        <app-tool-rail class="rail" [tool]="draw.tool()" (chosen)="draw.selectTool($event)" />
       }
 
       @if (hint(); as text) {
@@ -142,47 +132,53 @@ const FOCUS_HEIGHT = 250;
             <app-problem-alert>{{ error }}</app-problem-alert>
           }
 
-          @if (selectedSceneId()) {
-            @if (formKind(); as kind) {
+          @if (workspace.sceneId()) {
+            @if (draw.formKind(); as kind) {
               <app-annotation-form
                 [kind]="kind"
-                [ready]="draftReady()"
-                [busy]="saving()"
-                [problem]="formProblem()"
-                (submitted)="save($event)"
-                (cancelled)="selectTool('select')"
+                [ready]="draw.ready()"
+                [busy]="draw.saving()"
+                [problem]="draw.problem()"
+                (submitted)="draw.save($event)"
+                (cancelled)="draw.selectTool('select')"
               />
-            } @else if (editing(); as annotation) {
+            } @else if (edit.annotation(); as annotation) {
               <app-annotation-editor
                 [annotation]="annotation"
-                [moving]="moving()"
-                [moved]="movedTo() !== null"
-                [busy]="updating()"
-                [problem]="editProblem()"
-                [stale]="editStale()"
-                (submitted)="saveEdit($event)"
-                (moveRequested)="startMove()"
-                (moveCancelled)="cancelMove()"
-                (reloadRequested)="loadLatest()"
-                (closed)="closeEditor()"
+                [moving]="edit.moving()"
+                [moved]="edit.movedTo() !== null"
+                [busy]="edit.updating()"
+                [problem]="edit.problem()"
+                [stale]="edit.stale()"
+                (submitted)="edit.save($event)"
+                (moveRequested)="edit.start()"
+                (moveCancelled)="edit.cancelMove()"
+                (reloadRequested)="edit.loadLatest()"
+                (closed)="edit.close()"
               />
             } @else {
-              @if (data.detailFailed()) {
+              @if (workspace.data.detailFailed()) {
                 <app-problem-alert>Could not load this annotation.</app-problem-alert>
               }
               <app-annotation-list
-                [items]="data.items()"
-                [selectedId]="selectedAnnotationId()"
-                [truncated]="data.truncated()"
-                [loading]="data.loading()"
+                [items]="workspace.data.items()"
+                [selectedId]="workspace.annotationId()"
+                [truncated]="workspace.data.truncated()"
+                [loading]="workspace.data.loading()"
                 (selected)="focus($event)"
               />
             }
 
-            @if (data.failed()) {
+            @if (workspace.data.failed()) {
               <app-problem-alert>
                 Could not load the annotations.
-                <button hlmBtn variant="link" size="sm" type="button" (click)="data.reload()">
+                <button
+                  hlmBtn
+                  variant="link"
+                  size="sm"
+                  type="button"
+                  (click)="workspace.data.reload()"
+                >
                   Try again
                 </button>
               </app-problem-alert>
@@ -316,97 +312,38 @@ export class Scene {
   readonly annotation = input<string>();
 
   private readonly router = inject(Router);
-  private readonly document = inject(DOCUMENT);
   private readonly ionTokenStore = inject(IonTokenStore);
   private readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
   private destroyed = false;
 
   protected readonly scenes = inject(SceneData);
-
   protected readonly map = signal<MapViewer | null>(null);
   protected readonly loadError = signal<string | null>(null);
-
-  protected readonly selectedSceneId = computed(() => this.sceneId() ?? this.scenes.defaultId());
-  /** Follows the URL, and takes the user's choice at once while the URL catches up. */
-  protected readonly selectedAnnotationId = linkedSignal<string | null>(
-    () => this.annotation() ?? null,
-  );
-  private readonly view = computed(() => this.map()?.visibleBbox() ?? null);
-  protected readonly data = annotationData(
-    this.selectedSceneId,
-    this.view,
-    this.selectedAnnotationId,
-  );
-
   protected readonly panelOpen = signal(true);
-  protected readonly linkState = signal<'idle' | 'copied' | 'failed'>('idle');
-  protected readonly linkLabel = computed(() => LINK_LABELS[this.linkState()]);
-  private linkTimer: ReturnType<typeof setTimeout> | undefined;
 
-  protected readonly tool = signal<Tool>('select');
-  protected readonly draft = linkedSignal<
-    { readonly tool: Tool; readonly id: string | null },
-    readonly LonLat[]
-  >({
-    source: () => ({ tool: this.tool(), id: this.selectedAnnotationId() }),
-    computation: (source, previous) =>
-      source.tool === 'select' || previous?.source.tool !== source.tool
-        ? []
-        : (previous?.value ?? []),
-  });
-  protected readonly saving = signal(false);
-  protected readonly formProblem = signal<string | null>(null);
-  protected readonly updating = signal(false);
-
-  // Half-finished edits belong to one annotation: choosing another one starts them afresh.
-  protected readonly moving = linkedSignal(() => {
-    this.selectedAnnotationId();
-    return false;
-  });
-  protected readonly movedTo = linkedSignal<LonLat | null>(() => {
-    this.selectedAnnotationId();
-    return null;
-  });
-  protected readonly editProblem = linkedSignal<string | null>(() => {
-    this.selectedAnnotationId();
-    return null;
-  });
-  protected readonly editStale = linkedSignal(() => {
-    this.selectedAnnotationId();
-    return false;
-  });
-  protected readonly creatingScene = signal(false);
-  protected readonly sceneProblem = signal<string | null>(null);
-
-  protected readonly formKind = computed(() => {
-    const tool = this.tool();
-    return tool === 'select' ? null : tool;
-  });
-  protected readonly draftReady = computed(() => {
-    const kind = this.formKind();
-    return kind !== null && isDraftReady(kind, this.draft());
-  });
-
-  protected readonly editing = computed(() =>
-    this.tool() === 'select' ? this.data.current() : null,
-  );
-
-  /** A scene is built from the visible area, so the map must have reported one. */
-  protected readonly canCreateScene = computed(() => !!this.map()?.visibleBbox());
+  private readonly view = computed(() => this.map()?.visibleBbox() ?? null);
+  protected readonly workspace = sceneWorkspace(this.sceneId, this.annotation, this.view);
+  protected readonly draw = drawingState(this.workspace);
+  protected readonly edit = editState(this.workspace, this.draw);
+  protected readonly creation = sceneCreation(this.view);
+  protected readonly link = linkCopy();
 
   protected readonly hint = computed(() =>
-    this.selectedSceneId()
-      ? toolHint({ tool: this.tool(), points: this.draft().length, moving: this.moving() })
+    this.workspace.sceneId()
+      ? toolHint({
+          tool: this.draw.tool(),
+          points: this.draw.draft().length,
+          moving: this.edit.moving(),
+        })
       : null,
   );
 
-  private readonly mapFeatures = computed(() => this.data.items().map(toMapFeature));
+  private readonly mapFeatures = computed(() => this.workspace.data.items().map(toMapFeature));
 
   constructor() {
     afterNextRender(() => void this.start());
     inject(DestroyRef).onDestroy(() => {
       this.destroyed = true;
-      clearTimeout(this.linkTimer);
       this.map()?.destroy();
     });
 
@@ -416,13 +353,13 @@ export class Scene {
       const map = this.map();
       if (!map) return;
       map.epoch();
-      map.setFeatures(this.mapFeatures(), this.selectedAnnotationId());
+      map.setFeatures(this.mapFeatures(), this.workspace.annotationId());
     });
     effect(() => {
       const map = this.map();
       if (!map) return;
       map.epoch();
-      map.setDraft(this.draft(), this.tool() === 'OUTLINE');
+      map.setDraft(this.draw.draft(), this.draw.tool() === 'OUTLINE');
     });
 
     effect(() => {
@@ -431,111 +368,15 @@ export class Scene {
     });
   }
 
-  protected selectTool(tool: Tool): void {
-    this.tool.set(tool);
-    this.draft.set([]);
-    this.formProblem.set(null);
-  }
-
   protected focus(annotation: AnnotationSummary): void {
-    this.selectAnnotation(annotation.id);
+    this.workspace.selectAnnotation(annotation.id);
     const point = focusPoint(annotation.geometry);
     if (point) this.map()?.flyTo({ ...point, height: FOCUS_HEIGHT });
-  }
-
-  protected async save(value: AnnotationFormValue): Promise<void> {
-    const sceneId = this.selectedSceneId();
-    const kind = this.formKind();
-    if (!sceneId || !kind || !this.draftReady()) return;
-
-    this.saving.set(true);
-    this.formProblem.set(null);
-    const outcome = await this.data.create(sceneId, buildCreateRequest(kind, value, this.draft()));
-    this.saving.set(false);
-
-    if (outcome.ok) {
-      this.data.reload();
-      this.selectAnnotation(outcome.value.id);
-      this.selectTool('select');
-    } else {
-      this.formProblem.set(problemMessage(outcome.problem));
-    }
-  }
-
-  protected startMove(): void {
-    this.moving.set(true);
-    this.movedTo.set(null);
-    this.draft.set([]);
-  }
-
-  protected cancelMove(): void {
-    this.moving.set(false);
-    this.movedTo.set(null);
-    this.draft.set([]);
-  }
-
-  protected closeEditor(): void {
-    this.selectAnnotation(null);
-  }
-
-  protected loadLatest(): void {
-    this.resetEdit();
-    this.data.reloadDetail();
-    this.data.reload();
-  }
-
-  protected async saveEdit(value: AnnotationFormValue): Promise<void> {
-    const current = this.data.current();
-    if (!current) return;
-    const request = buildUpdateRequest(current, value, this.movedTo());
-    if (!request) return;
-
-    this.updating.set(true);
-    this.editProblem.set(null);
-    this.editStale.set(false);
-    const outcome = await this.data.update(request);
-    this.updating.set(false);
-
-    if (outcome.ok) {
-      this.data.reload();
-      this.data.reloadDetail();
-      this.resetEdit();
-      return;
-    }
-    this.editProblem.set(problemMessage(outcome.problem));
-    const code = outcome.problem?.code;
-    this.editStale.set(code === 'STALE_VERSION' || code === 'CONCURRENT_MODIFICATION');
-  }
-
-  protected async createScene(name: string): Promise<void> {
-    const box = this.map()?.visibleBbox();
-    if (!box) return;
-    if (box.west > box.east) {
-      this.sceneProblem.set('The view crosses the date line. Move the map and try again.');
-      return;
-    }
-    this.creatingScene.set(true);
-    this.sceneProblem.set(null);
-    const outcome = await this.scenes.create(name, bboxPolygon(box));
-    this.creatingScene.set(false);
-    if (outcome.ok) void this.router.navigate(['/scenes', outcome.value.id]);
-    else this.sceneProblem.set(problemMessage(outcome.problem));
   }
 
   protected chooseScene(id: string): void {
     this.scenes.remember(id);
     void this.router.navigate(['/scenes', id]);
-  }
-
-  protected async copyLink(): Promise<void> {
-    try {
-      await navigator.clipboard.writeText(this.document.location.href);
-      this.linkState.set('copied');
-    } catch {
-      this.linkState.set('failed');
-    }
-    clearTimeout(this.linkTimer);
-    this.linkTimer = setTimeout(() => this.linkState.set('idle'), 2500);
   }
 
   protected resetView(): void {
@@ -552,41 +393,19 @@ export class Scene {
     void this.start();
   }
 
-  /** The user's choice shows at once, and goes into the URL so the link can be shared. */
-  private selectAnnotation(id: string | null): void {
-    this.selectedAnnotationId.set(id);
-    void this.router.navigate([], {
-      queryParams: { annotation: id },
-      queryParamsHandling: 'merge',
-      replaceUrl: true,
-    });
-  }
-
-  private resetEdit(): void {
-    this.moving.set(false);
-    this.movedTo.set(null);
-    this.editProblem.set(null);
-    this.editStale.set(false);
-    if (this.tool() === 'select') this.draft.set([]);
-  }
-
+  /** What a click on the map means depends on the tool in hand and on a move being awaited. */
   private onMapClick(click: MapClick): void {
-    const tool = this.tool();
-    if (tool === 'select') {
-      if (this.moving()) {
-        if (click.longitude === null || click.latitude === null) return;
-        const point = { longitude: click.longitude, latitude: click.latitude };
-        this.movedTo.set(point);
-        this.draft.set([point]);
-        this.moving.set(false);
-        return;
-      }
-      this.selectAnnotation(click.featureId);
-      return;
+    const point =
+      click.longitude === null || click.latitude === null
+        ? null
+        : { longitude: click.longitude, latitude: click.latitude };
+    if (this.draw.tool() !== 'select') {
+      if (point) this.draw.addPoint(point);
+    } else if (this.edit.moving()) {
+      if (point) this.edit.chooseSpot(point);
+    } else {
+      this.workspace.selectAnnotation(click.featureId);
     }
-    if (click.longitude === null || click.latitude === null) return;
-    const point = { longitude: click.longitude, latitude: click.latitude };
-    this.draft.update((points) => (tool === 'OUTLINE' ? [...points, point] : [point]));
   }
 
   private async start(): Promise<void> {

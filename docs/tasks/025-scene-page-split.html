@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Scene page split - Twin Atlas docs</title>
+<meta name="description" content="The scene page component split into a thin shell and small pieces of feature state.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../guide.html"><span>Using the app</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="../tasks/022-ui-panel-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li><li><a href="../tasks/023-ui-redesign.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">023</span><span>Redesign: tools and panel</span></a></li><li><a href="../tasks/024-client-structure-tidy.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">024</span><span>Client structure tidy</span></a></li><li><a href="../tasks/025-scene-page-split.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">025</span><span>Scene page split</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Scene page split</h1>
+<div class="tags"><span class="tag c-white">Task 025</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/scene-state-split</code></span></div>
+<p class="lead">The scene page was one 613-line component that did six jobs. Its state now lives in five small files, and the component only wires them to the map and the screen.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Nothing looks different. Open <code>client/src/app/features/scene/scene.ts</code>: the class is 122 lines, and each part has its own file next to it.</p></aside>
+<h2>What moved</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">File</th><th class="">What it holds</th></tr></thead><tbody>
+<tr><td class=""><code>scene-workspace.ts</code></td><td class="">Which scene and annotation are chosen (from the address), the annotations in view, and how a choice goes into the address.</td></tr>
+<tr><td class=""><code>drawing-state.ts</code></td><td class="">The tool in hand, the points clicked, and saving something new.</td></tr>
+<tr><td class=""><code>edit-state.ts</code></td><td class="">Changes to the chosen annotation that are not saved: a move, a refusal, a conflict.</td></tr>
+<tr><td class=""><code>scene-creation.ts</code></td><td class="">Creating a scene that covers what the map shows.</td></tr>
+<tr><td class=""><code>link-copy.ts</code></td><td class="">Copying the address and saying how it went.</td></tr>
+</tbody></table></div></div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 700 300" width="700" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The scene page and its parts</title><desc id="d">The Scene component wires the map to five small pieces of state: workspace, drawing, edit, creation and link copy. The drawing and edit state use the workspace.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker></defs><rect class="c-sky" x="20" y="20" width="660" height="64" rx="8"/><text class="t-title" x="32" y="44">Scene (scene.ts)</text><text class="t-small" x="32" y="62">starts the map, wires the state to it, renders the page</text><rect class="c-sky" x="20" y="150" width="120" height="64" rx="8"/><text class="t-title" x="32" y="174">workspace</text><text class="t-small" x="32" y="192">choice + data</text><rect class="c-sky" x="160" y="150" width="120" height="64" rx="8"/><text class="t-title" x="172" y="174">drawing</text><text class="t-small" x="172" y="192">tool, points</text><rect class="c-sky" x="300" y="150" width="120" height="64" rx="8"/><text class="t-title" x="312" y="174">edit</text><text class="t-small" x="312" y="192">move, conflict</text><rect class="c-sky" x="440" y="150" width="110" height="64" rx="8"/><text class="t-title" x="452" y="174">creation</text><text class="t-small" x="452" y="192">new scene</text><rect class="c-sky" x="570" y="150" width="110" height="64" rx="8"/><text class="t-title" x="582" y="174">link copy</text><text class="t-small" x="582" y="192">copy address</text><path class="arrow" d="M80,84 L80,150" marker-end="url(#ah)"/><path class="arrow" d="M220,84 L220,150" marker-end="url(#ah)"/><path class="arrow" d="M360,84 L360,150" marker-end="url(#ah)"/><path class="arrow" d="M495,84 L495,150" marker-end="url(#ah)"/><path class="arrow" d="M625,84 L625,150" marker-end="url(#ah)"/><path class="arrow" d="M220,214 L220,236 L80,236 L80,214" marker-end="url(#ah)"/><path class="arrow" d="M360,214 L360,252 L100,252 L100,214" marker-end="url(#ah)"/><text class="t-small" x="20" y="284">drawing and edit read the workspace (the chosen scene and annotation, and the data)</text></svg></div><figcaption>One component wires the page. The state lives in small functions.</figcaption></figure><div class="col">
+<h2>Why functions and not services</h2>
+<p>The page&#39;s scene and annotation come from the address as inputs of the component. A service cannot read them, but a function that is handed the signals can. It is the pattern <code>annotationData</code> already used, so the page now has one way of doing this, and each function can be tested with plain signals and no browser or server.</p>
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Behaviour</td><td class="">The 44 page tests pass without any change to what they assert.</td></tr><tr><td class="">The moved logic</td><td class="">21 new tests for the drawing state, the edit state and the link copy: a tool change clears the draft, an outline collects points, a move waits for a click, half-finished edits start afresh, a conflict is marked stale and another refusal is not, and the link label resets.</td></tr><tr><td class="">Deliberate breaks</td><td class="">Six, each failed a test: an outline keeping one point, edits surviving a new choice, every refusal counted as a conflict, a move click selecting instead, a save staying in drawing mode, and the link label never resetting. One first break did not compile, so it was redone.</td></tr><tr><td class="">Build</td><td class="">264 tests in all. Formatting, lint with the class check and the production build are clean.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The app was not opened after the split. The page tests cover the behaviour, but nobody has clicked through it.</p></div>
+<h2>Left</h2>
+<p>The file is still 430 lines, because it holds the page&#39;s template and styles (about 300 lines). Pulling the side panel into its own component would shorten it, but it would need many inputs and outputs, so it was not done.</p>
+</div>
+<nav class="pager" aria-label="Pages"><a href="024-client-structure-tidy.html">Previous: Client structure tidy</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>
