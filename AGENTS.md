@@ -22,10 +22,11 @@ The goal is a fast, reliable and easy-to-use platform that brings real-world spa
 ## Repository layout
 
 ```
-/               AGENTS.md, ARCHITECTURE.md, ROADMAP.md, docs/adr/, specs/, docker-compose.yml
+/               AGENTS.md, ARCHITECTURE.md, ROADMAP.md, docker-compose.yml
 ├── server/     Spring Boot (single Maven module, `server/mvnw`)
 ├── client/     Angular app
-└── specs/      one file per task: description, acceptance criteria, status
+├── specs/      one file per task: description, acceptance criteria, status
+└── docs/       adr/ (decisions), openapi.json (API contract), index.html + tasks/ (HTML documentation)
 ```
 
 ## Stack
@@ -167,6 +168,18 @@ E2E tests are part of the project, but **they are never run without my explicit 
 8. **No `any` in TypeScript.** Use precise types, `unknown` plus narrowing, or generics.
 9. When unsure about scope, an approach, or a dependency, ask instead of guessing.
 10. **Specs track every task.** `specs/README.md` indexes them. Each `specs/NNN-<slug>.md` has a short description, acceptance criteria and a status (`Proposed` → `Approved` → `In progress` → `Done`). Update the status in the same branch as the work. Mark `Done` only after I confirm.
+11. **Every finished task gets an HTML docs page.** Add `docs/tasks/NNN-<slug>.html` in the shared style (see "HTML documentation" below), link it from `docs/index.html` and the sidebar of the other pages, and update the status board. The page is written for someone who has not read the code: plain words first, then what was built, a diagram, how it was checked and what is not verified. Write it before asking me to confirm the task.
+
+## HTML documentation (`docs/`)
+
+Static HTML that opens straight from disk. No build step, no scripts, no web fonts, no CDN, no third-party libraries.
+
+- **Style:** light theme, sans-serif system font stack, solid soft colour fills with solid borders. No gradients, no shadows, no animation. One stylesheet: `docs/assets/docs.css`.
+- **Colour means one thing everywhere:** blue is the browser, green is pure rules (the core), yellow is server code, purple is data, grey is tooling or generated code, red is errors and things not verified.
+- **Diagrams** are inline SVG that use the colour classes from `docs.css` (`c-sky`, `c-mint`, `c-butter`, `c-lilac`, `c-slate`, `c-blush`), with a `<title>` for screen readers. Every diagram earns its place: it shows a flow, a boundary or a structure that prose explains badly.
+- **Each task page** has: a plain-words summary, how to see or try it, what was built, a diagram, why the decisions were made (link the ADR), how it was checked (numbers, not adjectives), and known limits, including anything not verified.
+- **Terms** a newcomer would not know are explained once in `docs/glossary.html` and linked.
+- Copy `docs/tasks/_template.html` to start a page.
 
 # Shared
 
@@ -183,6 +196,6 @@ E2E tests are part of the project, but **they are never run without my explicit 
 
 ## Done means
 
-Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit; E2E excluded unless I approved a run), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still runs everything (once `docker-compose.yml` exists), spec status updated, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.
+Acceptance criteria met and confirmed, tests green (core, endpoints on real PostGIS, ArchUnit, frontend unit; E2E excluded unless I approved a run), code formatted, zero `any`, OpenAPI spec regenerated, SDK rebuilt, `docker compose up` still runs everything (once `docker-compose.yml` exists), spec status updated, docs page written and linked, work committed on a feature branch with Conventional Commits. Then stop and wait for approval.
 
 Criteria that don't apply to a task yet (no backend, no client, no compose file) are marked "n/a" in its spec, not silently skipped.

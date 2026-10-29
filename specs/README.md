@@ -20,6 +20,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 012 | [Portfolio polish](012-portfolio-polish.md)                | `docs/portfolio-polish`          | Proposed   |
 | 013 | [E2E tests (run only on approval)](013-e2e-tests.md)       | `test/e2e`                       | Proposed   |
 | 014 | [Annotation update (rename and move)](014-annotation-update.md) | `feat/annotation-update`        | Proposed    |
+| 015 | [HTML documentation](015-html-docs.md)                     | `docs/html-docs`                 | In progress |
 
 ## File template
 
