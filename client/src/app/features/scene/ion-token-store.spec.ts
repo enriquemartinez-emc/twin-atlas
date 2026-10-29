@@ -1,6 +1,6 @@
 import { TestBed } from '@angular/core/testing';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { IonTokenStore } from './ion-token.store';
+import { IonTokenStore } from './ion-token-store';
 
 describe('IonTokenStore', () => {
   beforeEach(() => localStorage.clear());

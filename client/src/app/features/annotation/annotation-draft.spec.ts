@@ -7,7 +7,7 @@ import {
   focusPoint,
   isDraftReady,
   toMapFeature,
-} from './draft';
+} from './annotation-draft';
 
 const a = { longitude: 2.17, latitude: 41.4 };
 const b = { longitude: 2.18, latitude: 41.4 };

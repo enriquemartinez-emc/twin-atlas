@@ -4,6 +4,6 @@ export const SCENE_ROUTES: Routes = [
   {
     path: '',
     title: 'Scene · Twin Atlas',
-    loadComponent: () => import('./scene-viewer.page').then((m) => m.SceneViewerPage),
+    loadComponent: () => import('./scene').then((m) => m.Scene),
   },
 ];

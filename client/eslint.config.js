@@ -51,9 +51,9 @@ module.exports = defineConfig([
         {
           patterns: [
             {
-              group: ['../**'],
+              group: ['../../**', '../*/**'],
               message:
-                'No parent-relative imports. Use a path alias (@app, @features, @shared, @map, @api, @env). Relative imports are only for siblings and direct children.',
+                'Do not climb out of a folder. A file may import a sibling, a direct child, or a file in its parent folder (../name), which is how components reach their own feature. Everything else uses a path alias (@app, @features, @shared, @map, @api, @env).',
             },
             {
               group: ['@features/*/**', '!@features/*/public-api'],

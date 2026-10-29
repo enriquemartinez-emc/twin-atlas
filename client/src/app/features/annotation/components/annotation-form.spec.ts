@@ -1,7 +1,7 @@
 import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AnnotationForm } from './annotation-form';
-import type { AnnotationFormValue } from './draft';
+import type { AnnotationFormValue } from '../annotation-draft';
 
 describe('AnnotationForm', () => {
   let fixture: ComponentFixture<AnnotationForm>;

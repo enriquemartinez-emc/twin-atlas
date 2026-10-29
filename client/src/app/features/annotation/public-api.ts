@@ -1,13 +1,13 @@
 // Public entry point of the annotation feature. Other features import only from here.
-export { AnnotationData } from './annotation.data';
-export { AnnotationEditor } from './annotation-editor';
-export { AnnotationForm } from './annotation-form';
-export { AnnotationList } from './annotation-list';
+export { AnnotationData } from './annotation-data';
+export { AnnotationEditor } from './components/annotation-editor';
+export { AnnotationForm } from './components/annotation-form';
+export { AnnotationList } from './components/annotation-list';
 export {
   buildCreateRequest,
   buildUpdateRequest,
   focusPoint,
   isDraftReady,
   toMapFeature,
-} from './draft';
-export type { AnnotationFormValue, AnnotationKind } from './draft';
+} from './annotation-draft';
+export type { AnnotationFormValue, AnnotationKind } from './annotation-draft';

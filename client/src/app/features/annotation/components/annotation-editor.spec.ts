@@ -2,7 +2,7 @@ import { type ComponentFixture, TestBed } from '@angular/core/testing';
 import type { AnnotationResponse } from '@api/index';
 import { beforeEach, describe, expect, it } from 'vitest';
 import { AnnotationEditor } from './annotation-editor';
-import type { AnnotationFormValue } from './draft';
+import type { AnnotationFormValue } from '../annotation-draft';
 
 const base: AnnotationResponse = {
   id: 'a1',

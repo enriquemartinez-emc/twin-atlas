@@ -31,11 +31,11 @@ import type { LonLat, MapClick, MapService } from '@map/public-api';
 import { bboxPolygon } from '@shared/geo/geojson';
 import { problemMessage } from '@shared/problems/problem-message';
 import { HlmButtonImports } from '@shared/ui/button';
-import { IonTokenPanel } from './ion-token-panel';
-import { IonTokenStore } from './ion-token.store';
-import { ScenePicker } from './scene-picker';
-import { ScenesService } from './scenes.service';
-import { ProblemAlert } from '@shared/problems/problem-alert';
+import { IonTokenPanel } from './components/ion-token-panel';
+import { IonTokenStore } from './ion-token-store';
+import { ScenePicker } from './components/scene-picker';
+import { SceneData } from './scene-data';
+import { ProblemAlert } from '@shared/components/problem-alert';
 import { HlmCardImports } from '@shared/ui/card';
 import { HlmSeparatorImports } from '@shared/ui/separator';
 import { HlmToggleGroupImports } from '@shared/ui/toggle-group';
@@ -54,7 +54,7 @@ const FOCUS_HEIGHT = 250;
 
 /** Route-level component: owns the map, the chosen scene and the drawing state. */
 @Component({
-  selector: 'app-scene-viewer',
+  selector: 'app-scene',
   imports: [
     DecimalPipe,
     HlmButtonImports,
@@ -235,7 +235,7 @@ const FOCUS_HEIGHT = 250;
     }
   `,
 })
-export class SceneViewerPage {
+export class Scene {
   private readonly loadMap = injectAsync(() =>
     import('@map/map.service').then((m) => m.MapService),
   );
@@ -243,7 +243,7 @@ export class SceneViewerPage {
   private readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
   private destroyed = false;
 
-  protected readonly scenes = inject(ScenesService);
+  protected readonly scenes = inject(SceneData);
   protected readonly data = inject(AnnotationData);
   protected readonly tools = TOOLS;
 

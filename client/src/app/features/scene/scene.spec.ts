@@ -6,7 +6,7 @@ import { client } from '@api/client.gen';
 import { MapService } from '@map/map.service';
 import type { Bbox, MapClick, MapMode } from '@map/public-api';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { SceneViewerPage } from './scene-viewer.page';
+import { Scene } from './scene';
 
 /** Stands in for the Cesium-backed service: same signals and methods, no WebGL. */
 class FakeMap {
@@ -46,8 +46,8 @@ const annotation = (id: string, title: string) => ({
   geometry: { type: 'Point' as const, coordinates: [2.175, 41.405] },
 });
 
-describe('SceneViewerPage', () => {
-  let fixture: ComponentFixture<SceneViewerPage>;
+describe('Scene', () => {
+  let fixture: ComponentFixture<Scene>;
   let http: HttpTestingController;
   let map: FakeMap;
   let clickSequence = 0;
@@ -69,7 +69,7 @@ describe('SceneViewerPage', () => {
     http.expectOne((r) => r.method === 'GET' && r.url.endsWith('/api/scenes'));
 
   const open = async (annotations = [annotation('a1', 'Cracked window')]) => {
-    fixture = TestBed.createComponent(SceneViewerPage);
+    fixture = TestBed.createComponent(Scene);
     await settle();
     scenesRequest().flush([scene]);
     await settle();
@@ -124,7 +124,7 @@ describe('SceneViewerPage', () => {
   });
 
   it('asks the server only for what is inside the visible area', async () => {
-    fixture = TestBed.createComponent(SceneViewerPage);
+    fixture = TestBed.createComponent(Scene);
     await settle();
     scenesRequest().flush([scene]);
     await settle();
@@ -368,7 +368,7 @@ describe('SceneViewerPage', () => {
 
   it('shows a message when the viewer cannot start', async () => {
     map.init.mockRejectedValueOnce(new Error('WebGL is not supported'));
-    fixture = TestBed.createComponent(SceneViewerPage);
+    fixture = TestBed.createComponent(Scene);
 
     await settle();
 

@@ -16,7 +16,7 @@ const STORAGE_KEY = 'twinatlas.sceneId';
  * only. Storage can be unavailable (private window), so every access is guarded.
  */
 @Service()
-export class ScenesService {
+export class SceneData {
   private readonly loaded = httpResource<ListScenesResponse>(() => listScenesRequest());
   /** Scenes created in this session, shown at once, before the list reloads. */
   private readonly created = signal<readonly SceneResponse[]>([]);

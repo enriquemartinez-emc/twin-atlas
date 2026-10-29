@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { client } from '@api/client.gen';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { AnnotationData } from './annotation.data';
+import { AnnotationData } from './annotation-data';
 
 const summary = (id: string, title: string) => ({
   id,

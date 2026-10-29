@@ -4,8 +4,8 @@ import { notBlank } from '@shared/forms/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
 import { HlmTextareaImports } from '@shared/ui/textarea';
-import type { AnnotationFormValue, AnnotationKind } from './draft';
-import { ProblemAlert } from '@shared/problems/problem-alert';
+import type { AnnotationFormValue, AnnotationKind } from '../annotation-draft';
+import { ProblemAlert } from '@shared/components/problem-alert';
 import { HlmFieldImports } from '@shared/ui/field';
 import { HlmTypographyImports } from '@shared/ui/typography';
 

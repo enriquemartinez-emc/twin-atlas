@@ -3,7 +3,7 @@ import { HttpTestingController, provideHttpClientTesting } from '@angular/common
 import { TestBed } from '@angular/core/testing';
 import { client } from '@api/client.gen';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { ScenesService } from './scenes.service';
+import { SceneData } from './scene-data';
 
 const extent = {
   type: 'Polygon' as const,
@@ -30,7 +30,7 @@ const settle = async (): Promise<void> => {
   TestBed.tick();
 };
 
-describe('ScenesService', () => {
+describe('SceneData', () => {
   let http: HttpTestingController;
 
   const create = (remembered?: string) => {
@@ -41,7 +41,7 @@ describe('ScenesService', () => {
     });
     client.setConfig({ httpClient: TestBed.inject(HttpClient), baseUrl: '' });
     http = TestBed.inject(HttpTestingController);
-    return TestBed.inject(ScenesService);
+    return TestBed.inject(SceneData);
   };
 
   const flushList = async (scenes: ReturnType<typeof scene>[]) => {

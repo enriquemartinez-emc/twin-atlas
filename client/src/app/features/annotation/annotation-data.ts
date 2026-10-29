@@ -13,7 +13,7 @@ import {
 } from '@api/index';
 import type { Bbox } from '@map/public-api';
 import { type Outcome, asProblem, failed, succeeded } from '@shared/problems/outcome';
-import { bboxParam } from './draft';
+import { bboxParam } from './annotation-draft';
 
 const PAGE_SIZE = 200;
 
