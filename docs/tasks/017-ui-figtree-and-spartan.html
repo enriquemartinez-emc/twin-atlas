@@ -55,18 +55,20 @@
 <ul>
 <li><strong>My first test proved nothing.</strong> I checked the pressed state of the tool buttons, then broke the code on purpose by freezing the group's value, and every test still passed. The group tracks clicks by itself. A second test, for the case where the app changes the tool (Cancel returns to Select), does fail on that break.</li>
 <li><strong>The new check found two more offenders</strong> in the app shell, which I had not touched. Fixed.</li>
+<li><strong>The browser run found a spacing flaw the tests could not.</strong> In the Map section, "Reset view" and the token form sat flush against each other. Chromium does not apply a flex gap to the children of an open <code>details</code> element. The content now sits in a div, and the gap shows.</li>
 <li><strong>A stale test.</strong> One setup test asserted that a Tailwind class existed on the shell. It now asserts that Spartan's typography delivers its classes.</li>
 <li><strong>Nine style errors in the generated files</strong> (imports used only as types). The linter fixed them in place, as the rules allow.</li>
 </ul>
 <h2>How it was checked</h2>
 <div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Tests</td><td class="">182 client tests pass. Existing ones changed only where the markup changed (the list now shows the kind as a badge, so title, badge and text are checked separately).</td></tr><tr><td class="">Accessibility</td><td class="">The tool buttons keep their pressed state, the alerts keep their alert role, the list keeps its current-item mark. Tests assert each.</td></tr><tr><td class="">Rules can fail</td><td class="">A bloated class made the new check fail. Freezing the toggle group made the new test fail.</td></tr><tr><td class="">Build</td><td class="">Lint, formatting and the production build are clean with no warnings. The build output contains both font files and both font declarations.</td></tr><tr><td class="">The font files</td><td class="">Both contain the variable-font tables. The weight range of 300 to 900 is what the designers publish, I did not read it from the files.</td></tr></tbody></table></div>
-<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>I have not seen any of it in a browser: the spacing, the look of the panel and how the font renders are unchecked. A look needs your approval to run the app.</p></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>Seen in the approved browser run of 2026-10-29 (headless Chromium with software rendering, against the real server and database): the panel, the tool toggle group, the item list with badges, the editor, the conflict alert and the Figtree font (the browser reported it loaded, weight range 300 to 900, and the title rendered at weight 600). Not seen: dark mode, small screens, other browsers, a real graphics card, and the photorealistic tiles.</p></div>
 <h2>Known limits</h2>
 <ul>
 <li>Spartan's field error shows itself from the state of its own form helpers, which do not know about Signal Forms. It is used here as a styled message inside our own checks.</li>
 <li>The scene chooser is a plain <code>select</code>. Spartan's version needs an icon library, which is a new package and needs your approval.</li>
 <li>The Spartan components themselves carry long class strings. That is by design: it is where those classes belong.</li>
 <li>The map controls and dark mode were not redesigned.</li>
+<li>Rough edges seen in the run, not fixed: map labels overlap where markers are dense, imported titles such as "OSM node/1361887169" are noisy, and the form hint still says "Click the map to place the marker" after the marker is placed.</li>
 </ul>
 </div>
 <nav class="pager" aria-label="Pages"><a href="016-shared-kernel-and-cleanup.html">Previous: Shared kernel and server cleanup</a><span></span></nav>

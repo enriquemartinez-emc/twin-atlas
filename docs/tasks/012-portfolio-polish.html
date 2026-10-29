@@ -51,11 +51,11 @@
 </ul>
 <h2>How it was checked</h2>
 <div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Links</td><td class="">72 links in the README, roadmap, architecture notes, decision-record index and specs index all resolve. No placeholder text remains.</td></tr><tr><td class="">Specs</td><td class="">Every spec file shows the same status as the specs index.</td></tr><tr><td class="">A clean clone</td><td class="">A fresh clone of the branch: the server build with formatting check and all tests gives 192 passing tests. The client installs from its lock file, and lint, formatting, 182 passing tests and the production build pass. Regenerating the SDK from the committed contract leaves no difference.</td></tr><tr><td class="">The benchmark claim</td><td class="">The numbers in the README are copied from the benchmark results, not recalled.</td></tr></tbody></table></div>
-<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified, and not done</h3>
-<p>The README has no screenshots or recording, because making them means running the app, which needs your approval. The quick-start commands are the ones the client's README has always listed. The clean-clone check ran tests and builds, it did not start the database, the server or the client. The Swagger UI address in the README is springdoc's default and I have not opened it.</p></div>
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3>
+<p>The README has three screenshots, taken in the approved browser run of 2026-10-29 (headless Chromium with software rendering, against the real server and database). It has no recording. The quick-start commands were run from the working checkout (database, server, client), not from the clean clone: the clean-clone check ran tests and builds only. The Swagger UI address in the README is springdoc's default and I have not opened it.</p></div>
 <h2>Known limits</h2>
 <ul>
-<li>One criterion stays open until there is a demo to show.</li>
+<li>The screenshots show the OpenStreetMap globe. The photorealistic 3D tiles need a Cesium ion token that only you can create.</li>
 <li>npm 12 warns during installation that some packages' install scripts were not approved. The build and every test still pass.</li>
 <li>The README's benchmark paragraph is a summary. The method, hardware and plans are in the decision record.</li>
 </ul>

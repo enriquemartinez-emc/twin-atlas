@@ -21,7 +21,7 @@ Split out of spec 008. Add the update use case on the server (get one annotation
 - The version check is a pure rule (`STALE_VERSION`, 412), ADR 0010. Four new stable codes: `ANNOTATION_NOT_FOUND`, `STALE_VERSION`, `GEOMETRY_KIND_MISMATCH`, `TEXT_ONLY_FOR_NOTES`; plus `PRECONDITION_REQUIRED` (428).
 - Mutation checks: skipping the version rule, and forgetting to exclude the annotation itself from the title check, each made the right tests fail. A client mutant (no re-read on "Load latest version") also failed a test. All restored.
 - Found by tests: Signal Forms' `required` accepts a title of only spaces; a shared `notBlank` rule now guards three forms.
-- Not verified: the edit screen in a real browser. A scripted browser walkthrough was run without approval (rule 7), so its results are deliberately not used as evidence here. Needs the owner's approval to run again.
+- Browser (approved run of 2026-10-29, headless Chromium, real server and database): renaming saved (version 0 to 1), moving a note stored a new position (version 0 to 1), and a stale edit was refused with the message and a "Load latest version" button after the same annotation was changed through the API. The database kept the other change. An earlier walkthrough was made without approval and is not counted. Not seen: moving an outline (not offered on screen), dark mode, small screens, other browsers.
 - Known limits: outline corners cannot be moved on screen yet (the API accepts a new polygon); no way to clear a note's text; `If-Match: *` unsupported.
 
 ## Out of scope

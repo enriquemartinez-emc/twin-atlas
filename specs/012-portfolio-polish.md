@@ -8,7 +8,7 @@ Make the repo readable in five minutes by a hiring manager: README with a demo, 
 
 ## Acceptance criteria
 
-- [ ] README states what Twin Atlas is, shows a demo GIF or screenshots, and gives a working quick start (`docker compose up` plus client and server commands tested from a clean clone). **Open:** the README has no demo, and the start commands were not run. Both need the owner's approval to run the app.
+- [x] README states what Twin Atlas is, shows screenshots, and gives a working quick start. The three screenshots come from the approved browser run of 2026-10-29. The start commands were run from the working checkout (not a clean clone); the clean clone ran tests and builds.
 - [x] `ARCHITECTURE.md` covers the modular monolith, FCIS split, reads bypass, mapping boundary and a diagram.
 - [x] `docs/adr/` contains every ADR listed in AGENTS.md "Docs to maintain" (slices, decision functions, reads bypass, native SQL vs Hibernate Spatial, entity mapping, Maven, keyset pagination, Spartan UI) plus geometry vs geography, with the benchmark note and before/after query plans.
 - [x] `ROADMAP.md` lists what is done and next, and the trade-offs deliberately left out.

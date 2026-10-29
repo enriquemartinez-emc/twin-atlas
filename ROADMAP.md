@@ -14,12 +14,13 @@ Where Twin Atlas is, what comes next, and what was left out on purpose. Each tas
 - **OpenStreetMap import.** A bulk endpoint that imports what it can and reports every problem.
 - **Shared-kernel cleanup.** The shared parts are named for what they are and every framework error carries a code.
 - **Figtree and Spartan.** One font and real components, with no piles of style classes.
+- **A first look at the running app.** Verified in a real browser: creating, editing, moving, a refused stale edit and an imported extract on the map. Three screenshots in the README.
 - **Documentation.** This repository's README, architecture notes, 14 decision records and a site with a page per task.
 
 ## Next
 
-- **A demo you can look at.** Screenshots or a short recording of the running app in the README. Needs the owner's approval to run the app.
-- **Browser tests.** Written but never run without approval. The tool is not chosen yet and will be proposed first.
+- **A short recording** of the running app for the README. There are screenshots already.
+- **Browser tests.** Playwright is the approved tool. The tests are written but never run without the owner's approval, and live in their own folder with their own script.
 - **An import screen.** The OpenStreetMap import has no screen, so it can only be used through the API. It would also show the required attribution on the map.
 - **Paging for the scene list.** `GET /api/scenes` returns the newest 100, which breaks the keyset rule used everywhere else.
 - **The asset slice.** Plain CRUD for files attached to a place. Planned in the architecture, not built.

@@ -35,7 +35,7 @@ Client:
 
 - Operations got explicit ids and response fields are `@NotNull`, so the SDK has `listScenes`, `createAnnotation` and so on, with required fields, instead of `list1` and optional everything.
 - The generated runtime (`src/app/api/client`, `core`) has two `any` types. They are generated, so they are not edited and the folder is excluded from lint. Our code has none.
-- Manual check against the real server (headless Chromium, not an E2E suite): created a scene from the view, placed a marker, saw the duplicate-title rejection as a readable message, and drew an outline. The browser console stayed clean. Found and fixed a stale validation message after creating a scene.
+- Browser: an earlier headless run was made without approval and is not counted. In the approved run of 2026-10-29 a marker, a note and an outline were created through the screen and stored as drafts, with a clean console. The duplicate-title message was not repeated there. The browser console stayed clean. Found and fixed a stale validation message after creating a scene.
 - Not verified: the photorealistic 3D tiles with a real token (needs the user's Cesium ion token).
 - Added a `/api` proxy for development, `GET /api/scenes`, and spec 014 for editing.
 

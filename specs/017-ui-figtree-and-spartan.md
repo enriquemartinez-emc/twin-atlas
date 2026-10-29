@@ -17,7 +17,7 @@ Measured before this task: all four installed Spartan components (button, input,
 - [x] Behaviour is unchanged. Existing component tests pass. They are changed only where markup changed (roles and selectors), never weakened, and the accessibility they assert (pressed state, alerts, labels, current item) still holds.
 - [x] Prettier, ESLint, unit tests and the production build are green, and the build output contains the font and its `@font-face`.
 - [x] `AGENTS.md` records the Figtree choice and the class rule. A docs page for the task is written and linked.
-- [x] Not verified, and said so: how it looks in a browser. Nothing is started or driven without the owner's approval.
+- [x] How it looks in a browser is checked in a run the owner approves, and what was not seen is said so.
 
 ## Notes
 
@@ -27,7 +27,8 @@ Measured before this task: all four installed Spartan components (button, input,
 - Mutation checks: freezing the toggle group's value first **survived** (Brain tracks clicks by itself, so my first test proved nothing). The second test fails on that mutation. A bloated class makes `lint:classes` fail.
 - `ng lint` flagged 9 style errors in the generated Helm files (type-only imports). They were fixed in place with `--fix`, as the rulebook allows.
 - Known limits: Spartan's field error is used as a styled message inside our own checks, because its automatic display is built for Brain's form state and not for Signal Forms. The scene `<select>` is plain (no new package). Helm components carry long class strings by design: that is where they belong.
-- Not seen in a browser: layout, spacing and the look of the font are unchecked. Needs the owner's approval to run.
+- Seen in the approved browser run of 2026-10-29 (headless Chromium, software rendering): the panel, toggle group, item list with badges, editor, conflict alert and the Figtree font (reported loaded, weight range 300-900, title at weight 600). The run found one flaw the tests could not: the Map section's children had no gap, because Chromium does not apply a flex gap inside an open `<details>`. They now sit in a div. Not seen: dark mode, small screens, other browsers, the photorealistic tiles.
+- Rough edges seen, not fixed: overlapping map labels where markers are dense, noisy imported titles (`OSM node/1361887169`), and a form hint that stays after the marker is placed.
 
 ## Out of scope
 

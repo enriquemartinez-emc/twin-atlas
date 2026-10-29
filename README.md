@@ -12,6 +12,20 @@ A digital twin is a photorealistic 3D copy of a real place. Twin Atlas is the pl
 - **Bulk import from OpenStreetMap.** `POST /api/scenes/{id}/imports/osm` takes an Overpass answer, imports what is usable and reports every skipped element with a stable code. There is no screen for it yet.
 - **A typed API.** The server commits its OpenAPI contract, a test fails when it is stale, and the client's SDK is generated from it.
 
+## What it looks like
+
+Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe).
+
+![An OpenStreetMap extract imported into a scene: markers, a note and outlines on the map, listed in the panel](docs/assets/screenshots/import.png)
+
+Editing an annotation: the map flies to it, and the editor opens in the panel.
+
+![The editor for a marker, with the selected annotation highlighted on the map and in the list](docs/assets/screenshots/edit.png)
+
+When someone else changed the same annotation first, the save is refused and nothing is overwritten.
+
+![A refused save: "Someone changed this annotation since you opened it", with a Load latest version button](docs/assets/screenshots/conflict.png)
+
 ## Quick start
 
 You need JDK 25, Node 24 and Docker.
@@ -39,11 +53,11 @@ cd client && npm run lint && npm test -- --watch=false && npm run build
 - **Boundaries are enforced.** A modular monolith packaged by feature, with ArchUnit rules that fail the build ([ADR 0013](docs/adr/0013-modular-monolith-with-feature-slices.md)).
 - **Measured, not claimed.** On 1.2 million annotations on a 4-CPU laptop with 7.8 GiB of memory, a 250 m map view takes 7.5 ms at the median with the spatial index and 254 ms without it, and "10 nearest" takes 5.6 ms against 361 ms. Method, hardware and query plans are in [ADR 0009](docs/adr/0009-benchmark-one-million-rows.md) and [`docs/benchmark/`](docs/benchmark/).
 
-| | |
-| --- | --- |
-| Backend | Java 25, Spring Boot 4, Hibernate 7 with Hibernate Spatial, PostgreSQL and PostGIS, Flyway, MapStruct, springdoc |
-| Backend tests | JUnit 5, AssertJ, jqwik, Testcontainers, ArchUnit |
-| Client | Angular 22 (zoneless, Signal Forms, Vitest), CesiumJS, Spartan UI with Tailwind, Figtree |
+|               |                                                                                                                  |
+| ------------- | ---------------------------------------------------------------------------------------------------------------- |
+| Backend       | Java 25, Spring Boot 4, Hibernate 7 with Hibernate Spatial, PostgreSQL and PostGIS, Flyway, MapStruct, springdoc |
+| Backend tests | JUnit 5, AssertJ, jqwik, Testcontainers, ArchUnit                                                                |
+| Client        | Angular 22 (zoneless, Signal Forms, Vitest), CesiumJS, Spartan UI with Tailwind, Figtree                         |
 
 ## Where to read more
 
