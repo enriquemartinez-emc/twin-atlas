@@ -19,7 +19,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 011 | [Security and integrations](011-security-and-integrations.md) | `feat/security-and-integrations` | Proposed   |
 | 012 | [Portfolio polish](012-portfolio-polish.md)                | `docs/portfolio-polish`          | Proposed   |
 | 013 | [E2E tests (run only on approval)](013-e2e-tests.md)       | `test/e2e`                       | Proposed   |
-| 014 | [Annotation update (rename and move)](014-annotation-update.md) | `feat/annotation-update`        | In progress |
+| 014 | [Annotation update (rename and move)](014-annotation-update.md) | `feat/annotation-update`        | Done        |
 | 015 | [HTML documentation](015-html-docs.md)                     | `docs/html-docs`                 | Done       |
 
 ## File template

@@ -1,6 +1,6 @@
 # 014 — Annotation update (rename and move)
 
-**Status:** In progress | **Branch:** `feat/annotation-update`
+**Status:** Done | **Branch:** `feat/annotation-update`
 
 ## Description
 
