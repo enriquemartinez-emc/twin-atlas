@@ -29,6 +29,18 @@ class OpenApiTest {
     assertThat(result).bodyJson().extractingPath("$.paths['/api/scenes'].post").isNotNull();
     assertThat(result)
         .bodyJson()
+        .extractingPath("$.paths['/api/scenes/{sceneId}/annotations'].get")
+        .isNotNull();
+    assertThat(result)
+        .bodyJson()
+        .extractingPath("$.paths['/api/scenes/{sceneId}/annotations/nearest'].get")
+        .isNotNull();
+    assertThat(result)
+        .bodyJson()
+        .extractingPath("$.paths['/api/scenes/{sceneId}/annotations/search'].post")
+        .isNotNull();
+    assertThat(result)
+        .bodyJson()
         .extractingPath("$.components.schemas.ProblemResponse.properties.code.enum")
         .asList()
         .contains(
@@ -37,6 +49,7 @@ class OpenApiTest {
             "GEOMETRY_OUTSIDE_SCENE_EXTENT",
             "TITLE_ALREADY_USED",
             "VALIDATION_FAILED",
-            "CONCURRENT_MODIFICATION");
+            "CONCURRENT_MODIFICATION",
+            "INVALID_CURSOR");
   }
 }
