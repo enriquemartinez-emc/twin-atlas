@@ -26,6 +26,7 @@ Statuses: `Proposed` → `Approved` → `In progress` → `Done` (only after con
 | 018 | [One command to start the app](018-one-command-start.md) | `feat/one-command-start` | In progress |
 | 019 | [Angular structure, routes and state flow](019-angular-structure.md) | `chore/angular-structure` | In progress |
 | 020 | [Spring Boot structure: roles inside the big feature](020-spring-structure.md) | `chore/spring-structure` | In progress |
+| 021 | [UI polish: the app's own icon and name, and a guide for new users](021-ui-polish.md) | `feat/ui-polish` | In progress |
 
 ## File template
 
