@@ -49,3 +49,8 @@ The test extracts in `server/src/test/resources/osm/` and the map tiles shown by
 ## ng-icons and Lucide (MIT, ISC)
 
 `@ng-icons/core` (MIT) renders icons in Angular and `@ng-icons/lucide` (ISC) carries the Lucide icon set (<https://github.com/ng-icons/ng-icons>, <https://lucide.dev>). They are npm dependencies, not copied files. The icons in the tool rail, the status bar and the list come from Lucide.
+
+## Agent skills in `.claude/skills/`
+
+Five skill folders are copied from other projects, and `skills-lock.json` records where each came from: `angular-developer` and `angular-new-app` (<https://github.com/angular/angular>), `java-springboot` (<https://github.com/github/awesome-copilot>), `playwright-cli` (<https://github.com/microsoft/playwright-cli>) and `spartan` (<https://github.com/spartan-ng/spartan>). They keep the licences of their source repositories, which are the ones to read before reusing them. The two Angular skills say MIT in their own headers.
+

@@ -71,17 +71,25 @@ Five minutes, in the order that makes sense. The [user guide](docs/guide.html) e
 
 ## What it looks like
 
-Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe). They show the screen before the redesign (panel on the left, tools inside it) and will be retaken.
+Screenshots from the running app (headless Chromium, software rendering, the OpenStreetMap globe).
 
-![An OpenStreetMap extract imported into a scene: markers, a note and outlines on the map, listed in the panel](docs/assets/screenshots/import.png)
+An OpenStreetMap extract imported into a scene: markers, a note and outlines on the map. The panel lists what is in view, with a count and a filter by kind.
 
-Editing an annotation: the map flies to it, and the editor opens in the panel.
+![The scene page: the tool rail, the status bar and the panel listing what is in view](docs/assets/screenshots/overview.png)
 
-![The editor for a marker, with the selected annotation highlighted on the map and in the list](docs/assets/screenshots/edit.png)
+Drawing an outline: the tool lights up in the colour of what it makes, a hint says what to do next, and the form sits in the panel.
 
-When someone else changed the same annotation first, the save is refused and nothing is overwritten.
+![The outline tool chosen, with a hint above the bottom edge and a form in the panel](docs/assets/screenshots/draw.png)
 
-![A refused save: "Someone changed this annotation since you opened it", with a Load latest version button](docs/assets/screenshots/conflict.png)
+Editing a note: the map flew to it, it turns red, and the editor replaces the list in the panel.
+
+![The editor for a note, with the selected note highlighted in red on the map](docs/assets/screenshots/edit.png)
+
+On a phone the panel is a sheet at the bottom and the tools run along the top.
+
+<img src="docs/assets/screenshots/phone.png" alt="The same page at phone width, with the list in a bottom sheet" width="320">
+
+When someone else changed the same annotation first, the save is refused with "Someone changed this annotation since you opened it", nothing is overwritten, and the editor offers to load the latest version.
 
 ## What is worth a look
 
