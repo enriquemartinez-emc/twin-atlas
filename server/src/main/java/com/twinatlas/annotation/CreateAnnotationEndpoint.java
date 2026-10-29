@@ -50,6 +50,7 @@ class CreateAnnotationEndpoint {
 
   @PostMapping("/api/scenes/{sceneId}/annotations")
   @Operation(
+      operationId = "createAnnotation",
       summary = "Create an annotation in a scene",
       description =
           "Creates a draft marker, note or outline. The ETag is the optimistic-lock version.")

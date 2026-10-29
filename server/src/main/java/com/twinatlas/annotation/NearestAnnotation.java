@@ -1,3 +1,5 @@
 package com.twinatlas.annotation;
 
-public record NearestAnnotation(AnnotationSummary annotation, double distanceMeters) {}
+import jakarta.validation.constraints.NotNull;
+
+public record NearestAnnotation(@NotNull AnnotationSummary annotation, double distanceMeters) {}

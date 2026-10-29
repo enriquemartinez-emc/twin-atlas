@@ -1,6 +1,7 @@
 package com.twinatlas.platform;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotNull;
 
 /**
  * Documents the problem body (RFC 7807) for OpenAPI and the generated SDK. At runtime the body is a
@@ -8,8 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
  */
 public record ProblemResponse(
     String type,
-    String title,
+    @NotNull String title,
     int status,
-    String detail,
+    @NotNull String detail,
     String instance,
-    @Schema(description = "Stable machine-readable error code") String code) {}
+    @NotNull @Schema(description = "Stable machine-readable error code") String code) {}

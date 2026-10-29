@@ -38,6 +38,7 @@ class AnnotationReadEndpoints {
 
   @GetMapping
   @Operation(
+      operationId = "listAnnotations",
       summary = "List annotations, or the ones visible in a map view",
       description =
           "Keyset-paginated, ordered by creation time. With `bbox` only annotations that intersect"
@@ -71,6 +72,7 @@ class AnnotationReadEndpoints {
 
   @GetMapping("/nearest")
   @Operation(
+      operationId = "nearestAnnotations",
       summary = "The N annotations closest to a point",
       description = "Ordered by distance (KNN index scan). `distanceMeters` is geodesic.")
   @ApiResponse(
@@ -104,6 +106,7 @@ class AnnotationReadEndpoints {
 
   @PostMapping("/search")
   @Operation(
+      operationId = "searchAnnotations",
       summary = "Annotations that intersect a zone",
       description = "POST because the zone is a GeoJSON polygon. Keyset-paginated like the list.")
   @ApiResponse(

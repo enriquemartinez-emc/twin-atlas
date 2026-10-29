@@ -13,7 +13,7 @@
     "/api/scenes" : {
       "get" : {
         "description" : "The 100 newest scenes, newest first.",
-        "operationId" : "list",
+        "operationId" : "listScenes",
         "responses" : {
           "200" : {
             "content" : {
@@ -33,7 +33,7 @@
         "tags" : [ "scene-controller" ]
       },
       "post" : {
-        "operationId" : "create",
+        "operationId" : "createScene",
         "requestBody" : {
           "content" : {
             "application/json" : {
@@ -72,7 +72,7 @@
     },
     "/api/scenes/{id}" : {
       "get" : {
-        "operationId" : "get",
+        "operationId" : "getScene",
         "parameters" : [ {
           "in" : "path",
           "name" : "id",
@@ -111,7 +111,7 @@
     "/api/scenes/{sceneId}/annotations" : {
       "get" : {
         "description" : "Keyset-paginated, ordered by creation time. With `bbox` only annotations that intersect the view are returned. A west value greater than east crosses the antimeridian.",
-        "operationId" : "list_1",
+        "operationId" : "listAnnotations",
         "parameters" : [ {
           "in" : "path",
           "name" : "sceneId",
@@ -185,7 +185,7 @@
       },
       "post" : {
         "description" : "Creates a draft marker, note or outline. The ETag is the optimistic-lock version.",
-        "operationId" : "create_1",
+        "operationId" : "createAnnotation",
         "parameters" : [ {
           "in" : "path",
           "name" : "sceneId",
@@ -264,7 +264,7 @@
     "/api/scenes/{sceneId}/annotations/nearest" : {
       "get" : {
         "description" : "Ordered by distance (KNN index scan). `distanceMeters` is geodesic.",
-        "operationId" : "nearest",
+        "operationId" : "nearestAnnotations",
         "parameters" : [ {
           "in" : "path",
           "name" : "sceneId",
@@ -357,7 +357,7 @@
     "/api/scenes/{sceneId}/annotations/search" : {
       "post" : {
         "description" : "POST because the zone is a GeoJSON polygon. Keyset-paginated like the list.",
-        "operationId" : "search",
+        "operationId" : "searchAnnotations",
         "parameters" : [ {
           "in" : "path",
           "name" : "sceneId",
@@ -429,13 +429,15 @@
             "type" : [ "string", "null" ],
             "description" : "Pass as `cursor` to get the next page. Null on the last page."
           }
-        }
+        },
+        "required" : [ "items" ]
       },
       "AnnotationResponse" : {
         "type" : "object",
         "properties" : {
           "body" : {
-            "type" : "string"
+            "type" : [ "string", "null" ],
+            "description" : "Only notes carry text"
           },
           "createdAt" : {
             "type" : "string",
@@ -462,13 +464,15 @@
           "title" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "createdAt", "geometry", "id", "kind", "sceneId", "status", "title" ]
       },
       "AnnotationSummary" : {
         "type" : "object",
         "properties" : {
           "body" : {
-            "type" : "string"
+            "type" : [ "string", "null" ],
+            "description" : "Only notes carry text"
           },
           "createdAt" : {
             "type" : "string",
@@ -495,7 +499,8 @@
           "title" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "createdAt", "geometry", "id", "kind", "sceneId", "status", "title" ]
       },
       "CreateAnnotationRequest" : {
         "type" : "object",
@@ -606,7 +611,8 @@
             "type" : "number",
             "format" : "double"
           }
-        }
+        },
+        "required" : [ "annotation" ]
       },
       "ProblemResponse" : {
         "type" : "object",
@@ -632,7 +638,8 @@
           "type" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "code", "detail", "title" ]
       },
       "SceneResponse" : {
         "type" : "object",
@@ -651,7 +658,8 @@
           "name" : {
             "type" : "string"
           }
-        }
+        },
+        "required" : [ "createdAt", "extent", "id", "name" ]
       },
       "SearchRequest" : {
         "type" : "object",

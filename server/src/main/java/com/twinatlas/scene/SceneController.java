@@ -38,7 +38,7 @@ class SceneController {
   }
 
   @PostMapping("/api/scenes")
-  @Operation(summary = "Create a scene")
+  @Operation(operationId = "createScene", summary = "Create a scene")
   @ApiResponse(
       responseCode = "201",
       description = "Created",
@@ -57,7 +57,10 @@ class SceneController {
   }
 
   @GetMapping("/api/scenes")
-  @Operation(summary = "List scenes", description = "The 100 newest scenes, newest first.")
+  @Operation(
+      operationId = "listScenes",
+      summary = "List scenes",
+      description = "The 100 newest scenes, newest first.")
   @ApiResponse(
       responseCode = "200",
       description = "Scenes",
@@ -68,7 +71,7 @@ class SceneController {
   }
 
   @GetMapping("/api/scenes/{id}")
-  @Operation(summary = "Get a scene")
+  @Operation(operationId = "getScene", summary = "Get a scene")
   @ApiResponse(
       responseCode = "200",
       description = "The scene",
