@@ -1,7 +1,7 @@
 import { computed, inject, linkedSignal, type Signal } from '@angular/core';
 import { Router } from '@angular/router';
-import { annotationData } from '@features/annotation';
-import type { Bbox } from '@map';
+import { annotationData } from './annotation/annotation-data';
+import type { Bbox } from '@map/bbox';
 import { SceneData } from './scene-data';
 
 /** Which scene and annotation are chosen, and the annotations of the scene in view. */

@@ -17,30 +17,28 @@ import type { AnnotationSummary } from '@api/index';
 import { environment } from '@env/environment';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucidePanelRightClose, lucidePanelRightOpen } from '@ng-icons/lucide';
-import {
-  AnnotationEditor,
-  AnnotationForm,
-  AnnotationList,
-  focusPoint,
-  toMapFeature,
-} from '@features/annotation';
-import type { MapClick, MapViewer } from '@map';
-import { ProblemAlert } from '@shared/components/problem-alert';
+import { AnnotationEditor } from './annotation/annotation-editor';
+import { AnnotationForm } from './annotation/annotation-form';
+import { AnnotationList } from './annotation/annotation-list';
+import { focusPoint, toMapFeature } from './annotation/annotation-draft';
+import type { MapClick } from '@map/feature.model';
+import type { MapViewer } from '@map/map-viewer';
+import { ProblemAlert } from '@shared/problem-alert';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmCardImports } from '@shared/ui/card';
 import { HlmEmptyImports } from '@shared/ui/empty';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
-import { MapStatus } from './components/map-status';
-import { SceneBar } from './components/scene-bar';
-import { ToolRail } from './components/tool-rail';
-import { drawingState } from './drawing-state';
-import { editState } from './edit-state';
-import { IonTokenStore } from './ion-token-store';
+import { MapStatus } from './map-status';
+import { SceneBar } from './scene-bar/scene-bar';
+import { ToolRail } from './tools/tool-rail';
+import { drawingState } from './tools/drawing-state';
+import { editState } from './annotation/edit-state';
+import { IonTokenStore } from './scene-bar/ion-token-store';
 import { linkCopy } from './link-copy';
 import { SceneData } from './scene-data';
 import { sceneCreation } from './scene-creation';
 import { sceneWorkspace } from './scene-workspace';
-import { toolHint } from './tool-hint';
+import { toolHint } from './tools/tool-hint';
 
 const FOCUS_HEIGHT = 250;
 

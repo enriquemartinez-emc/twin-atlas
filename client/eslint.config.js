@@ -55,10 +55,28 @@ module.exports = defineConfig([
               message:
                 'Do not climb out of a folder. A file may import a sibling, a direct child, or a file in its parent folder (../name), which is how components reach their own feature. Everything else uses a path alias (@app, @features, @shared, @map, @api, @env).',
             },
+          ],
+        },
+      ],
+    },
+  },
+  {
+    // Directions of use: features may use shared, core, map and api, never the other way round.
+    files: ['src/app/shared/**/*.ts', 'src/app/core/**/*.ts', 'src/app/map/**/*.ts'],
+    rules: {
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
             {
-              group: ['@features/*/**'],
+              group: ['../../**', '../*/**'],
               message:
-                'Import a feature only through its entry point (@features/<feature>, which is its index.ts). Inside a feature, use relative imports.',
+                'Do not climb out of a folder. A file may import a sibling, a direct child, or a file in its parent folder (../name). Everything else uses a path alias.',
+            },
+            {
+              group: ['@features/**', '@app/features/**'],
+              message:
+                'shared, core and map are used by features and must not import from them. Move what both need into shared, core or map.',
             },
           ],
         },

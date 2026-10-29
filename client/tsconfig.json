@@ -18,7 +18,6 @@
       "@app/*": ["./src/app/*"],
       "@features/*": ["./src/app/features/*"],
       "@shared/*": ["./src/app/shared/*"],
-      "@map": ["./src/app/map/index.ts"],
       "@map/*": ["./src/app/map/*"],
       "@api/*": ["./src/app/api/*"],
       "@env/*": ["./src/environments/*"],

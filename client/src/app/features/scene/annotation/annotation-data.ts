@@ -11,7 +11,7 @@ import {
   createAnnotation,
   updateAnnotation,
 } from '@api/index';
-import type { Bbox } from '@map';
+import type { Bbox } from '@map/bbox';
 import {
   type Outcome,
   asProblem,

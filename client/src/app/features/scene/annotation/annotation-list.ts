@@ -9,7 +9,7 @@ import { HlmSkeleton } from '@shared/ui/skeleton';
 import { HlmToggleGroupImports } from '@shared/ui/toggle-group';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
 import { HlmTypographyImports } from '@shared/ui/typography';
-import { KIND_ICONS, KIND_META } from '../kind-meta';
+import { KIND_ICONS, KIND_META } from './kind-meta';
 
 type Kind = AnnotationSummary['kind'];
 type Filter = 'ALL' | Kind;

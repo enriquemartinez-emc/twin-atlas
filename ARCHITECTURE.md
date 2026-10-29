@@ -60,7 +60,7 @@ PostgreSQL with PostGIS. Flyway owns the schema, Hibernate only validates it (`d
 
 ## Client
 
-Angular 22: zoneless, standalone, signals, single-file components. Feature folders mirror the backend slices.
+Angular 22: zoneless, standalone, signals, single-file components. Organized by feature area as Angular's style guide recommends, with no barrel files.
 
 ```
 client/src/app
@@ -68,14 +68,14 @@ client/src/app
 ├── core/problems/       server error code → message, the Outcome type (app-wide, no UI)
 ├── map/                 the only code that touches Cesium: MapViewer, feature layer, pure descriptors, GeoJSON helpers
 ├── app.ts, app.config.ts, app.routes.ts, not-found.ts
-├── features/
-│   ├── scene/           scene.ts (the route-level page, wiring only), scene.routes.ts, scene-data.ts,
-│   │                    scene-workspace / drawing-state / edit-state / scene-creation / link-copy
-│   │                    (feature state, as functions fed with signals), ion-token-store.ts,
-│   │                    components/ (scene bar, tool rail, status bar, token panel)
+├── features/scene/     the only feature: scene.ts (the route-level page, wiring only),
+│   │                    scene.routes.ts, scene-data.ts, scene-workspace.ts, scene-creation.ts,
+│   │                    link-copy.ts, map-status.ts (feature state as functions fed with signals)
+│   ├── scene-bar/       the top bar: scene chooser, new-scene form, token panel and store
+│   ├── tools/           tool rail, hint, drawing state
 │   └── annotation/      annotation-data.ts (httpResource), annotation-draft.ts (pure logic),
-│                        components/ (form with Signal Forms, editor, list)
-└── shared/              components/ (problem alert, badge), forms/,
+│                        kind-meta.ts, list, form (Signal Forms), editor, edit state
+└── shared/              badge-dot.ts, problem-alert.ts, not-blank.ts,
                          ui/ (Spartan Helm components, path set by the CLI)
 ```
 

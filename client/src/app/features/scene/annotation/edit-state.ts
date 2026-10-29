@@ -1,12 +1,9 @@
 import { computed, linkedSignal, signal, type Signal } from '@angular/core';
-import {
-  type AnnotationData,
-  type AnnotationFormValue,
-  buildUpdateRequest,
-} from '@features/annotation';
+import { type AnnotationData } from './annotation-data';
+import { type AnnotationFormValue, buildUpdateRequest } from './annotation-draft';
 import { problemMessage } from '@app/core/problems/problem-message';
-import type { LonLat } from '@map';
-import type { DrawingState } from './drawing-state';
+import type { LonLat } from '@map/feature.model';
+import type { DrawingState } from '@features/scene/tools/drawing-state';
 
 /** What editing needs from the rest of the page. */
 export interface EditHost {

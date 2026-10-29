@@ -1,13 +1,13 @@
 import { computed, linkedSignal, signal, type Signal } from '@angular/core';
+import { type AnnotationData } from '@features/scene/annotation/annotation-data';
 import {
-  type AnnotationData,
   type AnnotationFormValue,
   buildCreateRequest,
   isDraftReady,
-} from '@features/annotation';
+} from '@features/scene/annotation/annotation-draft';
 import { problemMessage } from '@app/core/problems/problem-message';
-import type { LonLat } from '@map';
-import type { Tool } from './components/tool-rail';
+import type { LonLat } from '@map/feature.model';
+import type { Tool } from './tool-rail';
 
 /** What drawing needs from the rest of the page. */
 export interface DrawingHost {

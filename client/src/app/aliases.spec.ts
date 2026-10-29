@@ -1,8 +1,8 @@
 import { appConfig } from '@app/app.config';
-import * as annotation from '@features/annotation';
-import * as scene from '@features/scene';
+import * as annotation from '@features/scene/annotation/kind-meta';
+import * as scene from '@features/scene/scene.routes';
 import * as sdk from '@api/index';
-import * as map from '@map';
+import * as map from '@map/geojson';
 import * as button from '@shared/ui/button';
 import { environment } from '@env/environment';
 

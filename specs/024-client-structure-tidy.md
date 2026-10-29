@@ -20,3 +20,7 @@ A review of the client against the Angular developer skill and style guide found
 
 - Splitting the `Scene` page component (its own task).
 - Renaming `@map` or the other aliases beyond the one new entry.
+
+## Later
+
+The `index.ts` entry points were removed in task 026 (the style guide and our own build argued against barrels). The other changes stand.

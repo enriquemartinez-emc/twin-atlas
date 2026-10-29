@@ -1,5 +1,5 @@
 import { Component, input, output, signal } from '@angular/core';
-import type { MapMode } from '@map';
+import type { MapMode } from '@map/map-viewer';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
 import { HlmFieldImports } from '@shared/ui/field';

@@ -1,7 +1,8 @@
 import { Component, input, output } from '@angular/core';
 import { NgIcon, provideIcons } from '@ng-icons/core';
 import { lucideMousePointer2 } from '@ng-icons/lucide';
-import { KIND_ICONS, KIND_META, type AnnotationKind } from '@features/annotation';
+import { KIND_ICONS, KIND_META } from '@features/scene/annotation/kind-meta';
+import { type AnnotationKind } from '@features/scene/annotation/annotation-draft';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmTooltipImports } from '@shared/ui/tooltip';
 

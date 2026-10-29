@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Client without barrels - Twin Atlas docs</title>
+<meta name="description" content="Barrel files and type folders removed from the Angular client; annotations nested inside the scene feature.">
+<link rel="stylesheet" href="../assets/docs.css">
+</head>
+<body>
+<div class="shell">
+<nav class="side" aria-label="Documentation"><details open><summary>Menu</summary>
+<a class="brand" href="../index.html"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Twin Atlas</a>
+<h2>Start here</h2><ul>
+<li><a href="../index.html"><span>Overview</span></a></li>
+<li><a href="../guide.html"><span>Using the app</span></a></li>
+<li><a href="../architecture.html"><span>How it fits together</span></a></li>
+<li><a href="../glossary.html"><span>Glossary</span></a></li>
+</ul><h2>Tasks</h2><ul>
+<li><a href="../tasks/001-agents-md-fixes.html"><span class="dot done" aria-hidden="true"></span><span class="nn">001</span><span>Project rules and repository setup</span></a></li>
+<li><a href="../tasks/002-bootstrap-backend.html"><span class="dot done" aria-hidden="true"></span><span class="nn">002</span><span>Backend housekeeping</span></a></li>
+<li><a href="../tasks/003-init-client.html"><span class="dot done" aria-hidden="true"></span><span class="nn">003</span><span>Angular client setup</span></a></li>
+<li><a href="../tasks/004-backend-foundation.html"><span class="dot done" aria-hidden="true"></span><span class="nn">004</span><span>Backend foundation</span></a></li>
+<li><a href="../tasks/005-annotation-create.html"><span class="dot done" aria-hidden="true"></span><span class="nn">005</span><span>Creating annotations</span></a></li>
+<li><a href="../tasks/006-annotation-reads.html"><span class="dot done" aria-hidden="true"></span><span class="nn">006</span><span>Finding annotations by area</span></a></li>
+<li><a href="../tasks/007-map-viewer.html"><span class="dot done" aria-hidden="true"></span><span class="nn">007</span><span>The 3D map viewer</span></a></li>
+<li><a href="../tasks/008-annotation-ui.html"><span class="dot done" aria-hidden="true"></span><span class="nn">008</span><span>Annotations on screen</span></a></li>
+<li><a href="../tasks/009-benchmark-dataset.html"><span class="dot done" aria-hidden="true"></span><span class="nn">009</span><span>Benchmark with 1M rows</span></a></li>
+<li><a href="../tasks/010-osm-import.html"><span class="dot done" aria-hidden="true"></span><span class="nn">010</span><span>OpenStreetMap import</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">011</span><span>Security and integrations</span></span></li>
+<li><a href="../tasks/012-portfolio-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">012</span><span>Portfolio polish</span></a></li>
+<li><span class="todo"><span class="dot proposed" aria-hidden="true"></span><span class="nn">013</span><span>End-to-end tests</span></span></li>
+<li><a href="../tasks/014-annotation-update.html"><span class="dot done" aria-hidden="true"></span><span class="nn">014</span><span>Editing annotations</span></a></li>
+<li><a href="../tasks/015-html-docs.html"><span class="dot done" aria-hidden="true"></span><span class="nn">015</span><span>This documentation</span></a></li>
+<li><a href="../tasks/016-shared-kernel-and-cleanup.html"><span class="dot done" aria-hidden="true"></span><span class="nn">016</span><span>Shared kernel and server cleanup</span></a></li>
+<li><a href="../tasks/017-ui-figtree-and-spartan.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">017</span><span>Figtree font and a Spartan-built UI</span></a></li><li><a href="../tasks/018-one-command-start.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">018</span><span>One command to start the app</span></a></li><li><a href="../tasks/019-angular-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">019</span><span>Angular structure and routes</span></a></li><li><a href="../tasks/020-spring-structure.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">020</span><span>Spring Boot structure</span></a></li><li><a href="../tasks/021-ui-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">021</span><span>UI polish and a guide</span></a></li><li><a href="../tasks/022-ui-panel-polish.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">022</span><span>Panel polish and a guide</span></a></li><li><a href="../tasks/023-ui-redesign.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">023</span><span>Redesign: tools and panel</span></a></li><li><a href="../tasks/024-client-structure-tidy.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">024</span><span>Client structure tidy</span></a></li><li><a href="../tasks/025-scene-page-split.html"><span class="dot progress" aria-hidden="true"></span><span class="nn">025</span><span>Scene page split</span></a></li><li><a href="../tasks/026-client-no-barrels.html" aria-current="page"><span class="dot progress" aria-hidden="true"></span><span class="nn">026</span><span>Client without barrels</span></a></li>
+</ul></details></nav>
+<main>
+<header class="head col">
+<h1>Client without barrels</h1>
+<div class="tags"><span class="tag c-white">Task 026</span><span class="tag c-butter">In progress</span><span class="tag c-slate"><code>chore/client-no-barrels</code></span></div>
+<p class="lead">Research on Angular&#39;s own guidance and a measurement of our build showed that barrel files and folders named after code types were working against us. Both are gone, and annotations now live inside the scene feature.</p>
+</header><div class="col">
+<aside class="callout c-sky"><h3>How to see it</h3><p>Nothing looks different. Open <code>client/src/app/features/scene</code> to see the new layout. This page replaces the folder layout described in <a href="024-client-structure-tidy.html">Client structure tidy</a>.</p></aside>
+<h2>What the research said</h2>
+<ul>
+<li><strong>Barrels:</strong> Angular&#39;s style guide does not mention them. Its <a href="https://angular.dev/guide/templates/defer">deferred loading guide</a> warns that importing through an <code>index.ts</code> makes the bundler keep all the exports together, so a lazy piece ends up in the main bundle. It tells you to import from the file itself.</li>
+<li><strong>Folders:</strong> the <a href="https://angular.dev/style-guide">style guide</a> says to organize by feature area, to keep tests next to their code, and to avoid folders named for the type of code, such as <code>components/</code> and <code>services/</code>. It does not mention <code>core/</code>, <code>shared/</code> or <code>features/</code>; those are community convention.</li>
+</ul>
+<h2>What our build showed</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Lazy chunk</th><th class="">With the map barrel</th><th class="">Straight from the file</th></tr></thead><tbody>
+<tr><td class=""><code>map-viewer</code></td><td class="">119 bytes, a stub</td><td class="">7.85 kB, the real code</td></tr>
+<tr><td class=""><code>scene</code></td><td class="">277.7 kB</td><td class="">269.4 kB</td></tr>
+</tbody></table></div></div><div class="col">
+<p>The viewer&#39;s code had been pulled into the scene chunk, which defeated the lazy loading set up on purpose. The loss is small because Cesium itself is still its own 5 MB chunk, but the design promise was not true.</p>
+<h2>What changed</h2>
+<ul>
+<li><strong>Barrels removed.</strong> The three <code>index.ts</code> files and the <code>@map</code> alias are gone. Every import names the file that defines what it uses.</li>
+<li><strong>One feature.</strong> Annotations only exist inside a scene (on the server too), so <code>features/annotation/</code> became <code>features/scene/annotation/</code>. There is no longer anything crossing between features.</li>
+<li><strong>Folders named for what they are.</strong> <code>components/</code> is gone. The scene feature has <code>scene-bar/</code>, <code>tools/</code> and <code>annotation/</code>. In <code>shared/</code> the badge, the alert and the blank-title check sit directly next to <code>ui/</code>.</li>
+<li><strong>Directions linted.</strong> <code>shared/</code>, <code>core/</code> and <code>map/</code> may not import from <code>features/</code>. It was tried with a deliberate bad import and failed with a message. No new package.</li>
+</ul>
+</div><figure class="figure wide"><div class="scroll"><svg viewBox="0 0 700 320" width="700" role="img" aria-labelledby="t d" xmlns="http://www.w3.org/2000/svg"><title id="t">The client after the change</title><desc id="d">One feature, scene, holds the page and three sub-areas: scene-bar, tools and annotation. It uses shared, core, map and the generated api. Those four never use the feature.</desc><defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#5b6778"/></marker></defs><rect class="frame" x="10" y="10" width="680" height="170" rx="12"/><text class="t-title" x="26" y="34">features/scene/</text><text class="t-small" x="170" y="34">page, routes, scene data, workspace, creation, link copy, map status</text><rect class="c-sky" x="26" y="50" width="200" height="114" rx="8"/><text class="t-title" x="38" y="72">scene-bar/</text><text class="t-small" x="38" y="90">chooser, new scene,</text><text class="t-small" x="38" y="106">token panel and store</text><rect class="c-sky" x="246" y="50" width="200" height="114" rx="8"/><text class="t-title" x="258" y="72">tools/</text><text class="t-small" x="258" y="90">tool rail, hint,</text><text class="t-small" x="258" y="106">drawing state</text><rect class="c-sky" x="466" y="50" width="208" height="114" rx="8"/><text class="t-title" x="478" y="72">annotation/</text><text class="t-small" x="478" y="90">data, draft, kinds, list,</text><text class="t-small" x="478" y="106">form, editor, edit state</text><rect class="c-sky" x="10" y="230" width="150" height="70" rx="8"/><text class="t-title" x="22" y="252">shared/</text><text class="t-small" x="22" y="270">badge, alert, ui</text><rect class="c-sky" x="185" y="230" width="150" height="70" rx="8"/><text class="t-title" x="197" y="252">core/</text><text class="t-small" x="197" y="270">error messages</text><rect class="c-sky" x="360" y="230" width="150" height="70" rx="8"/><text class="t-title" x="372" y="252">map/</text><text class="t-small" x="372" y="270">Cesium wrapper</text><rect class="c-slate" x="535" y="230" width="155" height="70" rx="8"/><text class="t-title" x="547" y="252">api/</text><text class="t-small" x="547" y="270">generated SDK</text><path class="arrow" d="M85,180 L85,230" marker-end="url(#ah)"/><path class="arrow" d="M260,180 L260,230" marker-end="url(#ah)"/><path class="arrow" d="M435,180 L435,230" marker-end="url(#ah)"/><path class="arrow" d="M612,180 L612,230" marker-end="url(#ah)"/><text class="t-small" x="10" y="314">Arrows show who uses whom. The four boxes below never import from features/ (lint checks it).</text></svg></div><figcaption>One feature, three sub-areas, no barrels.</figcaption></figure><div class="col">
+<h2>How it was checked</h2>
+</div><div class="wide"><div class="table-wrap"><table><thead><tr><th class="">Check</th><th class="">Result</th></tr></thead><tbody><tr><td class="">Behaviour</td><td class="">All 264 client tests pass. Only their import paths changed.</td></tr><tr><td class="">Lazy boundary</td><td class="">The production build shows <code>map-viewer</code> as a 7.85 kB lazy chunk, and the scene chunk 8 kB smaller.</td></tr><tr><td class="">Boundaries</td><td class="">A deliberate import of the scene feature from <code>shared/</code> failed lint with the new message.</td></tr><tr><td class="">Build</td><td class="">Formatting, lint with the class check and the production build are clean.</td></tr></tbody></table></div></div><div class="col">
+<div class="callout c-blush" style="margin-top:1.5rem"><h3>Not verified</h3><p>The app was not opened after the move. If the dev server was running before, restart it, because it reads the path aliases only at start.</p></div>
+</div>
+<nav class="pager" aria-label="Pages"><a href="025-scene-page-split.html">Previous: Scene page split</a><span></span></nav>
+</main>
+</div>
+</body>
+</html>

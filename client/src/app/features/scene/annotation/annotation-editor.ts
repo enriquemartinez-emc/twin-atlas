@@ -1,12 +1,12 @@
 import { Component, computed, input, linkedSignal, output } from '@angular/core';
 import { FormField, form, maxLength, required, submit, validate } from '@angular/forms/signals';
 import type { AnnotationResponse } from '@api/index';
-import { notBlank } from '@shared/forms/not-blank';
+import { notBlank } from '@shared/not-blank';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmInputImports } from '@shared/ui/input';
 import { HlmTextareaImports } from '@shared/ui/textarea';
-import type { AnnotationFormValue } from '../annotation-draft';
-import { ProblemAlert } from '@shared/components/problem-alert';
+import type { AnnotationFormValue } from './annotation-draft';
+import { ProblemAlert } from '@shared/problem-alert';
 import { HlmFieldImports } from '@shared/ui/field';
 import { HlmTypographyImports } from '@shared/ui/typography';
 

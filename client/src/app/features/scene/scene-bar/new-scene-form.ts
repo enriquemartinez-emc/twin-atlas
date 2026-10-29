@@ -1,7 +1,7 @@
 import { Component, input, output, signal } from '@angular/core';
 import { FormField, form, maxLength, required, submit } from '@angular/forms/signals';
-import { notBlank } from '@shared/forms/not-blank';
-import { ProblemAlert } from '@shared/components/problem-alert';
+import { notBlank } from '@shared/not-blank';
+import { ProblemAlert } from '@shared/problem-alert';
 import { HlmButtonImports } from '@shared/ui/button';
 import { HlmFieldImports } from '@shared/ui/field';
 import { HlmInputImports } from '@shared/ui/input';

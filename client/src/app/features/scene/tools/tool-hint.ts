@@ -1,5 +1,5 @@
-import { OUTLINE_MIN_POINTS } from '@features/annotation';
-import type { Tool } from './components/tool-rail';
+import { OUTLINE_MIN_POINTS } from '@features/scene/annotation/annotation-draft';
+import type { Tool } from './tool-rail';
 
 export interface HintState {
   readonly tool: Tool;
